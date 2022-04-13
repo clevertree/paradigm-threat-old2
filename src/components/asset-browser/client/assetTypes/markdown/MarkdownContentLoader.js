@@ -23,6 +23,9 @@ export default class MarkdownContentLoader extends React.Component {
         this.options = {
             overrides: {
                 img: (props) => this.renderTag('img', props),
+                video: (props) => this.renderTag('video', props),
+                assetList: (props) => this.renderTag('assetList', props),
+                meta: (props) => this.renderTag('meta', props),
                 ...props.overrides
             }
         }

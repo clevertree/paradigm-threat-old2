@@ -1,26 +1,24 @@
 <header>
-<a href="/">
-<img src="/assets/site/header_logo.png" alt="Header Logo" class="logo" />
-</a>
+  <a href="/">
+    <img src="/media/site/header.png" alt="Header Logo" class="logo" />
+  </a>
 
-**Subheader Content**
+  **Subheader Content**
 </header>
 
 <nav>
 
-[Home](/)
-[War](/war)
-[History](/history)
-[Fake](/fake)
+  [Home](/)
+  [War](/war)
+  [History](/history)
+  [Fake](/fake)
 
 </nav>
 
 <article>
-<children/>
+  <templateContent></templateContent>
 </article>
 
 <footer>
-
-**[Footer Content]**
-
+  **[Footer Content]**
 </footer>

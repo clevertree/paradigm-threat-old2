@@ -24,7 +24,7 @@ export default class AssetBrowser extends React.Component {
             loaded: false
         }
         this.overrides = {
-            children: (props) => this.renderChildren(props),
+            templateContent: (props) => this.renderChildren(props),
         }
     }
 
