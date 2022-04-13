@@ -1,9 +1,10 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import MarkdownAsset from "./assetTypes/markdown/MarkdownAsset.js";
+import MarkdownAsset from "./asset-types/markdown/MarkdownAsset.js";
 import AssetIterator from "../util/AssetIterator.js";
 import AssetRenderer from "./AssetRenderer.js";
-
+import AssetLoader from "./AssetLoader.js";
+import AssetBrowserContext from "./AssetBrowserContext.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -34,19 +35,23 @@ export default class AssetBrowser extends React.Component {
     }
 
     async loadContent() {
-        const assetURL = new URL(process.env.REACT_APP_ASSET_ENDPOINT, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin);
-        const response = await fetch(assetURL + '');
-        const assets = await response.json()
+        const assets = await new AssetLoader().loadAssets()
         this.setState({assets, loaded: true});
-        console.log("Assets loaded: ", assets);
+        // console.log("Assets loaded: ", assets);
     }
 
     render() {
         const { defaultTemplate} = this.props;
         return (
-            <MarkdownAsset
-                overrides={this.overrides}
-                file={defaultTemplate} />
+            <AssetBrowserContext.Provider value={{
+                ...this.props,
+                ...this.state,
+                iterator: new AssetIterator(this.state.assets)
+            }}>
+                <MarkdownAsset
+                    overrides={this.overrides}
+                    file={defaultTemplate} />
+            </AssetBrowserContext.Provider>
         );
     }
 

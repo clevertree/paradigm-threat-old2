@@ -2,30 +2,31 @@
 
 video.asset-image,
 img.asset-image {
-    display: block;
-    max-width: 900px;
-    margin: auto;
     cursor: pointer;
-
-    object-fit: contain;
+    max-width: 100vh;
+    z-index: 3;
+    position: relative;
 }
 
-
-@media only screen and (max-width: 1900px) {
-    video.asset-image,
-    img.asset-image {
-        /*clear: both;*/
-        max-width: 42vw;
-        /*margin-top: 0.5em;*/
-    }
+.asset-image + .asset-image {
+    margin-bottom: 0.3em;
 }
 
-@media only screen and (max-width: 640px) {
-    video.asset-image,
-    img.asset-image {
-        max-width: 90vw;
-    }
-}
+/*@media only screen and (max-width: 1900px) {*/
+/*    video.asset-image,*/
+/*    img.asset-image {*/
+/*        !*clear: both;*!*/
+/*        max-width: 42vw;*/
+/*        !*margin-top: 0.5em;*!*/
+/*    }*/
+/*}*/
+
+/*@media only screen and (max-width: 640px) {*/
+/*    video.asset-image,*/
+/*    img.asset-image {*/
+/*        max-width: 90vw;*/
+/*    }*/
+/*}*/
 
 
 /** Fullscreen **/
@@ -55,7 +56,7 @@ div.asset-image-fullscreen > img {
     /*max-height: 80vw;*/
     object-fit: contain;
     padding: 1em;
-    background-color: #000;
+    /*background-color: #000;*/
 }
 
 @keyframes fadeIn {

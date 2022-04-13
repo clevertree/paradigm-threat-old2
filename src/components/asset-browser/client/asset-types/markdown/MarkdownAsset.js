@@ -3,6 +3,13 @@ import Markdown from 'markdown-to-jsx';
 import PropTypes from "prop-types";
 
 import "./MarkdownAsset.css"
+import ImageAsset from "../image/ImageAsset.js";
+
+/** Dev Update **/
+import Touch from "../../../server/touch.js"
+// console.log(Touch)
+import MetaAsset from "../meta/MetaAsset.js";
+import NavAsset from "../nav/NavAsset.js";
 
 export default class MarkdownAsset extends React.Component {
     /** Property validation **/
@@ -64,9 +71,16 @@ export default class MarkdownAsset extends React.Component {
             finalProps.src = new URL(finalProps.src, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin) + '';
         }
         // console.log('renderTag', tagName, finalProps, children)
-        // switch(tagName) {
-        //     case 'img':
-        // }
-        return React.createElement(tagName, finalProps, children);
+        switch(tagName) {
+            case 'img':
+                return <ImageAsset {...finalProps}>{children}</ImageAsset>
+            case 'meta':
+                return <MetaAsset {...finalProps}>{children}</MetaAsset>;
+            case 'nav':
+                return <NavAsset {...finalProps}>{children}</NavAsset>;
+            default:
+                return React.createElement(tagName, finalProps, children);
+        }
+
     }
 }

@@ -4,12 +4,9 @@
       <img src="/media/site/header.png" alt="Header Logo" class="logo" />
     </a>
   </header>
-  <nav>
+  <nav data-generate-links="auto">
   
-[Home](/)
-[War](/war)
-[History](/history)
-[Fake](/fake)
+[home](/)
   
   </nav>
   

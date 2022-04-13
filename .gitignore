@@ -3,6 +3,10 @@
 # Project Files
 files
 
+# PHP Storm
+/.idea
+
+
 # dependencies
 /node_modules
 /.pnp
@@ -24,5 +28,3 @@ files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-.idea/*

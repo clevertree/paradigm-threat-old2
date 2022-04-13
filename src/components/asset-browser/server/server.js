@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import express from "express";
 import {JSDOM} from "jsdom";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import {getFiles} from "./server-util.js";
 import {KEY_FILES, KEY_DIRS} from "../constants.js";
 
@@ -58,6 +60,16 @@ export function setup(app, BUILD_PATH) {
 }
 
 
+function updateTouchFile() {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
+    const touchFilePath = __dirname + '/touch.js';
+    fs.writeFileSync(touchFilePath,
+    `const Touch = ${new Date().getTime()};`
+    + `export default Touch;`);
+    console.log('Updated touch file', touchFilePath)
+}
+
 export async function generateAssetList() {
     const { assetPath, assetMatch } = getConfig();
     assetList[KEY_FILES] = [];
@@ -89,6 +101,8 @@ export async function generateAssetList() {
         }
     }
     console.log("Asset list updated: ", JSON.stringify(assetList).length)
+
+    updateTouchFile();
 }
 
 let watchTimeout = null;

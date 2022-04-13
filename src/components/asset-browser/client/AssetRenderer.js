@@ -1,9 +1,10 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import MarkdownAsset from "./assetTypes/markdown/MarkdownAsset.js";
-import VideoAsset from "./assetTypes/video/VideoAsset.js";
-import UnknownAsset from "./assetTypes/unknown/UnknownAsset.js";
-import PDFAsset from "./assetTypes/pdf/PDFAsset.js";
+import MarkdownAsset from "./asset-types/markdown/MarkdownAsset.js";
+import VideoAsset from "./asset-types/video/VideoAsset.js";
+import UnknownAsset from "./asset-types/unknown/UnknownAsset.js";
+import PDFAsset from "./asset-types/pdf/PDFAsset.js";
+import ImageAsset from "./asset-types/image/ImageAsset.js";
 
 export default class AssetRenderer extends React.Component {
     /** Property validation **/
@@ -43,7 +44,6 @@ export default class AssetRenderer extends React.Component {
 
     renderFile(filePath, key) {
         const ext = filePath.split('.').pop().toLowerCase();
-        console.log('WUT', filePath, ext, key);
         switch(ext) {
             case 'md':
                 return <MarkdownAsset file={filePath} key={key} />
@@ -53,7 +53,7 @@ export default class AssetRenderer extends React.Component {
             case 'png':
             case 'gif':
             case 'svg':
-                return <img src={filePath} alt={filePath} key={key} />;
+                return <ImageAsset src={filePath} alt={filePath} key={key} />;
             case 'm4v':
             case 'mp4':
             case 'mkv':

@@ -24,14 +24,14 @@ div.asset-list.spread {
 
     .float-right {
         float: right;
-        max-width: 24vw;
+        width: 24vw;
         padding-right: 0.5em;
         margin-left: 0.5em;
         clear: right;
     }
     .float-left {
         float: left;
-        max-width: 24vw;
+        width: 24vw;
         padding-left: 0.5em;
         margin-right: 0.5em;
         clear: left;
