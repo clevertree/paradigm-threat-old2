@@ -1,38 +1,52 @@
 import React from "react";
-import PropTypes from "prop-types";
 import AssetBrowserContext from "../../AssetBrowserContext.js"
 
+import "./NavAsset.css"
+
 export default class NavAsset extends React.Component {
-    /** Property validation **/
-    static propTypes = {
-        src: PropTypes.string.isRequired,
-    };
 
     render() {
         return <AssetBrowserContext.Consumer>
-            {assetBrowserState => (
-                <nav>
-                    {this.props.children}
-                    {this.renderGeneratedLinks(assetBrowserState)}
-                </nav>
-            )}
-        </AssetBrowserContext.Consumer>
-            ;
+            {({iterator, pathname, loaded}) => <nav className="asset-navigation">
+                {this.renderLinks(pathname, iterator, loaded)}
+            </nav>}
+        </AssetBrowserContext.Consumer>;
     }
 
-    renderGeneratedLinks({iterator, pathname, loaded}) {
-        let generate = this.props['data-generate-links'] || this.props['generate-links'];
-        if (!generate || !loaded)
-            return null;
-
-        const fileList = iterator.listDirectories(pathname)
-        return fileList.map(file => <a href={getAbsoluteURL(pathname, file)}>{file}</a>)
+    renderLinks(pathname, iterator, loaded) {
+        let generate = loaded && (this.props['data-generate-links'] || this.props['generate-links']);
+        return <>
+            <div className="main">
+                {this.props.children}
+                {generate ? this.renderGeneratedMainLinks(iterator) : null}
+            </div>
+                {generate ? this.renderGeneratedSubLinks(pathname, iterator) : null}
+        </>
     }
 
-}
+    renderGeneratedMainLinks(iterator) {
 
-function getAbsoluteURL(pathname, file) {
-    if(pathname[0] === '/')
-        pathname = pathname.substring(1);
-    return pathname + '/' + file;
+        const fileList = iterator.listDirectories('/')
+        return fileList.map((file, i) => <a href={'/' + file} key={i}>{file}</a>)
+    }
+
+    renderGeneratedSubLinks(pathname, iterator) {
+        let subPath = pathname;
+        let content = [], i=0;
+        while(subPath && subPath !== '/') {
+            console.log('subPath', subPath, pathname);
+            if(i++>10)
+                break;
+            const fileList = iterator.listDirectories(subPath);
+            if(fileList.length !== 0)
+            content.push(
+                <div className={"sub sub"+i} key={subPath}>
+                    {fileList.map((file, i) => <a href={subPath + '/' + file} key={i}>{file}</a>)}
+                </div>
+            )
+            subPath = subPath.substring(0, subPath.lastIndexOf("/"));
+        }
+        return content;
+    }
+
 }

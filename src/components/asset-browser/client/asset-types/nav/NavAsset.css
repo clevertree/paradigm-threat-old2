@@ -1,0 +1,10 @@
+nav.asset-navigation {
+
+}
+
+nav.asset-navigation .main,
+nav.asset-navigation .sub {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}

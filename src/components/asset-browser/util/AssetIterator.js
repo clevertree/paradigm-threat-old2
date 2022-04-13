@@ -25,10 +25,8 @@ export default class AssetIterator {
         for(let pathFrag of pathSplit) {
             if(!pathFrag)
                 continue;
-            if(!pointer[KEY_DIRS][pathFrag]) {
-                console.error("Path fragment not found: ", pathFrag, pointer[KEY_DIRS], path);
-                return null;
-            }
+            if(!pointer[KEY_DIRS] || !pointer[KEY_DIRS][pathFrag])
+                throw new Error(`Path fragment not found: ${pathFrag} path=${path}`);
 
             pointer = pointer[KEY_DIRS][pathFrag]
         }

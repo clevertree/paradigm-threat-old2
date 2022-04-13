@@ -2,11 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 
 export default class MetaAsset extends React.Component {
-    /** Property validation **/
-    static propTypes = {
-        src: PropTypes.string.isRequired,
-    };
-
     render() {
         let keyName = 'name';
         if(this.props.property)

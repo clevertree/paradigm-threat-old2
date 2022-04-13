@@ -27,6 +27,8 @@ export default class ImageAsset extends React.Component {
         let className = 'asset-image asset';
         if(this.props.className)
             className += ' ' + this.props.className;
+        if(this.props['data-no-fullscreen'])
+            className += ' no-fullscreen';
         // if(this.state.fullscreen)
         //     className += ' fullscreen';
         // className += [' even', ' odd'][i % 2];
@@ -58,6 +60,9 @@ export default class ImageAsset extends React.Component {
 
 
     onClick(e) {
+        if(this.props['data-no-fullscreen'])
+            return;
+
         if(this.props.href) {
             let url = new URL(this.props.href);
             console.log(url, document.location.origin);
@@ -73,7 +78,7 @@ export default class ImageAsset extends React.Component {
                 activeImages = [this];
             }
             this.setState({fullscreen});
-            console.log('activeImages', activeImages, fullscreen);
+            // console.log('activeImages', activeImages, fullscreen);
         }
     }
 
