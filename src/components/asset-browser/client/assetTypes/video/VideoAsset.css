@@ -1,0 +1,42 @@
+
+/** Image Asset **/
+
+div.asset-video {
+    margin: 0.5em;
+    /*text-align: center;*/
+    display: flex;
+    justify-content: center;
+
+}
+div.asset-video > video {
+    /*max-height: 20em;*/
+    /*max-width: 36vw;*/
+    vertical-align: top;
+}
+
+/** Youtube **/
+div.asset-video.youtube > iframe {
+    min-width: 640px;
+    min-height: 400px;
+}
+
+
+@media only screen and (max-width: 640px) {
+    div.asset-video.youtube > iframe,
+    div.asset-video > video {
+        display: block;
+        margin: auto;
+        max-width: 90vw;
+        min-width: 90vw;
+        min-height: 50vw;
+    }
+}
+@media only screen and (min-width: 640px) {
+    div.asset-video.even {
+        float: left;
+    }
+    div.asset-video.odd {
+        float: right;
+    }
+}
+

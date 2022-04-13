@@ -1,0 +1,76 @@
+/** Markdown Asset **/
+
+div.asset-markdown {
+    display: block;
+    margin: 0 auto;
+    align-self: start;
+    padding-bottom: 0.5em;
+}
+
+div.asset-markdown > div > :not(div) {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.asset-markdown > div > h1, div.asset-markdown > div > h2, div.asset-markdown > div > h3, div.asset-markdown > div > h4, div.asset-markdown > div > h5, div.asset-markdown > div > h6,
+div.asset-markdown > div > ul, div.asset-markdown > div > ol,
+div.asset-markdown > div > blockquote,
+div.asset-markdown > div > pre,
+div.asset-markdown > div > p {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1160px;
+}
+div.asset-markdown > div > h1, div.asset-markdown > div > h2, div.asset-markdown > div > h3, div.asset-markdown > div > h4, div.asset-markdown > div > h5, div.asset-markdown > div > h6 {
+    max-width: 1200px;
+}
+
+div.asset-markdown > div > h1:first-of-type,
+div.asset-markdown > div > h2:first-of-type,
+div.asset-markdown > div > h3:first-of-type {
+    margin-top: 0;
+    padding-top: 0.5em;
+}
+
+@media only screen and (max-width: 1800px) {
+
+    div.asset-markdown > div > h1, div.asset-markdown > div > h2, div.asset-markdown > div > h3, div.asset-markdown > div > h4, div.asset-markdown > div > h5, div.asset-markdown > div > h6,
+    div.asset-markdown > div > ul, div.asset-markdown > div > ol,
+    div.asset-markdown > div > blockquote,
+    div.asset-markdown > div > pre,
+    div.asset-markdown > div > p {
+        max-width: 760px;
+    }
+    div.asset-markdown > div > h1, div.asset-markdown > div > h2, div.asset-markdown > div > h3, div.asset-markdown > div > h4, div.asset-markdown > div > h5, div.asset-markdown > div > h6 {
+        max-width: 800px;
+    }
+}
+
+
+div.asset-markdown > div > pre > code,
+div.asset-markdown > div > p > code {
+    display: block;
+    background: #AAA;
+    padding: 1em;
+    border-radius: 4px;
+    white-space: pre-wrap;
+}
+
+div.asset-markdown > div > blockquote > p {
+    background: #C0C0C0;
+    padding: 1em;
+    white-space: normal;
+    font-style: italic;
+    border-radius: 4px;
+    border-left: 4px solid #AAA;
+    border-right: 4px solid #AAA;
+}
+
+/** overflow in asset list **/
+
+div.asset-list > div.asset-markdown {
+    max-height: 100vh;
+    overflow-y: auto;
+}

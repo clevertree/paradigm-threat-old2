@@ -1,15 +1,14 @@
 import React, {Component} from "react";
-import {withRouter} from 'react-router-dom';
 import PropTypes from "prop-types";
 
 export default class NavWrapper extends Component {
     static propTypes = {
-        window: PropTypes.object.isRequired
+        window: PropTypes.object
     }
 
     constructor(props) {
         super(props);
-        console.log('NavWrapper', props);
+        // console.log('NavWrapper', props);
         const windowObj = props.target || window;
         this.state = {
             pathname: windowObj.location.pathname
@@ -30,9 +29,8 @@ export default class NavWrapper extends Component {
 
     render() {
         const windowObj = this.props.target || window;
-        const { history, location, match } = windowObj;
-        const newProps = { history, location, match };
-        // console.log("NAVWRAPPER", newProps.location.pathname);
+        const newProps = { pathname: windowObj.location.pathname || '' };
+        // console.log("NAVWRAPPER", windowObj.location.pathname);
         return React.cloneElement(this.props.children, newProps);
     }
 

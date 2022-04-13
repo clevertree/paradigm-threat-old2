@@ -2,6 +2,7 @@ import * as React from "react";
 import Markdown from 'markdown-to-jsx';
 import PropTypes from "prop-types";
 
+/** @deprecated  Move to assetTypes **/
 
 export default class MarkdownContentLoader extends React.Component {
     /** Property validation **/

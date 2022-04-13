@@ -8,7 +8,8 @@
 
 <nav>
 
-[Home](/war)
+[Home](/)
+[War](/war)
 [History](/history)
 [Fake](/fake)
 

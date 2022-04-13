@@ -1,0 +1,29 @@
+/** PDF Asset **/
+
+div.asset-pdf {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /*margin: 0.5em;*/
+}
+div.asset-pdf > embed {
+    height: 23em;
+    width: 21em;
+    vertical-align: top;
+    /*margin: 1em;*/
+}
+div.asset-pdf > a {
+    display: block;
+    padding: 0.5em;
+    width: 100%;
+    text-align: center;
+}
+
+@media only screen and (max-width: 640px) {
+    div.asset-pdf > embed {
+        display: block;
+        margin: auto;
+        width: 90vw;
+        height: 90vw;
+    }
+}

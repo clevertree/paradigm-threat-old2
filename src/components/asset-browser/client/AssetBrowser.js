@@ -1,20 +1,24 @@
 import * as React from "react";
-import Markdown from 'markdown-to-jsx';
 import PropTypes from "prop-types";
-import MarkdownContentLoader from "../../markdown/MarkdownContentLoader.js";
+import MarkdownContentLoader from "./assetTypes/markdown/MarkdownContentLoader.js";
 import AssetIterator from "../util/AssetIterator.js";
+import AssetRenderer from "./AssetRenderer.js";
 
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
     static propTypes = {
         defaultTemplate: PropTypes.string.isRequired,
-        location: PropTypes.object.isRequired
+        pathname: PropTypes.string.isRequired
     };
+
+    static defaultProps = {
+        pathname: ""
+    }
 
     constructor(props) {
         super(props);
-        console.log('AssetBrowser', props);
+        // console.log('AssetBrowser', props);
         this.state = {
             assets: null,
             loaded: false
@@ -51,8 +55,9 @@ export default class AssetBrowser extends React.Component {
         if(!loaded)
             return "Loading...";
         const iterator = new AssetIterator(assets);
-        console.log(this.props.location.pathname, assets);
-        const fileList = iterator.listFiles(this.props.location.pathname)
-        return JSON.stringify(fileList);
+        // console.log(this.props.pathname, assets);
+        const fileList = iterator.listFiles(this.props.pathname)
+        return <AssetRenderer fileList={fileList} pathname={this.props.pathname} />;
     }
 }
+

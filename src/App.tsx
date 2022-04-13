@@ -1,5 +1,4 @@
 import React from "react";
-import {BrowserRouter} from "react-router-dom";
 import NavWrapper from "./components/nav/NavWrapper";
 import AssetBrowser from "./components/asset-browser/client/AssetBrowser";
 

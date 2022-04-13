@@ -2,25 +2,25 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="88630029-7dab-4bcf-8a15-7d09b1c6b1ec" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.env.development" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pt2.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/server.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/AssetBrowser.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/constants.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/server/assets.http" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/server/server-util.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/server/server.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/util/AssetIterator.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/markdown/MarkdownContentLoader.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/nav/NavWrapper.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/declarations.d.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/pages/site/template.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/AssetRenderer.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/image/ImageAsset.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/image/ImageAsset.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/list/AssetList.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/list/AssetList.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/markdown/MarkdownAsset.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/markdown/MarkdownAsset.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/pdf/PDFAsset.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/pdf/PDFAsset.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/unknown/UnknownAsset.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/video/VideoAsset.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/asset-browser/client/assetTypes/video/VideoAsset.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/files/suppressed/pyramids/sound.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/asset-browser/client/AssetBrowser.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/asset-browser/client/AssetBrowser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/markdown/MarkdownContentLoader.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/markdown/MarkdownContentLoader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/nav/NavWrapper.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/nav/NavWrapper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/site/template.md" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/site/template.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,17 +54,18 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/components/asset-browser/client" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/components/asset-browser/client" />
+      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="es6.move.members.recent.items">
+      <recent name="$PROJECT_DIR$/src/components/asset-browser/client/AssetRenderer.js" />
       <recent name="$PROJECT_DIR$/src/components/asset-browser/constants.js" />
     </key>
   </component>
@@ -115,7 +116,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1649802194949</updated>
-      <workItem from="1649802196109" duration="5351000" />
+      <workItem from="1649802196109" duration="8873000" />
     </task>
     <servers />
   </component>
