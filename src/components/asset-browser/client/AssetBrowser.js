@@ -1,6 +1,6 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import MarkdownContentLoader from "./assetTypes/markdown/MarkdownContentLoader.js";
+import MarkdownAsset from "./assetTypes/markdown/MarkdownAsset.js";
 import AssetIterator from "../util/AssetIterator.js";
 import AssetRenderer from "./AssetRenderer.js";
 
@@ -34,7 +34,7 @@ export default class AssetBrowser extends React.Component {
     }
 
     async loadContent() {
-        const assetURL = new URL(process.env.REACT_APP_ASSET_ENDPOINT, process.env.REACT_APP_SERVER_PUBLIC_URL || window.location.origin);
+        const assetURL = new URL(process.env.REACT_APP_ASSET_ENDPOINT, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin);
         const response = await fetch(assetURL + '');
         const assets = await response.json()
         this.setState({assets, loaded: true});
@@ -44,7 +44,7 @@ export default class AssetBrowser extends React.Component {
     render() {
         const { defaultTemplate} = this.props;
         return (
-            <MarkdownContentLoader
+            <MarkdownAsset
                 overrides={this.overrides}
                 file={defaultTemplate} />
         );

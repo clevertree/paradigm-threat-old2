@@ -6,6 +6,7 @@ import './App.css';
 
 /** Page Sections **/
 import PageTemplate from "./pages/site/template.md";
+import "./pages/site/theme/ThemeDefault.css"
 
 class App extends React.Component {
   render() {
