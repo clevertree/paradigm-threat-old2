@@ -11,7 +11,7 @@ img.asset-image {
 }
 
 .asset-image + .asset-image {
-    margin-bottom: 0.3em;
+    margin-top: 0.3em;
 }
 
 img.asset-image.no-fullscreen {

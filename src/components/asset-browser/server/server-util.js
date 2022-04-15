@@ -17,3 +17,18 @@ export async function* getFiles(dir) {
         }
     }
 }
+
+
+export async function* getDirectories(dir) {
+    const {assetIgnore} = getConfig();
+    const dirents = await readdir(dir, { withFileTypes: true });
+    for (const dirent of dirents) {
+        const res = resolve(dir, dirent.name);
+        if (dirent.isDirectory()) {
+            if(assetIgnore.indexOf(dirent.name) === -1) {
+                yield res;
+                yield* getDirectories(res);
+            }
+        }
+    }
+}

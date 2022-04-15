@@ -4,7 +4,7 @@ import express from "express";
 import {JSDOM} from "jsdom";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import {getFiles} from "./server-util.js";
+import {getDirectories, getFiles} from "./server-util.js";
 import {KEY_FILES, KEY_DIRS} from "../constants.js";
 
 const assetList = {
@@ -109,10 +109,19 @@ let watchTimeout = null;
 export async function watchAssetList() {
     const { assetPath } = getConfig();
     console.log("Watching ", assetPath);
-    fs.watch(assetPath, function (event, filename) {
-        clearTimeout(watchTimeout);
-        watchTimeout = setTimeout(generateAssetList, 500);
-    });
+
+    for await (const fileDirectory of getDirectories(assetPath)) {
+        // console.log("Watching ", fileDirectory);
+        // eslint-disable-next-line no-loop-func
+        fs.watch(fileDirectory,function (event, filename) {
+            clearTimeout(watchTimeout);
+            watchTimeout = setTimeout(function() {
+                console.log("File updated: ", fileDirectory + '/' + filename);
+                generateAssetList()
+            }, 500);
+        });
+    }
+
 }
 
 export function getConfig() {

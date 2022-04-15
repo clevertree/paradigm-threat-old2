@@ -5,13 +5,31 @@ import PropTypes from "prop-types";
 import "./MarkdownAsset.css"
 import ImageAsset from "../image/ImageAsset.js";
 
-/** Dev Update **/
-import Touch from "../../../server/touch.js"
-// console.log(Touch)
 import MetaAsset from "../meta/MetaAsset.js";
 import NavAsset from "../nav/NavAsset.js";
+import AssetBrowserContext from "../../AssetBrowserContext.js";
 
-export default class MarkdownAsset extends React.Component {
+const customTags = {};
+
+/**
+ * Callback for adding two numbers.
+ *
+ * @callback tagCallback
+ * @param {string} tagName - Tag Name.
+ * @param {object} props - Tag Props.
+ * @param {any} children - Tag Children.
+ */
+
+/**
+ *
+ * @param tagName
+ * @param {tagCallback} tagCallback - A callback to run.
+ */
+export function registerTag(tagName, tagCallback) {
+    customTags[tagName] = tagCallback;
+}
+
+class MarkdownAsset extends React.Component {
     /** Property validation **/
     static propTypes = {
         file: PropTypes.string.isRequired,
@@ -20,6 +38,7 @@ export default class MarkdownAsset extends React.Component {
     static defaultProps = {
         className: "markdown-body"
     }
+
 
     constructor(props) {
         super(props);
@@ -32,11 +51,17 @@ export default class MarkdownAsset extends React.Component {
             createElement: this.renderTag.bind(this),
             overrides: props.overrides
         }
+        this.refreshHash = null;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.file !== this.props.file) {
-            // console.log("Reloading content: ", this.props.file);
+            this.setState({content: null, loaded: false});
+            console.log("Reloading content: ", this.props.file);
+            this.loadContent().then();
+        }
+        if (prevProps.refreshHash !== this.props.refreshHash) {
+            console.log("Refreshing content: ", this.props.file, prevProps.refreshHash);
             this.loadContent().then();
         }
     }
@@ -56,7 +81,7 @@ export default class MarkdownAsset extends React.Component {
     render() {
         return (
             <Markdown options={this.options}>
-                {this.state.loaded ? this.state.content : "Loading Markdown page: " + this.props.file}
+                {this.state.content ? this.state.content : "Loading Markdown page: " + this.props.file}
             </Markdown>
         );
     }
@@ -70,17 +95,26 @@ export default class MarkdownAsset extends React.Component {
         if(props.src) {
             finalProps.src = new URL(finalProps.src, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin) + '';
         }
-        // console.log('renderTag', tagName, finalProps, children)
-        switch(tagName) {
-            case 'img':
-                return <ImageAsset {...finalProps}>{children}</ImageAsset>
-            case 'meta':
-                return <MetaAsset {...finalProps}>{children}</MetaAsset>;
-            case 'nav':
-                return <NavAsset {...finalProps}>{children}</NavAsset>;
-            default:
-                return React.createElement(tagName, finalProps, children);
-        }
 
+        if(customTags[tagName])
+            return customTags[tagName](tagName, finalProps, children);
+
+        // console.log('renderTag', tagName, finalProps, children)
+        return React.createElement(tagName, finalProps, children);
+    }
+}
+registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
+registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
+registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
+
+export default class MarkdownAssetWrapper extends React.Component {
+    render() {
+        return <AssetBrowserContext.Consumer>
+            {({refreshHash}) => {
+                return <MarkdownAsset {...this.props} refreshHash={refreshHash} >
+                    {this.props.children}
+                </MarkdownAsset>;
+            }}
+        </AssetBrowserContext.Consumer>;
     }
 }
