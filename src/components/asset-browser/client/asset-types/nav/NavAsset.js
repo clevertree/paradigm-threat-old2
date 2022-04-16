@@ -8,7 +8,8 @@ export default class NavAsset extends React.Component {
         super(props);
         this.ref = {
             nav: React.createRef(),
-            container: React.createRef()
+            container: React.createRef(),
+            bottomText: React.createRef()
         }
         this.cb = {
             onScroll: e => this.updateScrollPosition(e),
@@ -30,8 +31,17 @@ export default class NavAsset extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const navElm = this.ref.nav.current;
         const containerElm = this.ref.container.current;
-        const {height: containerHeight} = containerElm.getBoundingClientRect();
-        if(containerHeight) navElm.setAttribute('style', `height: ${containerHeight}px`);
+        const bottomElm = this.ref.bottomText.current;
+        if(this.state.floating) {
+            const {height: containerHeight} = containerElm.getBoundingClientRect();
+            const {height: bottomHeight} = bottomElm.getBoundingClientRect();
+            navElm.setAttribute('style', `height: ${containerHeight}px`);
+            console.log('bottomElm', bottomElm, bottomHeight);
+            document.body.style.paddingBottom = `${bottomHeight}px`;
+        } else {
+            navElm.removeAttribute('style');
+            document.body.style.paddingBottom = null
+        }
     }
 
     render() {
@@ -42,12 +52,15 @@ export default class NavAsset extends React.Component {
             {({iterator, pathname, loaded}) => <nav
                 ref={this.ref.nav}
                 className={className}>
-                <div className="nav-container" ref={this.ref.container}>
+                <div className="nav-container"
+                     ref={this.ref.container}
+                >
                 {this.renderLinks(pathname, iterator, loaded)}
                 </div>
                 {this.state.floating ? <div
                     className="bottom-text"
                     onClick={this.cb.scrollToTop}
+                    ref={this.ref.bottomText}
                 >Back to top</div> : null}
             </nav>}
         </AssetBrowserContext.Consumer>;
