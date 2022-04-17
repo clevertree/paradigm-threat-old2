@@ -15,7 +15,8 @@ export default function setupAPI(app) {
     const schema = buildSchema(`
     scalar JSON
     type Query {
-        assets: JSON
+        assets(path: String): JSON
+        report(path: String): JSON
     },
 `);
 
@@ -33,9 +34,9 @@ export default function setupAPI(app) {
 }
 
 
-function handleAssetsAPI() {
+function handleAssetsAPI(args) {
     const { assetList } = getConfig();
-    return assetList;
+    return traverseObject(assetList, args.path);
 }
 
 function handleReportAPI(args) {
@@ -46,19 +47,20 @@ function handleReportAPI(args) {
         throw new Error( "Missing process.env.REACT_APP_ASSET_GOACCESS_REPORT")
     const reportJSONString = fs.readFileSync(path.resolve(assetPath + reportPath), 'utf8');
     const reportJSON = JSON.parse(reportJSONString);
-    if(args.path) {
-        let pointer = reportJSON;
-        const pathSplit = args.path.split('/');
-        for(const pathFrag of pathSplit) {
-            if(!pathFrag)
-                continue;
-            if(!pointer[pathFrag])
-                throw new Error("Invalid path: " + args.path);
-            pointer = pointer[pathFrag];
-        }
-        return pointer;
-    }
-
-    return reportJSON;
+    return traverseObject(reportJSON, args.path);
 }
 
+function traverseObject(obj, path) {
+    let pointer = obj;
+    if(path) {
+        const pathSplit = path.split(/[.\/]/g);
+        for (const pathFrag of pathSplit) {
+            if (!pathFrag)
+                continue;
+            if (!pointer.hasOwnProperty(pathFrag))
+                throw new Error("Invalid path: " + path);
+            pointer = pointer[pathFrag];
+        }
+    }
+    return pointer;
+}
