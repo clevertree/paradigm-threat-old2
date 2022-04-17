@@ -1,6 +1,6 @@
 import {resolve} from "path";
-import {getConfig} from "./server.js";
 import fs from "fs";
+import getConfig from "./config.js";
 const { readdir } = fs.promises;
 
 export async function* getFiles(dir) {

@@ -1,28 +1,25 @@
 import fs from "fs";
-import path from "path";
+import path, {dirname} from "path";
 import express from "express";
 import {JSDOM} from "jsdom";
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import {fileURLToPath} from 'url';
 import {getDirectories, getFiles} from "./server-util.js";
-import {KEY_FILES, KEY_DIRS} from "../constants.js";
+import {KEY_DIRS, KEY_FILES} from "../constants.js";
+import getConfig from "./config.js";
+import setupAPI from "./api.js";
 
-const assetList = {
-    [KEY_FILES]: [],
-    [KEY_DIRS]: {},
-};
 
-function handleAPI(req, res) {
-    res.json(assetList);
-}
 
 export function setup(app, BUILD_PATH) {
     const { assetPath } = getConfig();
     const BUILD_INDEX_PATH = path.resolve(BUILD_PATH, 'index.html');
 
+    // Asset Files
     app.use(express.static(BUILD_PATH));
     app.use(express.static(assetPath));
-    app.all(process.env.REACT_APP_ASSET_ENDPOINT, handleAPI);
+
+    // Asset APIs
+    setupAPI(app);
 
     app.use((req, res) => {
         console.log('404', req.path);
@@ -60,6 +57,7 @@ export function setup(app, BUILD_PATH) {
 }
 
 
+
 function updateTouchFile() {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
@@ -71,7 +69,7 @@ function updateTouchFile() {
 }
 
 export async function generateAssetList() {
-    const { assetPath, assetMatch } = getConfig();
+    const { assetList, assetPath, assetMatch } = getConfig();
     assetList[KEY_FILES] = [];
     assetList[KEY_DIRS] = {};
     for await (const filePath of getFiles(assetPath)) {
@@ -122,20 +120,6 @@ export async function watchAssetList() {
         });
     }
 
-}
-
-export function getConfig() {
-    let {
-        REACT_APP_ASSET_PATH: assetPath,
-        REACT_APP_ASSET_URL: assetURL,
-        REACT_APP_ASSET_IGNORE: assetIgnore,
-        REACT_APP_ASSET_MATCH: assetMatch
-    } = process.env;
-    assetPath = path.resolve(process.cwd(), assetPath);
-    assetIgnore = assetIgnore.split(';');
-    assetMatch = assetMatch.split(';');
-
-    return {assetPath, assetURL, assetIgnore, assetMatch};
 }
 
 
