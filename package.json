@@ -29,6 +29,7 @@
   },
   "scripts": {
     "server": "node scripts/server.js",
+    "goaccess": "sh scripts/goaccess.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
