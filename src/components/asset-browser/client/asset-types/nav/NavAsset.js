@@ -1,5 +1,5 @@
 import React from "react";
-import AssetBrowserContext from "../../AssetBrowserContext.js"
+import AssetBrowserContext from "../../context/AssetBrowserContext.js"
 
 import "./NavAsset.css"
 
@@ -90,22 +90,26 @@ export default class NavAsset extends React.Component {
             // console.log('subPath', subPath, pathname);
             if(i++>10)
                 break;
-            const fileList = iterator.listDirectories(subPath);
-            if(fileList.length !== 0)
-            content.unshift(
-                <div className={"sub"} key={subPath}>
-                    {fileList.map((file, i) => <a href={subPath + '/' + file} key={i}>{file}</a>)}
-                </div>
-            )
+            addSubPath(subPath)
             subPath = subPath.substring(0, subPath.lastIndexOf("/"));
         }
         return content;
+
+        function addSubPath(subPath) {
+            const fileList = iterator.listDirectories(subPath);
+            if(fileList.length !== 0)
+                content.unshift(
+                    <div className={"sub"} key={subPath}>
+                        {fileList.map((file, i) => <a href={subPath + '/' + file} key={i}>{file}</a>)}
+                    </div>
+                )
+        }
     }
 
 
-    updateScrollPosition(e) {
+    updateScrollPosition() {
         const navElm = this.ref.nav.current;
-        const {top, height, y} = navElm.getBoundingClientRect();
+        const {top, height} = navElm.getBoundingClientRect();
         const floating = top < 0;
         if(this.state.floating !== floating) {
             this.setState({floating, height: floating ? height : 0})

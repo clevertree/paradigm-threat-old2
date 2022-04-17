@@ -2,10 +2,10 @@ import * as React from "react";
 import PropTypes from "prop-types";
 import MarkdownAsset from "./asset-types/markdown/MarkdownAsset.js";
 import AssetIterator from "../util/AssetIterator.js";
-import AssetRenderer from "./AssetRenderer.js";
-import AssetLoader from "./AssetLoader.js";
-import AssetBrowserContext from "./AssetBrowserContext.js";
-import AssetRefresher from "./AssetRefresher.js";
+import AssetLoader from "./loader/AssetLoader.js";
+import AssetBrowserContext from "./context/AssetBrowserContext.js";
+import AssetRefresher from "./loader/AssetRefresher.js";
+import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -61,7 +61,6 @@ export default class AssetBrowser extends React.Component {
                     file={defaultTemplate}/>
             </>
         </AssetBrowserContext.Provider>;
-        ;
     }
 
     renderChildren() {
@@ -70,8 +69,12 @@ export default class AssetBrowser extends React.Component {
             return "Loading...";
         const iterator = new AssetIterator(assets);
         // console.log(this.props.pathname, assets);
-        const fileList = iterator.listFiles(this.props.pathname)
-        return <AssetRenderer fileList={fileList} pathname={this.props.pathname}/>;
+        const fileList = iterator.listFiles(this.props.pathname);
+
+        const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
+        if (indexMDPath)
+            return <MarkdownAsset file={indexMDPath} />;
+        return <AssetRenderer>{fileList}</AssetRenderer>;
     }
 }
 

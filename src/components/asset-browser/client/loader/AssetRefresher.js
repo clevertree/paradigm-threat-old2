@@ -2,8 +2,8 @@ import React from "react";
 
 
 /** Dev Update **/
-import touchValue from "../server/touch.js"
-import AssetBrowserContext from "./AssetBrowserContext.js";
+import touchValue from "../../server/touch.js"
+import AssetBrowserContext from "../context/AssetBrowserContext.js";
 let lastTouch, timeout;
 export default class AssetRefresher extends React.Component {
     render() {

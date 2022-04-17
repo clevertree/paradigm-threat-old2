@@ -7,8 +7,10 @@ export default class AssetIterator {
     }
 
     listFiles(path) {
+        if (path[0] === '/')
+            path = path.substring(1);
         const pointer = this.getPointer(path);
-        return pointer[KEY_FILES];
+        return pointer[KEY_FILES].map(file => this.getAbsoluteURL(path + '/' + file));
     }
 
     listDirectories(path) {
@@ -16,6 +18,10 @@ export default class AssetIterator {
         if(!pointer[KEY_DIRS])
             return [];
         return Object.keys(pointer[KEY_DIRS]);
+    }
+
+    getAbsoluteURL(file) {
+        return new URL(file, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin) + ''
     }
 
     getPointer(path) {

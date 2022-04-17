@@ -7,7 +7,8 @@ import ImageAsset from "../image/ImageAsset.js";
 
 import MetaAsset from "../meta/MetaAsset.js";
 import NavAsset from "../nav/NavAsset.js";
-import AssetBrowserContext from "../../AssetBrowserContext.js";
+import AssetBrowserContext from "../../context/AssetBrowserContext.js";
+import AssetRenderer from "../asset-renderer/AssetRenderer.js";
 
 const customTags = {};
 
@@ -48,7 +49,7 @@ class MarkdownAsset extends React.Component {
         }
         this.options = {
             wrapper: React.Fragment,
-            createElement: this.renderTag.bind(this),
+            createElement: this.createElement.bind(this),
             overrides: props.overrides
         }
         this.refreshHash = null;
@@ -86,7 +87,7 @@ class MarkdownAsset extends React.Component {
         );
     }
 
-    renderTag(tagName, props, children) {
+    createElement(tagName, props, children) {
         let finalProps = {...props};
         if(props.class) {
             finalProps.className = finalProps.class;
@@ -106,6 +107,7 @@ class MarkdownAsset extends React.Component {
 registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
+registerTag('assetRenderer', (tagName, props, children) => <AssetRenderer {...props}>{children}</AssetRenderer>)
 
 export default class MarkdownAssetWrapper extends React.Component {
     render() {
