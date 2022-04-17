@@ -28,7 +28,7 @@ export default class AssetRenderer extends React.Component {
     }
 
     render() {
-        const { fileList } = this.props;
+        const { fileList=[] } = this.props;
         if(fileList.indexOf('index.md') !== -1)
             return this.renderIndexMD();
 

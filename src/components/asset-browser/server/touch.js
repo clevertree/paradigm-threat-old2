@@ -1,1 +1,1 @@
-const Touch = 1649873382360;export default Touch;
+const Touch = 1650162007092;export default Touch;

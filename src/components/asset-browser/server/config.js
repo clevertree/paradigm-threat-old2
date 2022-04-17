@@ -18,5 +18,10 @@ export default function getConfig() {
     assetIgnore = assetIgnore.split(';');
     assetMatch = assetMatch.split(';');
 
-    return {assetList, assetPath, assetURL, assetIgnore, assetMatch};
+    return {assetList, assetPath, assetURL, assetIgnore, assetMatch, resetAssets};
+}
+
+function resetAssets() {
+    assetList[KEY_FILES] = [];
+    assetList[KEY_DIRS] = {};
 }

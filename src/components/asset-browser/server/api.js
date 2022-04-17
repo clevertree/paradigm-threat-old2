@@ -2,25 +2,25 @@ import {graphqlHTTP} from "express-graphql";
 
 
 import {buildSchema} from "graphql";
-import {KEY_DIRS, KEY_FILES} from "../constants.js";
+import {GraphQLJSON} from "graphql-type-json";
+
 import getConfig from "./config.js";
 import fs from "fs";
 import path from "path";
 
 
+
 export default function setupAPI(app) {
 // GraphQL schema
-    var schema = buildSchema(`
+    const schema = buildSchema(`
+    scalar JSON
     type Query {
-        assets(path: String): AssetDirectory
+        assets: JSON
     },
-    type AssetDirectory {
-        ${KEY_FILES}: [String]
-        ${KEY_DIRS}: [AssetDirectory]
-    }
 `);
 
-    var root = {
+    const root = {
+        JSON: GraphQLJSON,
         assets: handleAssetsAPI,
         report: handleReportAPI,
     };
@@ -33,22 +33,9 @@ export default function setupAPI(app) {
 }
 
 
-function handleAssetsAPI(args) {
+function handleAssetsAPI() {
     const { assetList } = getConfig();
-
-    let pointer = assetList;
-    if(args.path) {
-        const pathSplit = args.path.split('/');
-        for(const pathFrag of pathSplit) {
-            if(!pathFrag)
-                continue;
-            if(!pointer[KEY_DIRS][pathFrag])
-                throw new Error("Invalid path: " + args.path);
-            pointer = pointer[KEY_DIRS][pathFrag];
-        }
-    }
-
-    return pointer;
+    return assetList;
 }
 
 function handleReportAPI(args) {
@@ -74,3 +61,4 @@ function handleReportAPI(args) {
 
     return reportJSON;
 }
+

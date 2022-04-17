@@ -69,9 +69,8 @@ function updateTouchFile() {
 }
 
 export async function generateAssetList() {
-    const { assetList, assetPath, assetMatch } = getConfig();
-    assetList[KEY_FILES] = [];
-    assetList[KEY_DIRS] = {};
+    const { assetList, assetPath, assetMatch, resetAssets } = getConfig();
+    resetAssets();
     for await (const filePath of getFiles(assetPath)) {
         let relativeFilePath = filePath.replace(assetPath, '').replace(/\\/g, '/').substring(1);
         const fileSplit = relativeFilePath.split('/');
