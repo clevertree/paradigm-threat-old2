@@ -1,3 +1,5 @@
+import {resolveAssetURL} from "../util/ClientUtil.js";
+
 let assetAsyncObj = null;
 export default class AssetLoader {
 
@@ -8,7 +10,7 @@ export default class AssetLoader {
     }
 }
 async function loadAssets(force = false) {
-    const assetURL = new URL(process.env.REACT_APP_ASSET_ENDPOINT, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin);
+    const assetURL = resolveAssetURL(process.env.REACT_APP_ASSET_ENDPOINT);
     const response = await fetch(assetURL + '?query={assets}');
     const {data: { assets }, errors} = await response.json();
     if(errors)

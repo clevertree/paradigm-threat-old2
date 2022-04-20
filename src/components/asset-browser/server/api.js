@@ -26,7 +26,7 @@ export default function setupAPI(app) {
         report: handleReportAPI,
     };
 
-    app.use(process.env.REACT_APP_ASSET_ENDPOINT, graphqlHTTP({
+    app.use(path.join('/', process.env.REACT_APP_ASSET_ENDPOINT), graphqlHTTP({
         schema: schema,
         rootValue: root,
         graphiql: true
@@ -42,10 +42,8 @@ function handleAssetsAPI(args) {
 function handleReportAPI(args) {
     const { assetPath } = getConfig();
 
-    const reportPath = process.env.REACT_APP_ASSET_GOACCESS_REPORT;
-    if(!reportPath)
-        throw new Error( "Missing process.env.REACT_APP_ASSET_GOACCESS_REPORT")
-    const reportJSONString = fs.readFileSync(path.resolve(assetPath + reportPath), 'utf8');
+    const reportPath = path.join(assetPath, process.env.REACT_APP_ASSET_SITE_DIRECTORY, process.env.REACT_APP_ASSET_GOACCESS_REPORT_JSON);
+    const reportJSONString = fs.readFileSync(reportPath, 'utf8');
     const reportJSON = JSON.parse(reportJSONString);
     return traverseObject(reportJSON, args.path);
 }

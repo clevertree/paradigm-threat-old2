@@ -1,4 +1,5 @@
 import {KEY_FILES, KEY_DIRS} from "../constants.js";
+import {resolveAssetURL} from "../client/util/ClientUtil.js";
 
 
 export default class AssetIterator {
@@ -10,7 +11,7 @@ export default class AssetIterator {
         if (path[0] === '/')
             path = path.substring(1);
         const pointer = this.getPointer(path);
-        return pointer[KEY_FILES].map(file => this.getAbsoluteURL(path + '/' + file));
+        return pointer[KEY_FILES].map(file => resolveAssetURL(path + '/' + file));
     }
 
     listDirectories(path) {
@@ -20,9 +21,6 @@ export default class AssetIterator {
         return Object.keys(pointer[KEY_DIRS]);
     }
 
-    getAbsoluteURL(file) {
-        return new URL(file, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin) + ''
-    }
 
     getPointer(path) {
         if(path[0] === '/') path = path.substring(1);

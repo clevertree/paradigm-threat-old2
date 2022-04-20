@@ -8,17 +8,14 @@ body {
   color: #000;
   background-color: #ccc;
   min-height: 100vh;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
 
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
 }
 
-.theme-default article {
-  color: #000;
-  min-height: 50vh;
-  //margin: 0 auto;
-}
+/** Header **/
 
 .theme-default header {
   clear: both;
@@ -27,34 +24,50 @@ body {
   justify-content: center;
 }
 
+/** Section **/
+
+.theme-default section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 /** Article **/
 
-.theme-default > article {
+
+.theme-default article {
+  color: #000;
+  min-height: 50vh;
+  margin: 0 auto;
+}
+
+
+.theme-default article {
   > h1, h2, h3, h4, h5, h6, blockquote, pre {
     max-width: 1160px;
     margin: 0.7em auto 0.7em auto;
   }
-  > p, ul {
+
+  > p, ul, ol {
     max-width: 1200px;
     margin: 0.5em auto;
   }
 }
 
 @media only screen and (max-width: 1800px) {
-  .theme-default > article {
+  .theme-default article {
     > h1, h2, h3, h4, h5, h6, blockquote, pre {
       max-width: 800px;
     }
-    > p, ul {
+
+    > p, ul, ol {
       max-width: 760px;
     }
   }
-
 }
 
 
-.theme-default > article > pre > code,
-.theme-default > article > p > code {
+.theme-default article > pre > code,
+.theme-default article > p > code {
   display: block;
   background: #AAA;
   padding: 1em;
@@ -62,7 +75,7 @@ body {
   white-space: pre-wrap;
 }
 
-.theme-default > article > blockquote > p {
+.theme-default article > blockquote > p {
   background: #C0C0C0;
   padding: 1em;
   white-space: normal;
@@ -72,6 +85,17 @@ body {
   border-right: 4px solid #AAA;
 }
 
+
+/** overflow in asset list **/
+
+.theme-default article.float {
+  max-height: 70vh;
+  overflow-y: auto;
+  margin: 0.5em auto;
+}
+
+/** Anchor Links **/
+
 .theme-default a:not(:hover) {
   text-decoration: none;
   color: #33A;
@@ -80,10 +104,67 @@ body {
 /** Footer **/
 
 .theme-default footer {
+  clear: both;
   border-top: 2px solid #888;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 1em;
   border-top: 2px solid #888;
+}
+
+/** Image Asset **/
+
+video.asset-image,
+img.asset-image {
+  cursor: pointer;
+  max-width: 100vh;
+  z-index: 3;
+  position: relative;
+  display: block;
+  margin: auto;
+}
+
+.asset-image + .asset-image {
+  padding-top: 0.3em;
+}
+
+
+/** Floating Images **/
+
+.asset-image.float {
+  max-width: 31vw;
+}
+
+
+@media only screen and (min-width: 640px) {
+  .asset-image.float-right {
+    float: right;
+    width: 24%;
+    padding-right: 0.5em;
+    margin-left: 0.5em;
+    clear: right;
+  }
+
+  .asset-image.float-left {
+    float: left;
+    width: 24%;
+    padding-left: 0.5em;
+    margin-right: 0.5em;
+    clear: left;
+  }
+}
+
+
+@media only screen and (min-width: 800px) {
+  .float-left,
+  .float-right {
+  }
+}
+
+@media only screen and (min-width: 1800px) {
+  .float-left,
+  .float-right {
+    max-width: 30em;
+  }
 }

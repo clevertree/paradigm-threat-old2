@@ -2,8 +2,18 @@ import express from "express";
 import {setup} from "../src/components/asset-browser/server/server.js";
 import {config} from "dotenv";
 import path from "path";
+import {fileURLToPath} from "url";
+
+// Locate root directory
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootPath = path.dirname(__dirname);
+
+// Change to root directory
+process.chdir(rootPath)
+
+// Load environment variables
 config();
-// console.log(config({path: '.env'}))
+
 
 const BUILD_PATH = path.resolve(process.cwd(), 'build');
 

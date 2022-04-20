@@ -1,7 +1,7 @@
 <div class="theme-default">
 <header>
   <a href="/">
-    <img src="/media/site/header.png" alt="Header Logo" class="logo" data-no-fullscreen />
+    <img src="/@site/header.png" alt="Header Logo" class="logo" data-no-fullscreen />
   </a>
 </header>
 
@@ -11,9 +11,9 @@
 
 </nav>
 
-<article>
-  <templateContent></templateContent>
-</article>
+<section>
+<templateContent></templateContent>
+</section>
 
 <footer>
   <div>Created by <a href="https://github.com/clevertree/" target="_blank" rel="noopener noreferrer">Ari Asulin</a></div>

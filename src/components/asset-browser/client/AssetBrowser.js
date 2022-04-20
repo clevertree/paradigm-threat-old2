@@ -36,14 +36,17 @@ export default class AssetBrowser extends React.Component {
         this.loadContent().then();
     }
 
-    async loadContent() {
-        const assets = await new AssetLoader().loadAssets()
+    async loadContent(force = false) {
+        const assets = await new AssetLoader().loadAssets(force)
         this.setState({assets, loaded: true});
         // console.log("Assets loaded: ", assets);
     }
 
     updateRefreshHash(refreshHash) {
-        this.setState({refreshHash})
+        if (refreshHash !== this.state.refreshHash) {
+            this.setState({refreshHash})
+            this.loadContent(true).then();
+        }
     }
 
     render() {
@@ -57,6 +60,7 @@ export default class AssetBrowser extends React.Component {
             <>
                 <AssetRefresher/>
                 <MarkdownAsset
+                    wrapper={React.Fragment}
                     overrides={this.overrides}
                     file={defaultTemplate}/>
             </>
@@ -73,7 +77,9 @@ export default class AssetBrowser extends React.Component {
 
         const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
         if (indexMDPath)
-            return <MarkdownAsset file={indexMDPath} />;
+            return <article className={"index"}>
+                <MarkdownAsset file={indexMDPath}/>
+            </article>;
         return <AssetRenderer>{fileList}</AssetRenderer>;
     }
 }

@@ -10,49 +10,56 @@ export default class AssetRenderer extends React.Component {
     /** Property validation **/
     static propTypes = {
         children: PropTypes.array,
-        source: 'children'
     };
 
     static defaultProps = {
-        children: []
+        children: [],
+        source: 'children'
     }
 
 
     render() {
         let fileList;
-        switch(this.props.source) {
+        switch (this.props.source) {
+            default:
             case 'children':
                 fileList = this.props.children;
                 break;
             case 'unused':
                 return 'TODO: Render Unused Assets';
         }
-        if(!Array.isArray(fileList))
-            throw new Error("Invalid file list in props.children")
-
+        if (!Array.isArray(fileList))
+            throw new Error("Invalid file list in props.children: " + typeof fileList)
         return fileList.map((filePath, i) => this.renderFile(filePath, i))
     }
 
     renderFile(filePath, key) {
         const ext = filePath.split('.').pop().toLowerCase();
+        const props = {
+            src: filePath,
+            key,
+            className: 'float'
+        }
         switch (ext) {
             case 'md':
-                return <MarkdownAsset file={filePath} key={key}/>
+                return <article className={props.className}>
+                    <MarkdownAsset file={filePath} key={key}/>;
+                </article>
             case 'img':
             case 'jpg':
             case 'jpeg':
             case 'png':
             case 'gif':
             case 'svg':
-                return <ImageAsset src={filePath} alt={filePath} key={key}/>;
+                return <ImageAsset {...props} alt={filePath}/>;
             case 'm4v':
             case 'mp4':
             case 'mkv':
-                return <VideoAsset src={filePath} alt={filePath} key={key}/>;
+                return <VideoAsset {...props}/>;
             case 'pdf':
-                return <PDFAsset src={filePath} alt={filePath} key={key}/>;
+                return <PDFAsset {...props}/>;
             default:
-                return <UnknownAsset src={filePath} alt={filePath} key={key}/>;
+                return <UnknownAsset {...props}/>;
         }
     }
 }

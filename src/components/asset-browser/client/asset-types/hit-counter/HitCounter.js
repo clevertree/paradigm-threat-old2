@@ -1,4 +1,5 @@
 import React from "react";
+import {resolveAssetURL} from "../../util/ClientUtil.js";
 
 export default class HitCounter extends React.Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class HitCounter extends React.Component {
 
 let asyncCall = null;
 async function loadUniqueVisitors() {
-    const assetURL = new URL(process.env.REACT_APP_ASSET_ENDPOINT, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin);
+    const assetURL = resolveAssetURL(process.env.REACT_APP_ASSET_ENDPOINT);
     const response = await fetch(assetURL + '?query={report(path:"general.unique_visitors")}');
     const {data: {report}} = await response.json();
     return report;

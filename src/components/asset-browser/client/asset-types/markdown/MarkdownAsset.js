@@ -9,6 +9,7 @@ import MetaAsset from "../meta/MetaAsset.js";
 import NavAsset from "../nav/NavAsset.js";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import AssetRenderer from "../asset-renderer/AssetRenderer.js";
+import {resolveAssetURL} from "../../util/ClientUtil.js";
 
 const customTags = {};
 
@@ -50,7 +51,7 @@ class MarkdownAsset extends React.Component {
         this.options = {
             wrapper: React.Fragment,
             createElement: this.createElement.bind(this),
-            overrides: props.overrides
+            overrides: props.overrides,
         }
         this.refreshHash = null;
     }
@@ -89,21 +90,22 @@ class MarkdownAsset extends React.Component {
 
     createElement(tagName, props, children) {
         let finalProps = {...props};
-        if(props.class) {
+        if (props.class) {
             finalProps.className = finalProps.class;
             delete finalProps.class;
         }
-        if(props.src) {
-            finalProps.src = new URL(finalProps.src, process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin) + '';
+        if (props.src) {
+            finalProps.src = resolveAssetURL(props.src, window.location.pathname);
         }
 
-        if(customTags[tagName])
+        if (customTags[tagName])
             return customTags[tagName](tagName, finalProps, children);
 
-        // console.log('renderTag', tagName, finalProps, children)
+        console.log('renderTag', tagName, finalProps, children)
         return React.createElement(tagName, finalProps, children);
     }
 }
+
 registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
@@ -113,7 +115,7 @@ export default class MarkdownAssetWrapper extends React.Component {
     render() {
         return <AssetBrowserContext.Consumer>
             {({refreshHash}) => {
-                return <MarkdownAsset {...this.props} refreshHash={refreshHash} >
+                return <MarkdownAsset {...this.props} refreshHash={refreshHash}>
                     {this.props.children}
                 </MarkdownAsset>;
             }}

@@ -32,7 +32,7 @@ export default class NavAsset extends React.Component {
         const navElm = this.ref.nav.current;
         const containerElm = this.ref.container.current;
         const bottomElm = this.ref.bottomText.current;
-        if(this.state.floating) {
+        if (this.state.floating) {
             const {height: containerHeight} = containerElm.getBoundingClientRect();
             const {height: bottomHeight} = bottomElm.getBoundingClientRect();
             navElm.setAttribute('style', `height: ${containerHeight}px`);
@@ -46,7 +46,7 @@ export default class NavAsset extends React.Component {
 
     render() {
         let className = "asset-navigation";
-        if(this.state.floating)
+        if (this.state.floating)
             className += ' floating';
         return <AssetBrowserContext.Consumer>
             {({iterator, pathname, loaded}) => <nav
@@ -55,7 +55,7 @@ export default class NavAsset extends React.Component {
                 <div className="nav-container"
                      ref={this.ref.container}
                 >
-                {this.renderLinks(pathname, iterator, loaded)}
+                    {this.renderLinks(pathname, iterator, loaded)}
                 </div>
                 {this.state.floating ? <div
                     className="bottom-text"
@@ -73,7 +73,7 @@ export default class NavAsset extends React.Component {
                 {this.props.children}
                 {generate ? this.renderGeneratedMainLinks(iterator) : null}
             </div>
-                {generate ? this.renderGeneratedSubLinks(pathname, iterator) : null}
+            {generate ? this.renderGeneratedSubLinks(pathname, iterator) : null}
         </>
     }
 
@@ -85,10 +85,10 @@ export default class NavAsset extends React.Component {
 
     renderGeneratedSubLinks(pathname, iterator) {
         let subPath = pathname;
-        let content = [], i=0;
-        while(subPath && subPath !== '/') {
+        let content = [], i = 0;
+        while (subPath && subPath !== '/') {
             // console.log('subPath', subPath, pathname);
-            if(i++>10)
+            if (i++ > 10)
                 break;
             addSubPath(subPath)
             subPath = subPath.substring(0, subPath.lastIndexOf("/"));
@@ -97,7 +97,7 @@ export default class NavAsset extends React.Component {
 
         function addSubPath(subPath) {
             const fileList = iterator.listDirectories(subPath);
-            if(fileList.length !== 0)
+            if (fileList.length !== 0)
                 content.unshift(
                     <div className={"sub"} key={subPath}>
                         {fileList.map((file, i) => <a href={subPath + '/' + file} key={i}>{file}</a>)}
@@ -111,7 +111,7 @@ export default class NavAsset extends React.Component {
         const navElm = this.ref.nav.current;
         const {top, height} = navElm.getBoundingClientRect();
         const floating = top < 0;
-        if(this.state.floating !== floating) {
+        if (this.state.floating !== floating) {
             this.setState({floating, height: floating ? height : 0})
         }
         return floating;
