@@ -9,9 +9,8 @@ import getConfig from "./config.js";
 import setupAPI from "./api.js";
 
 
-
 export function setup(app, BUILD_PATH) {
-    const { assetPath } = getConfig();
+    const {assetPath} = getConfig();
     const BUILD_INDEX_PATH = path.resolve(BUILD_PATH, 'index.html');
 
     // Asset Files
@@ -22,19 +21,23 @@ export function setup(app, BUILD_PATH) {
     setupAPI(app);
 
     app.use((req, res) => {
-        console.log('404', req.path);
+        if (req.headers.accept && (!req.headers.accept.includes('html'))) {
+            console.log('404', req.path, req.headers.accept);
+            return res.status(404).send("");
+        }
+        console.log('Serving Index', req.path, req.headers.accept);
         let indexHTML = fs.readFileSync(BUILD_INDEX_PATH, 'utf8');
 
         const pathIndexMD = path.resolve(assetPath + req.path, 'index.md');
-        if(fs.existsSync(pathIndexMD)) {
+        if (fs.existsSync(pathIndexMD)) {
             const markdownHTML = fs.readFileSync(pathIndexMD, 'utf8');
 
             const MDDOM = new JSDOM(markdownHTML);
             const metaList = MDDOM.window.document.head.querySelectorAll('meta, title');
 
             const DOM = new JSDOM(indexHTML);
-            for(let metaTag of metaList) {
-                if((metaTag.getAttribute('name')||'').toLowerCase() === 'title') {
+            for (let metaTag of metaList) {
+                if ((metaTag.getAttribute('name') || '').toLowerCase() === 'title') {
                     let title = DOM.window.document.querySelector('title') ||
                         DOM.window.document.createElement('title');
                     title.innerHTML = metaTag.getAttribute('content')
@@ -57,45 +60,44 @@ export function setup(app, BUILD_PATH) {
 }
 
 
-
 function updateTouchFile() {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
     const touchFilePath = __dirname + '/touch.js';
     fs.writeFileSync(touchFilePath,
-    `const Touch = ${new Date().getTime()};`
-    + `export default Touch;`);
+        `const Touch = ${new Date().getTime()};`
+        + `export default Touch;`);
     console.log('Updated touch file', touchFilePath)
 }
 
 export async function generateAssetList() {
-    const { assetList, assetPath, assetMatch, resetAssets } = getConfig();
+    const {assetList, assetPath, assetMatch, resetAssets} = getConfig();
     resetAssets();
     for await (const filePath of getFiles(assetPath)) {
         let relativeFilePath = filePath.replace(assetPath, '').replace(/\\/g, '/').substring(1);
         const fileSplit = relativeFilePath.split('/');
-        const fileName = fileSplit[fileSplit.length-1].toLowerCase();
+        const fileName = fileSplit[fileSplit.length - 1].toLowerCase();
         let matched = false;
-        for(const match of assetMatch) {
-            if(fileName.endsWith(match))
+        for (const match of assetMatch) {
+            if (fileName.endsWith(match))
                 matched = true;
         }
-        if(!matched)
+        if (!matched)
             continue;
 
         let pointer = assetList;
-        for(let i=0; i<fileSplit.length; i++) {
+        for (let i = 0; i < fileSplit.length; i++) {
             const fileFrag = fileSplit[i];
-            if(fileFrag[0] === '@') // Ignore file or directory if prepended with @
+            if (fileFrag[0] === '@') // Ignore file or directory if prepended with @
                 break;
-            if(i === fileSplit.length - 1) {
+            if (i === fileSplit.length - 1) {
                 pointer[KEY_FILES].push(fileFrag)
                 break;
             }
-            if(!pointer[KEY_DIRS])
+            if (!pointer[KEY_DIRS])
                 pointer[KEY_DIRS] = {};
-            if(!pointer[KEY_DIRS][fileFrag])
-                pointer[KEY_DIRS][fileFrag] = {[KEY_FILES]:[]};
+            if (!pointer[KEY_DIRS][fileFrag])
+                pointer[KEY_DIRS][fileFrag] = {[KEY_FILES]: []};
             pointer = pointer[KEY_DIRS][fileFrag];
         }
     }
@@ -105,16 +107,17 @@ export async function generateAssetList() {
 }
 
 let watchTimeout = null;
+
 export async function watchAssetList() {
-    const { assetPath } = getConfig();
+    const {assetPath} = getConfig();
     console.log("Watching ", assetPath);
 
     for await (const fileDirectory of getDirectories(assetPath)) {
         // console.log("Watching ", fileDirectory);
         // eslint-disable-next-line no-loop-func
-        fs.watch(fileDirectory,function (event, filename) {
+        fs.watch(fileDirectory, function (event, filename) {
             clearTimeout(watchTimeout);
-            watchTimeout = setTimeout(function() {
+            watchTimeout = setTimeout(function () {
                 console.log("File updated: ", fileDirectory + '/' + filename);
                 generateAssetList()
             }, 500);

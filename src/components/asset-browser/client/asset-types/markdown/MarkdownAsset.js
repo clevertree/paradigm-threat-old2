@@ -101,7 +101,7 @@ class MarkdownAsset extends React.Component {
         if (customTags[tagName])
             return customTags[tagName](tagName, finalProps, children);
 
-        console.log('renderTag', tagName, finalProps, children)
+        // console.log('renderTag', tagName, finalProps, children)
         return React.createElement(tagName, finalProps, children);
     }
 }

@@ -3,6 +3,7 @@
 nav.asset-navigation {
 
 }
+
 nav.asset-navigation > div.nav-container {
     font-size: 18px;
 }
@@ -25,28 +26,34 @@ nav.asset-navigation > div.nav-container > .sub {
     padding: 2px;
     background-color: #999;
     display: flex;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-wrap: wrap;
 }
+
 nav.asset-navigation > div.nav-container > .sub {
     background-color: #888;
 }
+
 nav.asset-navigation > div.nav-container > .sub + .sub {
     background-color: #777;
 }
-nav.asset-navigation > div.nav-container > .sub + .sub  + .sub {
+
+nav.asset-navigation > div.nav-container > .sub + .sub + .sub {
     background-color: #666;
 }
 
-nav.asset-navigation.floating > div.nav-container {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    z-index: 9;
+@media only screen and (min-width: 800px) {
+    nav.asset-navigation.floating > div.nav-container {
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        z-index: 9;
+    }
 }
 
 nav.asset-navigation > div.bottom-text {
+    transition: background-color 1s;
     display: none;
 }
 
@@ -62,7 +69,12 @@ nav.asset-navigation.floating > div.bottom-text {
     cursor: pointer;
     text-align: center;
     clear: both;
-    padding: 0.5em;
+    padding: 1vw 0.5em;
 }
+
+nav.asset-navigation > div.bottom-text:hover {
+    background: #AAF;
+}
+
 
 

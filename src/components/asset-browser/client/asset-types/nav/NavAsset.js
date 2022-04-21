@@ -80,7 +80,7 @@ export default class NavAsset extends React.Component {
     renderGeneratedMainLinks(iterator) {
 
         const fileList = iterator.listDirectories('/')
-        return fileList.map((file, i) => <a href={'/' + file} key={i}>{file}</a>)
+        return fileList.map((file, i) => this.renderAnchorLink("", file, i))
     }
 
     renderGeneratedSubLinks(pathname, iterator) {
@@ -90,20 +90,27 @@ export default class NavAsset extends React.Component {
             // console.log('subPath', subPath, pathname);
             if (i++ > 10)
                 break;
-            addSubPath(subPath)
-            subPath = subPath.substring(0, subPath.lastIndexOf("/"));
-        }
-        return content;
-
-        function addSubPath(subPath) {
             const fileList = iterator.listDirectories(subPath);
             if (fileList.length !== 0)
                 content.unshift(
                     <div className={"sub"} key={subPath}>
-                        {fileList.map((file, i) => <a href={subPath + '/' + file} key={i}>{file}</a>)}
+                        {fileList.map((file, i) => this.renderAnchorLink(subPath, file, i))}
                     </div>
                 )
+            subPath = subPath.substring(0, subPath.lastIndexOf("/"));
         }
+        return content;
+    }
+
+    renderAnchorLink(subPath, file, key) {
+        const relativePath = subPath + '/' + file;
+        let name = file.split('/').pop();
+        name = name.replace(/_+/g, ' ');
+        console.log('name', file, name)
+        return <a
+            className={relativePath === document.location.pathname ? 'selected' : null}
+            href={relativePath}
+            key={key}>{name}</a>
     }
 
 

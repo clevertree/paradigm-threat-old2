@@ -1,7 +1,7 @@
 body {
   color: #000;
   background-color: #ccc;
-  padding-bottom: 4em;
+  //padding-bottom: 4em;
 }
 
 .theme-default {
@@ -9,7 +9,7 @@ body {
   background-color: #ccc;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-
+  word-break: break-word;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -38,6 +38,14 @@ body {
   color: #000;
   min-height: 50vh;
   margin: 0 auto;
+  padding: 0 2vw;
+}
+
+/** Paragraphs **/
+.theme-default article > p {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-indent: 12px;
+  text-align: justify;
 }
 
 
@@ -101,6 +109,11 @@ body {
   color: #33A;
 }
 
+.theme-default a.selected {
+  color: #1c1cd4;
+  font-weight: bold;
+}
+
 /** Footer **/
 
 .theme-default footer {
@@ -118,7 +131,7 @@ body {
 video.asset-image,
 img.asset-image {
   cursor: pointer;
-  max-width: 100vh;
+  max-width: 100%;
   z-index: 3;
   position: relative;
   display: block;
