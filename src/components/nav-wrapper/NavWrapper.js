@@ -14,22 +14,25 @@ export default class NavWrapper extends Component {
             pathname: windowObj.location.pathname
         }
         this.listener = {
-            onClick: e => this.onClick(e)
+            onClick: e => this.onClick(e),
+            onPopState: e => this.onPopState(e)
         }
     }
 
     componentDidMount() {
         document.addEventListener('click', this.listener.onClick);
+        window.addEventListener('popstate', this.listener.onPopState);
     }
 
     componentWillUnmount() {
         document.removeEventListener('click', this.listener.onClick);
+        window.removeEventListener('popstate', this.listener.onPopState);
     }
 
 
     render() {
         const windowObj = this.props.target || window;
-        const newProps = { pathname: windowObj.location.pathname || '' };
+        const newProps = {pathname: windowObj.location.pathname || ''};
         // console.log("NAVWRAPPER", windowObj.location.pathname);
         return React.cloneElement(this.props.children, newProps);
     }
@@ -68,6 +71,13 @@ export default class NavWrapper extends Component {
                 });
             }
         }
+    }
+
+    onPopState(e) {
+        const {pathname} = window.location;
+        this.setState({
+            pathname
+        })
     }
 }
 

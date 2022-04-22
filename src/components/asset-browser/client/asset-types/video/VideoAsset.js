@@ -9,16 +9,21 @@ export default class VideoAsset extends React.Component {
         src: PropTypes.string.isRequired,
     };
 
+    constructor(props) {
+        super(props);
+        this.className = 'asset video youtube';
+        if (this.props.className)
+            this.className += ' ' + this.props.className;
+    }
+
     render() {
-        if(this.parseYoutubeURL(this.props.src))
+        if (this.parseYoutubeURL(this.props.src))
             return this.renderYoutube();
         // let i = this.props.i || 0;
-        let className = 'asset-video asset-image';
-        // className += [' even', ' odd'][i % 2];
         return (
-            <div className={className}>
+            <div className={this.className}>
                 <video controls>
-                    <source {...this.props} type="video/mp4" />
+                    <source {...this.props} type="video/mp4"/>
                     Your browser does not support the video tag.
                 </video>
             </div>
@@ -26,12 +31,10 @@ export default class VideoAsset extends React.Component {
     }
 
     renderYoutube() {
-        let className = 'asset-video asset-image youtube';
-        // className += [' even', ' odd'][i % 2];
         const src = 'https://www.youtube.com/embed/' + this.parseYoutubeURL(this.props.src);
         const title = 'Youtube';
         return (
-            <div className={className}>
+            <div className={this.className + ' youtube'}>
                 <iframe title={title} {...this.props} src={src}>
                 </iframe>
             </div>
@@ -43,6 +46,6 @@ export default class VideoAsset extends React.Component {
     parseYoutubeURL(url) {
         var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
         var match = url.match(regExp);
-        return (match && match[7].length===11)? match[7] : false;
+        return (match && match[7].length === 11) ? match[7] : false;
     }
 }

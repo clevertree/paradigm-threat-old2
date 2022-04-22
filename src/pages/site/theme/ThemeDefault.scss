@@ -9,7 +9,7 @@ body {
   background-color: #ccc;
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  word-break: break-word;
+  //word-break: break-word;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -50,12 +50,12 @@ body {
 
 
 .theme-default article {
-  > h1, h2, h3, h4, h5, h6, blockquote, pre {
+  > h1, > h2, > h3, > h4, > h5, > h6, > blockquote, > pre {
     max-width: 1160px;
     margin: 0.7em auto 0.7em auto;
   }
 
-  > p, ul, ol {
+  > p, > ul, > ol {
     max-width: 1200px;
     margin: 0.5em auto;
   }
@@ -63,11 +63,11 @@ body {
 
 @media only screen and (max-width: 1800px) {
   .theme-default article {
-    > h1, h2, h3, h4, h5, h6, blockquote, pre {
+    > h1, > h2, > h3, > h4, > h5, > h6, > blockquote, > pre {
       max-width: 800px;
     }
 
-    > p, ul, ol {
+    > p, > ul, > ol {
       max-width: 760px;
     }
   }
@@ -128,30 +128,33 @@ body {
 
 /** Image Asset **/
 
-video.asset-image,
-img.asset-image {
-  cursor: pointer;
-  max-width: 100%;
-  z-index: 3;
+.asset {
   position: relative;
   display: block;
   margin: auto;
 }
 
-.asset-image + .asset-image {
-  padding-top: 0.3em;
+.asset.image {
+  cursor: pointer;
+  max-width: 100%;
+  z-index: 3;
+}
+
+.asset + .asset {
+  padding-top: 0.3vw;
 }
 
 
 /** Floating Images **/
 
-.asset-image.float {
-  max-width: 31vw;
+.asset.float {
+  max-width: 30vw;
+  padding: 0.4vw;
 }
 
 
 @media only screen and (min-width: 640px) {
-  .asset-image.float-right {
+  .asset.float-right {
     float: right;
     width: 24%;
     padding-right: 0.5em;
@@ -159,7 +162,7 @@ img.asset-image {
     clear: right;
   }
 
-  .asset-image.float-left {
+  .asset.float-left {
     float: left;
     width: 24%;
     padding-left: 0.5em;

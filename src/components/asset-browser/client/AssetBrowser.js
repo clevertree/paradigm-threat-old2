@@ -6,6 +6,7 @@ import AssetLoader from "./loader/AssetLoader.js";
 import AssetBrowserContext from "./context/AssetBrowserContext.js";
 import AssetRefresher from "./loader/AssetRefresher.js";
 import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
+import {setUnusedAssets} from "./asset-types/markdown/markdownOptions.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -24,7 +25,7 @@ export default class AssetBrowser extends React.Component {
         this.state = {
             assets: null,
             loaded: false,
-            refreshHash: null
+            refreshHash: null,
         }
         this.overrides = {
             templateContent: (props) => this.renderChildren(props),
@@ -72,14 +73,23 @@ export default class AssetBrowser extends React.Component {
         if (!loaded)
             return "Loading...";
         const iterator = new AssetIterator(assets);
-        // console.log(this.props.pathname, assets);
         const fileList = iterator.listFiles(this.props.pathname);
 
         const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
         if (indexMDPath)
-            return <article className={"index"}>
-                <MarkdownAsset file={indexMDPath}/>
-            </article>;
+            return this.renderIndexPage(indexMDPath, fileList)
+        return this.renderAssetPage(fileList)
+    }
+
+    renderIndexPage(indexMDPath, fileList) {
+        const filteredFileList = fileList.filter(file => !file.endsWith('.md'))
+        setUnusedAssets(filteredFileList);
+        return <article className={"index"}>
+            <MarkdownAsset file={indexMDPath}/>
+        </article>;
+    }
+
+    renderAssetPage(fileList) {
         return <AssetRenderer>{fileList}</AssetRenderer>;
     }
 }

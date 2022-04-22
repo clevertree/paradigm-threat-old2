@@ -36,7 +36,6 @@ export default class NavAsset extends React.Component {
             const {height: containerHeight} = containerElm.getBoundingClientRect();
             const {height: bottomHeight} = bottomElm.getBoundingClientRect();
             navElm.setAttribute('style', `height: ${containerHeight}px`);
-            console.log('bottomElm', bottomElm, bottomHeight);
             document.body.style.paddingBottom = `${bottomHeight}px`;
         } else {
             navElm.removeAttribute('style');
@@ -106,7 +105,6 @@ export default class NavAsset extends React.Component {
         const relativePath = subPath + '/' + file;
         let name = file.split('/').pop();
         name = name.replace(/_+/g, ' ');
-        console.log('name', file, name)
         return <a
             className={relativePath === document.location.pathname ? 'selected' : null}
             href={relativePath}

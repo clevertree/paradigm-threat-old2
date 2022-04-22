@@ -5,6 +5,7 @@ import ImageAsset from "../image/ImageAsset.js";
 import VideoAsset from "../video/VideoAsset.js";
 import PDFAsset from "../pdf/PDFAsset.js";
 import UnknownAsset from "../unknown/UnknownAsset.js";
+import {getUnusedAssets} from "../markdown/markdownOptions.js";
 
 export default class AssetRenderer extends React.Component {
     /** Property validation **/
@@ -26,7 +27,8 @@ export default class AssetRenderer extends React.Component {
                 fileList = this.props.children;
                 break;
             case 'unused':
-                return 'TODO: Render Unused Assets';
+                fileList = getUnusedAssets()
+                break;
         }
         if (!Array.isArray(fileList))
             throw new Error("Invalid file list in props.children: " + typeof fileList)
@@ -51,7 +53,7 @@ export default class AssetRenderer extends React.Component {
             case 'png':
             case 'gif':
             case 'svg':
-                return <ImageAsset {...props} alt={filePath}/>;
+                return <ImageAsset {...props}/>;
             case 'm4v':
             case 'mp4':
             case 'mkv':

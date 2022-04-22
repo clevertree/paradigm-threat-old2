@@ -1,0 +1,78 @@
+/** Fullscreen **/
+
+div.asset-image-fullscreen {
+  position: fixed;
+
+  margin: 0 !important;
+  padding: 5vh 5vw;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #000D;
+  cursor: pointer;
+
+  display: flex;
+  /*flex-direction: column;*/
+  flex-wrap: wrap;
+  align-content: center;
+  /*justify-content: center;*/
+  /*justify-items: center;*/
+  z-index: 9;
+
+  animation: fadeIn 0.3s;
+
+  > img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    flex-grow: 1;
+    /*background-color: #000;*/
+  }
+
+  > .alt-text {
+    position: relative;
+    max-width: 90vw;
+    //background: #000;
+    color: white;
+    //flex: 1 1;
+    margin-left: 0.5em;
+
+    > * {
+      cursor: default;
+    }
+
+    > .source {
+      font-style: italic;
+      font-size: smaller;
+    }
+
+  }
+
+  > .close {
+    font-size: xx-large;
+    color: indianred;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: indianred;
+      color: red;
+    }
+  }
+
+}
+
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
