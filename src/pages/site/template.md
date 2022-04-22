@@ -5,11 +5,7 @@
   </a>
 </header>
 
-<nav data-generate-links="auto">
-
-[home](/)
-
-</nav>
+<nav data-generate-links="auto"></nav>
 
 <section>
 <templateContent></templateContent>

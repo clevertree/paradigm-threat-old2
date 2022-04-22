@@ -45,15 +45,14 @@ export function getMarkdownOptions(pathname) {
         createElement,
     }
 
-    function createElement(tagName, {key, ...props}, children) {
+    function createElement(tagName, props, children) {
         let finalProps = {...props};
         if (props.class) {
             finalProps.className = finalProps.class;
             delete finalProps.class;
         }
         if (props.src) {
-            finalProps.src = resolveAssetURL(props.src, pathname);
-            // TODO FIX console.log('src', props.src, pathname)
+            finalProps.src = resolveAssetURL(props.src + '', pathname);
             let found = unusedAssets.indexOf(finalProps.src);
             if (found !== -1) {
                 unusedAssets.splice(found, 1);

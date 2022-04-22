@@ -22,21 +22,20 @@ class MarkdownAsset extends React.Component {
         super(props);
         this.state = {
             content: null,
-            loaded: false
+            loaded: false,
+            pathname: null
         }
         this.refreshHash = null;
     }
-    
+
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.file !== this.props.file) {
             this.setState({content: null, loaded: false});
-            console.log("Reloading content: ", this.props.file);
-            setTimeout(() => {
-                this.loadContent().then();
-            }, 1000)
+            // console.log("Changing content: ", this.props.file);
+            this.loadContent().then();
         }
-        if (prevProps.refreshHash !== this.props.refreshHash) {
+        if (prevProps.refreshHash && (prevProps.refreshHash !== this.props.refreshHash)) {
             console.log("Refreshing content: ", this.props.file, prevProps.refreshHash);
             this.loadContent().then();
         }
@@ -48,23 +47,29 @@ class MarkdownAsset extends React.Component {
     }
 
     async loadContent() {
-        const filePath = this.props.file;
-        const response = await fetch(filePath);
+        const {file} = this.props;
+        const response = await fetch(file);
         const content = await response.text()
-        this.setState({content, loaded: true});
+        this.setState({
+            content,
+            loaded: true,
+            pathname: file.substring(0, file.lastIndexOf("/") + 1)
+        });
     }
 
     render() {
-        const {file} = this.props;
-        const path = file.substring(0, file.lastIndexOf("/") + 1);
-        const markdownOptions = getMarkdownOptions(path);
+
+        const {loaded, pathname} = this.state;
+        if (!loaded)
+            return "Loading: " + this.props.file;
+        const markdownOptions = getMarkdownOptions(pathname);
         const options = {
             ...markdownOptions,
             overrides: this.props.overrides,
         }
         return (
             <Markdown options={options}>
-                {this.state.loaded ? this.state.content : "Loading Markdown page: " + this.props.file}
+                {this.state.content}
             </Markdown>
         );
     }

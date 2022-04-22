@@ -2,8 +2,20 @@ import React from "react";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js"
 
 import "./NavAsset.css"
+import PropTypes from "prop-types";
 
 export default class NavAsset extends React.Component {
+    /** Property validation **/
+    static propTypes = {
+        homeShow: PropTypes.bool.isRequired,
+        homeName: PropTypes.string.isRequired
+    };
+
+    static defaultProps = {
+        homeShow: true,
+        homeName: 'home'
+    }
+
     constructor(props) {
         super(props);
         this.ref = {
@@ -70,6 +82,7 @@ export default class NavAsset extends React.Component {
         return <>
             <div className="main">
                 {this.props.children}
+                {this.props.homeShow ? this.renderAnchorLink("", "", 'home', this.props.homeName) : null}
                 {generate ? this.renderGeneratedMainLinks(iterator) : null}
             </div>
             {generate ? this.renderGeneratedSubLinks(pathname, iterator) : null}
@@ -101,12 +114,14 @@ export default class NavAsset extends React.Component {
         return content;
     }
 
-    renderAnchorLink(subPath, file, key) {
+    renderAnchorLink(subPath, file, key, name = null) {
         const relativePath = subPath + '/' + file;
-        let name = file.split('/').pop();
+        if (!name) name = file.split('/').pop();
         name = name.replace(/_+/g, ' ');
+        const {pathname} = document.location;
+        const selected = relativePath === '/' ? relativePath === pathname : pathname.startsWith(relativePath);
         return <a
-            className={relativePath === document.location.pathname ? 'selected' : null}
+            className={selected ? 'selected' : null}
             href={relativePath}
             key={key}>{name}</a>
     }
