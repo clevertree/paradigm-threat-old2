@@ -1,1 +1,0 @@
-const Touch = 1650591699236;export default Touch;

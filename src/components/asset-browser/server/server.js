@@ -63,7 +63,7 @@ export function setup(app, BUILD_PATH) {
 function updateTouchFile() {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
-    const touchFilePath = __dirname + '/touch.js';
+    const touchFilePath = dirname(dirname(dirname(__dirname))) + '/.touch.js';
     fs.writeFileSync(touchFilePath,
         `const Touch = ${new Date().getTime()};`
         + `export default Touch;`);
@@ -112,7 +112,7 @@ export async function watchAssetList() {
     const {assetPath} = getConfig();
     console.log("Watching ", assetPath);
 
-    for await (const fileDirectory of getDirectories(assetPath)) {
+    function watch(fileDirectory) {
         // console.log("Watching ", fileDirectory);
         // eslint-disable-next-line no-loop-func
         fs.watch(fileDirectory, function (event, filename) {
@@ -122,6 +122,11 @@ export async function watchAssetList() {
                 generateAssetList()
             }, 500);
         });
+    }
+
+    watch(assetPath)
+    for await (const fileDirectory of getDirectories(assetPath)) {
+        watch(fileDirectory)
     }
 
 }

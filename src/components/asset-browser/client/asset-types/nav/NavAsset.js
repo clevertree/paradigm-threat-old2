@@ -99,6 +99,7 @@ export default class NavAsset extends React.Component {
         let subPath = pathname;
         let content = [], i = 0;
         while (subPath && subPath !== '/') {
+            const currentSubPath = subPath;
             // console.log('subPath', subPath, pathname);
             if (i++ > 10)
                 break;
@@ -106,7 +107,7 @@ export default class NavAsset extends React.Component {
             if (fileList.length !== 0)
                 content.unshift(
                     <div className={"sub"} key={subPath}>
-                        {fileList.map((file, i) => this.renderAnchorLink(subPath, file, i))}
+                        {fileList.map((file, i) => this.renderAnchorLink(currentSubPath, file, i))}
                     </div>
                 )
             subPath = subPath.substring(0, subPath.lastIndexOf("/"));

@@ -2,7 +2,6 @@ import * as React from "react";
 
 import "./MarkdownAsset.scss"
 import ImageAsset from "../image/ImageAsset.js";
-import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 
 import MetaAsset from "../meta/MetaAsset.js";
 import NavAsset from "../nav/NavAsset.js";
@@ -29,7 +28,6 @@ let unusedAssets = [];
 export function registerTag(tagName, tagCallback) {
     customTags[tagName] = tagCallback;
 }
-
 
 registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
