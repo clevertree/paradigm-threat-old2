@@ -30,6 +30,7 @@
   "scripts": {
     "server": "node scripts/server.js",
     "goaccess": "node scripts/goaccess.js",
+    "deploy": "sh scripts/deploy.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "CI=true react-scripts test",

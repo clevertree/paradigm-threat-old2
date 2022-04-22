@@ -53,6 +53,7 @@ export default class AssetRenderer extends React.Component {
             case 'png':
             case 'gif':
             case 'svg':
+            case 'ppm':
                 return <ImageAsset {...props}/>;
             case 'm4v':
             case 'mp4':
