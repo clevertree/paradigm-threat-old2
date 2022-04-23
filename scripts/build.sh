@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "Removing old dist";
+react-scripts build || exit;
 rm -rf ./dist;
-react-scripts build;
 mv ./build ./dist
