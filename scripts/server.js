@@ -3,6 +3,7 @@ import {setup} from "../src/components/asset-browser/server/server.js";
 import {config} from "dotenv";
 import path from "path";
 import {fileURLToPath} from "url";
+import fs from "fs";
 
 // Locate root directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -15,11 +16,12 @@ process.chdir(rootPath)
 config();
 
 
-const BUILD_PATH = path.resolve(process.cwd(), 'build');
-
+let BUILD_PATH = path.resolve(process.cwd(), process.env.REACT_APP_ASSET_BUILD);
+if (!fs.existsSync(BUILD_PATH))
+    throw new Error("dist folder not found: " + BUILD_PATH)
 const app = express();
 app.use(express.json());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
@@ -35,6 +37,6 @@ app.use(function(req, res, next) {
 
 setup(app, BUILD_PATH);
 
-app.listen(process.env.REACT_APP_SERVER_PORT, function() {
+app.listen(process.env.REACT_APP_SERVER_PORT, function () {
     console.log('Paradigm Threat Server listening on port: ' + process.env.REACT_APP_SERVER_PORT);
 });

@@ -15,20 +15,6 @@ export function setup(app, BUILD_PATH) {
 
     // Asset Files
     app.use(express.static(BUILD_PATH));
-    app.use((req, res, next) => {
-        if (req.path.indexOf('.') === -1) {
-            const file = path.join(assetPath, req.path);
-            if (fs.existsSync(file)) {
-
-            }
-            fs.exists(file, function (exists) {
-                if (exists)
-                    req.url += '.html';
-                next();
-            });
-        } else
-            next();
-    })
     app.use(express.static(assetPath));
 
     // Asset APIs
