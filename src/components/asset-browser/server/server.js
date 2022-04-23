@@ -88,8 +88,6 @@ export async function generateAssetList() {
         let pointer = assetList;
         for (let i = 0; i < fileSplit.length; i++) {
             const fileFrag = fileSplit[i];
-            if (fileFrag[0] === '@') // Ignore file or directory if prepended with @
-                break;
             if (i === fileSplit.length - 1) {
                 pointer[KEY_FILES].push(fileFrag)
                 break;

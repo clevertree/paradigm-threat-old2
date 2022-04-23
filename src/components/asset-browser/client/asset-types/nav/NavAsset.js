@@ -92,7 +92,9 @@ export default class NavAsset extends React.Component {
     renderGeneratedMainLinks(iterator) {
 
         const fileList = iterator.listDirectories('/')
-        return fileList.map((file, i) => this.renderAnchorLink("", file, i))
+        return fileList
+            .filter(file => !file.startsWith('@'))
+            .map((file, i) => this.renderAnchorLink("", file, i))
     }
 
     renderGeneratedSubLinks(pathname, iterator) {
@@ -107,7 +109,9 @@ export default class NavAsset extends React.Component {
             if (fileList.length !== 0)
                 content.unshift(
                     <div className={"sub"} key={subPath}>
-                        {fileList.map((file, i) => this.renderAnchorLink(currentSubPath, file, i))}
+                        {fileList
+                            .filter(file => !file.startsWith('@'))
+                            .map((file, i) => this.renderAnchorLink(currentSubPath, file, i))}
                     </div>
                 )
             subPath = subPath.substring(0, subPath.lastIndexOf("/"));
