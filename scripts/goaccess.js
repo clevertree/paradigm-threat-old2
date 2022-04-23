@@ -31,9 +31,9 @@ child_process.exec('pkill goaccess', function (error, stdout, stderr) {
 
 setTimeout(() => {
 
-    const cmd = `/bin/zcat /var/log/nginx/access.log.*.gz | goaccess -o ${path.join(reportPath, reportHTMLPath)} -o ${path.join(reportPath, reportJSONPath)}`
+    const cmd = `/bin/zcat /var/log/nginx/paradigmthreat.access.log.*.gz | goaccess -o ${path.join(reportPath, reportHTMLPath)} -o ${path.join(reportPath, reportJSONPath)}`
         + ` --real-time-html`
-        + ` --ignore-crawlers --log-format=COMBINED /var/log/nginx/access.log -`
+        + ` --ignore-crawlers --log-format=COMBINED /var/log/nginx/paradigmthreat.access.log -`
 
     console.log("Executing ", cmd);
     const process = child_process.exec(cmd, function (error, stdout, stderr) {
