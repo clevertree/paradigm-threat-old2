@@ -12,7 +12,7 @@
 </section>
 
 <footer>
-  <div>Created by <a href="https://github.com/clevertree/" target="_blank" rel="noopener noreferrer">Ari Asulin</a></div>
-  <hitCounter/>
+  <div>created by <a href="https://clevertree.net/">Ari Asulin</a></div>
+  <hitCounter></hitCounter>
 </footer>
 </div>

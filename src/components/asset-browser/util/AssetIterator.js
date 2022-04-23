@@ -1,10 +1,10 @@
-import {KEY_FILES, KEY_DIRS} from "../constants.js";
+import {KEY_DIRS, KEY_FILES} from "../constants.js";
 import {resolveAssetURL} from "../client/util/ClientUtil.js";
 
 
 export default class AssetIterator {
     constructor(assets) {
-        if(!assets)
+        if (!assets)
             throw new Error("Invalid assets")
         this.assets = assets;
     }
@@ -18,21 +18,21 @@ export default class AssetIterator {
 
     listDirectories(path) {
         const pointer = this.getPointer(path);
-        if(!pointer[KEY_DIRS])
+        if (!pointer[KEY_DIRS])
             return [];
         return Object.keys(pointer[KEY_DIRS]);
     }
 
 
-    getPointer(path, orThrow=true) {
-        if(path[0] === '/') path = path.substring(1);
+    getPointer(path, orThrow = true) {
+        if (path[0] === '/') path = path.substring(1);
         const pathSplit = path.split('/');
         let pointer = this.assets;
-        for(let pathFrag of pathSplit) {
-            if(!pathFrag)
+        for (let pathFrag of pathSplit) {
+            if (!pathFrag)
                 continue;
-            if(!pointer || !pointer[KEY_DIRS] || !pointer[KEY_DIRS][pathFrag]) {
-                if(orThrow)
+            if (!pointer || !pointer[KEY_DIRS] || !pointer[KEY_DIRS][pathFrag]) {
+                if (orThrow)
                     throw new Error(`Path fragment not found: ${pathFrag} path=${path}`);
                 return null;
             }
@@ -46,11 +46,10 @@ export default class AssetIterator {
         const dir = filepath.substring(0, filepath.lastIndexOf("/") + 1);
         const filename = filepath.split('/').pop();
         const pointer = this.getPointer(dir, false);
-        console.log('tryPath', filepath, pointer);
-        if(!pointer)
+        if (!pointer)
             return null;
 
-        if(pointer[KEY_FILES].indexOf(filename) !== -1)
+        if (pointer[KEY_FILES].indexOf(filename) !== -1)
             return filepath;
         return null;
     }

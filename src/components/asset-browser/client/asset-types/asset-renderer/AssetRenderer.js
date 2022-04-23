@@ -6,6 +6,7 @@ import VideoAsset from "../video/VideoAsset.js";
 import PDFAsset from "../pdf/PDFAsset.js";
 import UnknownAsset from "../unknown/UnknownAsset.js";
 import {getUnusedAssets} from "../markdown/markdownOptions.js";
+import StyleSheetAsset from "../link/StyleSheetAsset.js";
 
 export default class AssetRenderer extends React.Component {
     /** Property validation **/
@@ -61,6 +62,11 @@ export default class AssetRenderer extends React.Component {
                 return <VideoAsset {...props}/>;
             case 'pdf':
                 return <PDFAsset {...props}/>;
+            case 'css':
+                return <StyleSheetAsset href={filePath} key={key}/>;
+            case 'json':
+            case 'txt':
+                return <UnknownAsset {...props} render/>;
             default:
                 return <UnknownAsset {...props}/>;
         }

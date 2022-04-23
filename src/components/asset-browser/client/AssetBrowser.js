@@ -8,10 +8,11 @@ import AssetRefresher from "./loader/AssetRefresher.js";
 import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
 import {setUnusedAssets} from "./asset-types/markdown/markdownOptions.js";
 
-import DefaultTemplate from "../template/DefaultTemplate.md";
-import "../template/DefaultTheme.scss";
-import {PATH_SITE} from "../constants.js";
+import DefaultTemplate from "../template/default.template.md";
+import "../template/default.theme.scss";
+import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, PATH_SITE} from "../constants.js";
 import {pathJoin, resolveAssetURL} from "./util/ClientUtil.js";
+import StyleSheetAsset from "./asset-types/link/StyleSheetAsset.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -55,17 +56,28 @@ export default class AssetBrowser extends React.Component {
         }
     }
 
+    getTemplatePath(pathname, iterator) {
+        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE))
+            || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
+        if (templatePath)
+            return resolveAssetURL(templatePath);
+        return DefaultTemplate;
+    }
+
+    getSiteThemePath(iterator) {
+        let scssPath = iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
+        if (scssPath)
+            return resolveAssetURL(scssPath)
+        return null;
+    }
+
     render() {
         const {assets, loaded} = this.state;
         if (!loaded)
             return "Loading...";
         const iterator = new AssetIterator(assets);
-        let templatePath = iterator.tryFile(pathJoin(PATH_SITE, 'default.template.md'))
-        || iterator.tryFile(pathJoin(this.props.pathname, 'default.template.md'));
-        if(templatePath)
-            templatePath = resolveAssetURL(templatePath)
-        else
-            templatePath = DefaultTemplate
+        let templatePath = this.getTemplatePath(this.props.pathname, iterator)
+        let themePath = this.getSiteThemePath(iterator)
 
         return <AssetBrowserContext.Provider value={{
             browser: this,
@@ -74,6 +86,7 @@ export default class AssetBrowser extends React.Component {
             iterator
         }}>
             <>
+                {themePath ? <StyleSheetAsset href={themePath}/> : null}
                 <AssetRefresher/>
                 <MarkdownAsset
                     wrapper={React.Fragment}
