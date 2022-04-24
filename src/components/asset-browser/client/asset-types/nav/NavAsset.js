@@ -3,6 +3,7 @@ import AssetBrowserContext from "../../context/AssetBrowserContext.js"
 
 import "./NavAsset.css"
 import PropTypes from "prop-types";
+import {pathJoin} from "../../util/ClientUtil.js";
 
 export default class NavAsset extends React.Component {
     /** Property validation **/
@@ -77,41 +78,37 @@ export default class NavAsset extends React.Component {
         </AssetBrowserContext.Consumer>;
     }
 
-    renderLinks(pathname, iterator, loaded) {
+    renderLinks(currentPath, iterator, loaded) {
         let generate = loaded && (this.props['data-generate-links'] || this.props['generate-links']);
         return <>
             <div className="main">
                 {this.props.children}
-                {this.props.homeShow ? this.renderAnchorLink("", "", 'home', this.props.homeName) : null}
-                {generate ? this.renderGeneratedMainLinks(iterator) : null}
+                {this.props.homeShow ? this.renderAnchorLink("/", 'home', this.props.homeName) : null}
+                {generate ? this.renderDirectoryLinks("/", iterator.listDirectories('/')) : null}
             </div>
-            {generate ? this.renderGeneratedSubLinks(pathname, iterator) : null}
+            {generate ? this.renderDirectorySubLinks(currentPath, iterator) : null}
         </>
     }
 
-    renderGeneratedMainLinks(iterator) {
-
-        const fileList = iterator.listDirectories('/')
+    renderDirectoryLinks(currentPath, fileList) {
         return fileList
             .filter(file => !file.startsWith('@'))
-            .map((file, i) => this.renderAnchorLink("", file, i))
+            .map((file, i) => this.renderAnchorLink(pathJoin(currentPath, file), i))
     }
 
-    renderGeneratedSubLinks(pathname, iterator) {
-        let subPath = pathname;
+    renderDirectorySubLinks(currentPath, iterator) {
+        let subPath = currentPath;
         let content = [], i = 0;
+        if (subPath.endsWith('/'))
+            subPath = subPath.substring(0, subPath.length - 1);
         while (subPath && subPath !== '/') {
-            const currentSubPath = subPath;
-            // console.log('subPath', subPath, pathname);
             if (i++ > 10)
                 break;
-            const fileList = iterator.listDirectories(subPath);
-            if (fileList.length !== 0)
+            const fileList = iterator.listDirectories(subPath, false);
+            if (fileList && fileList.length !== 0)
                 content.unshift(
                     <div className={"sub"} key={subPath}>
-                        {fileList
-                            .filter(file => !file.startsWith('@'))
-                            .map((file, i) => this.renderAnchorLink(currentSubPath, file, i))}
+                        {this.renderDirectoryLinks(subPath, fileList)}
                     </div>
                 )
             subPath = subPath.substring(0, subPath.lastIndexOf("/"));
@@ -119,15 +116,14 @@ export default class NavAsset extends React.Component {
         return content;
     }
 
-    renderAnchorLink(subPath, file, key, name = null) {
-        const relativePath = subPath + '/' + file;
-        if (!name) name = file.split('/').pop();
+    renderAnchorLink(filePath, key, name = null) {
+        if (!name) name = filePath.split('/').pop();
         name = name.replace(/_+/g, ' ');
         const {pathname} = document.location;
-        const selected = relativePath === '/' ? relativePath === pathname : pathname.startsWith(relativePath);
+        const selected = filePath === '/' ? filePath === pathname : pathname.startsWith(filePath);
         return <a
             className={selected ? 'selected' : null}
-            href={relativePath}
+            href={filePath}
             key={key}>{name}</a>
     }
 

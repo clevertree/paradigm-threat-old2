@@ -1,5 +1,5 @@
 export const pathJoin = (...args) => {
-    return args.map((part, i) => {
+    return (args[0] === '/' ? '/' : '') + args.map((part, i) => {
         if (i === 0) {
             return part.trim().replace(/\/*$/g, '')
         } else {

@@ -99,12 +99,16 @@ export default class AssetBrowser extends React.Component {
     renderChildren() {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
-        const fileList = iterator.listFiles(this.props.pathname);
+        try {
+            const fileList = iterator.listFiles(this.props.pathname);
 
-        const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
-        if (indexMDPath)
-            return this.renderIndexPage(indexMDPath, fileList)
-        return this.renderAssetPage(fileList)
+            const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
+            if (indexMDPath)
+                return this.renderIndexPage(indexMDPath, fileList)
+            return this.renderAssetPage(fileList)
+        } catch (e) {
+            return this.renderErrorPage(e);
+        }
     }
 
     renderIndexPage(indexMDPath, fileList) {
@@ -117,6 +121,12 @@ export default class AssetBrowser extends React.Component {
 
     renderAssetPage(fileList) {
         return <AssetRenderer>{fileList}</AssetRenderer>;
+    }
+
+    renderErrorPage(error) {
+        return <article className={"error"}>
+            <pre className={"error"}>{error.stack}</pre>
+        </article>;
     }
 }
 

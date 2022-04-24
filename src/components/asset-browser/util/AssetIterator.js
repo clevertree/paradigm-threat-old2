@@ -16,9 +16,9 @@ export default class AssetIterator {
         return pointer[KEY_FILES].map(file => resolveAssetURL(path + '/' + file));
     }
 
-    listDirectories(path) {
-        const pointer = this.getPointer(path);
-        if (!pointer[KEY_DIRS])
+    listDirectories(path, orThrow = true) {
+        const pointer = this.getPointer(path, orThrow);
+        if (!pointer || !pointer[KEY_DIRS])
             return [];
         return Object.keys(pointer[KEY_DIRS]);
     }
@@ -33,7 +33,7 @@ export default class AssetIterator {
                 continue;
             if (!pointer || !pointer[KEY_DIRS] || !pointer[KEY_DIRS][pathFrag]) {
                 if (orThrow)
-                    throw new Error(`Path fragment not found: ${pathFrag} path=${path}`);
+                    throw new Error(`Path not found: ${path}`);
                 return null;
             }
             pointer = pointer[KEY_DIRS][pathFrag]
