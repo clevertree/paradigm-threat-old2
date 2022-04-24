@@ -46,7 +46,7 @@ export default class AssetRenderer extends React.Component {
         switch (ext) {
             case 'md':
                 return <article className={props.className} key={key}>
-                    <MarkdownAsset file={filePath}/>;
+                    <MarkdownAsset file={filePath}/>
                 </article>
             case 'img':
             case 'jpg':

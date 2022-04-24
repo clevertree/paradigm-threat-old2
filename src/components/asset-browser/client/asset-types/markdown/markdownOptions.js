@@ -7,6 +7,8 @@ import MetaAsset from "../meta/MetaAsset.js";
 import NavAsset from "../nav/NavAsset.js";
 import AssetRenderer from "../asset-renderer/AssetRenderer.js";
 import {resolveAssetURL} from "../../util/ClientUtil.js";
+import ChatRoomAsset from "../chatroom/ChatRoomAsset.js";
+import VideoAsset from "../video/VideoAsset.js";
 
 const customTags = {};
 let unusedAssets = [];
@@ -30,8 +32,10 @@ export function registerTag(tagName, tagCallback) {
 }
 
 registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
+registerTag('video', (tagName, props, children) => <VideoAsset {...props}>{children}</VideoAsset>)
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
+registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
 registerTag('assetRenderer', (tagName, {key, ...props}, children) => <section key={key}>
     <AssetRenderer {...props}>{children}</AssetRenderer>
 </section>)

@@ -50,7 +50,7 @@ body {
   }
 
   h1 {
-    font-size: 1.5em;
+    font-size: 1.7em;
   }
 
   h2 {
@@ -153,6 +153,7 @@ body {
   position: relative;
   display: block;
   margin: auto;
+  max-height: 100vh;
 }
 
 .asset.image {
@@ -171,6 +172,8 @@ body {
 .asset.float {
   max-width: 30vw;
   padding: 0.4vw;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 

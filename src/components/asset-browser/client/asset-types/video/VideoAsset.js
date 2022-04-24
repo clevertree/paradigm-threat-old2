@@ -11,7 +11,7 @@ export default class VideoAsset extends React.Component {
 
     constructor(props) {
         super(props);
-        this.className = 'asset video youtube';
+        this.className = 'asset video';
         if (this.props.className)
             this.className += ' ' + this.props.className;
     }

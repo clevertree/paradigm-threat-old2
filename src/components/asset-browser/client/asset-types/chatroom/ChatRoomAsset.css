@@ -1,0 +1,16 @@
+.asset.chatroom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80vw;
+    height: 48vw;
+    padding: 1vw;
+    max-width: 1200px;
+    max-height: 720px;
+    /*clear: both;*/
+}
+
+.asset.chatroom iframe {
+    width: 100%;
+    height: 100%
+}

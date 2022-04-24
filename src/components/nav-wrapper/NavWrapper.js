@@ -55,6 +55,7 @@ export default class NavWrapper extends Component {
                 // Allow navigation
             } else if (url.hash
                 || url.pathname.endsWith('.pdf')
+                || url.pathname.endsWith('.html') // TODO: hack fix!
             ) {
                 // Allow local navigation
 

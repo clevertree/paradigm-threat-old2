@@ -2,7 +2,7 @@
 
 npm run test || exit;
 
-git push gitbucket master;
+git push gitbucket master -f;
 
 ssh git.paradigmthreat.net << EOF
 cd /var/www/paradigm-threat;

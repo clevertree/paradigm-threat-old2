@@ -11,7 +11,7 @@ export const pathJoin = (...args) => {
 export function resolveAssetURL(pathToAsset, relativePath) {
     if (pathToAsset.toLowerCase().startsWith('http'))
         return pathToAsset;
-    const base = process.env.REACT_APP_ASSET_PUBLIC_URL || window.location.origin;
+    const base = process.env.REACT_APP_ASSET_PUBLIC_ORIGIN || window.location.origin;
     if (relativePath && pathToAsset[0] !== '/')
         pathToAsset = pathJoin(relativePath, pathToAsset);
     return new URL(pathToAsset, base) + '';

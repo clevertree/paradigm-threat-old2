@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import "./UnknownAsset.scss"
+
 export default class UnknownAsset extends React.Component {
     /** Property validation **/
     static propTypes = {
@@ -40,7 +42,7 @@ export default class UnknownAsset extends React.Component {
 
 
     render() {
-        let className = 'asset-unknown asset';
+        let className = 'asset unknown';
         if (this.props.className)
             className += ' ' + this.props.className;
         return (

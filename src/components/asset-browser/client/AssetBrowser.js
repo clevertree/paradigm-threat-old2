@@ -112,7 +112,7 @@ export default class AssetBrowser extends React.Component {
     }
 
     renderIndexPage(indexMDPath, fileList) {
-        const filteredFileList = fileList.filter(file => !file.endsWith('.md'))
+        const filteredFileList = fileList.filter(file => !file.endsWith('index.md'))
         setUnusedAssets(filteredFileList);
         return <article className={"index"}>
             <MarkdownAsset file={indexMDPath}/>
