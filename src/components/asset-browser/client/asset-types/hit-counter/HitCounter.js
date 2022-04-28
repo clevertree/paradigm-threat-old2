@@ -28,7 +28,9 @@ export default class HitCounter extends React.Component {
     }
 
     render() {
-        return <a href={resolveAssetURL(process.env.REACT_APP_ASSET_SITE_DIRECTORY + '/report.html')}>
+        return <a href={resolveAssetURL(process.env.REACT_APP_ASSET_SITE_DIRECTORY + '/report.html')}
+                  target="_blank" rel="noreferrer"
+        >
             {this.state.content} Visitors
         </a>;
     }

@@ -14,7 +14,7 @@ process.chdir(rootPath)
 config();
 
 
-if(!process.env.REACT_APP_ASSET_PATH)
+if (!process.env.REACT_APP_ASSET_PATH)
     throw new Error(".env file not loaded: " + rootPath);
 
 const {
@@ -25,7 +25,7 @@ const {
 } = process.env;
 const reportPath = path.join(rootPath, assetPath, siteDirectory);
 
-child_process.exec('pkill goaccess', function (error, stdout, stderr) {
+child_process.exec('pkill -9 goaccess', function (error, stdout, stderr) {
     error ? console.log("Existing goaccess process not found") : console.log("Killing existing goaccess process")
 });
 
@@ -43,11 +43,11 @@ setTimeout(() => {
             throw error;
     });
 
-    process.stdout.on('data', function(data) {
+    process.stdout.on('data', function (data) {
         console.log(data);
     });
 
-    process.stderr.on('data', function(data) {
+    process.stderr.on('data', function (data) {
         console.error(data);
     });
 }, 1000)

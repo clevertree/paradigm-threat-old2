@@ -2,10 +2,13 @@
 
 npm run test || exit;
 
-git push gitbucket master -f;
+echo "Pushing to origin"
+git push origin master || exit;
+git push github master -f;
 
+echo "Deploying to server"
 ssh git.paradigmthreat.net << EOF
-cd /var/www/paradigm-threat;
+cd /var/www/paradigm-threat-site;
 git stash;
 git pull;
 git reset --hard origin/master;
@@ -14,7 +17,7 @@ npm run test || exit;
 
 npm run build;
 
-pm2 restart paradigm-threat
+pm2 restart "Paradigm Threat Server"
 
 cd /var/www/paradigm-threat-files;
 git pull;
