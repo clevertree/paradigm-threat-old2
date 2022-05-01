@@ -4,8 +4,9 @@ import PropTypes from "prop-types";
 import "./ImageAsset.scss";
 import Markdown from "markdown-to-jsx";
 import {getMarkdownOptions} from "../markdown/markdownOptions.js";
+import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 
-export default class ImageAsset extends React.Component {
+class ImageAsset extends React.Component {
     /** Property validation **/
     static propTypes = {
         src: PropTypes.string.isRequired,
@@ -17,6 +18,7 @@ export default class ImageAsset extends React.Component {
 
         this.state = {
             fullscreen: false,
+            originalRefreshHash: this.props.refreshHash
         }
         const markdownOptions = getMarkdownOptions();
         this.options = {
@@ -44,14 +46,16 @@ export default class ImageAsset extends React.Component {
         // className += [' even', ' odd'][i % 2];
         // if(i % 4 === 0)
         //     className += ' clear';
-        const {src, alt, title} = this.props;
+        const {src, alt, title, refreshHash} = this.props;
         const altText = alt || src.split('/').pop();
-
+        let finalSrc = src;
+        if (refreshHash && refreshHash !== this.state.originalRefreshHash)
+            finalSrc += '?refreshHash=' + refreshHash;
         return [
             <img
                 key="image"
                 className={className}
-                src={src}
+                src={finalSrc}
                 alt={altText}
                 title={title || altText}
                 onClick={this.cb.onClick}
@@ -62,13 +66,14 @@ export default class ImageAsset extends React.Component {
                 onClick={this.cb.onClick}
             >
                 <img
-                    src={src}
+                    src={finalSrc}
                     alt={altText}
                 />
                 {altText ? <div className={'alt-text'}>
                     <Markdown onClick={this.cb.stopPropagation}
                               options={this.options}>{altText.replace(/\\n/g, "\n")}</Markdown>
-                    <a onClick={this.cb.stopPropagation} href={src} className="source" target="_blank" rel="noreferrer">Source
+                    <a onClick={this.cb.stopPropagation} href={finalSrc} className="source" target="_blank"
+                       rel="noreferrer">Source
                         File</a>
                 </div> : null}
                 <div className="close">&#10006;</div>
@@ -108,3 +113,16 @@ export default class ImageAsset extends React.Component {
 
 
 let activeImages = [];
+
+
+export default class ImageAssetWrapper extends React.Component {
+    render() {
+        return <AssetBrowserContext.Consumer>
+            {({refreshHash}) => {
+                return <ImageAsset {...this.props} refreshHash={refreshHash}>
+                    {this.props.children}
+                </ImageAsset>;
+            }}
+        </AssetBrowserContext.Consumer>;
+    }
+}
