@@ -9,6 +9,7 @@ import AssetRenderer from "../asset-renderer/AssetRenderer.js";
 import {resolveAssetURL} from "../../util/ClientUtil.js";
 import ChatRoomAsset from "../chatroom/ChatRoomAsset.js";
 import VideoAsset from "../video/VideoAsset.js";
+import HeaderListAsset from "../list/HeaderListAsset.js";
 
 const customTags = {};
 let unusedAssets = [];
@@ -36,6 +37,7 @@ registerTag('video', (tagName, props, children) => <VideoAsset {...props}>{child
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
 registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
+registerTag('headerList', (tagName, props, children) => <HeaderListAsset {...props}>{children}</HeaderListAsset>)
 registerTag('assetRenderer', (tagName, {key, ...props}, children) => <section key={key}>
     <AssetRenderer {...props}>{children}</AssetRenderer>
 </section>)

@@ -48,7 +48,7 @@ export default class NavAsset extends React.Component {
         if (this.state.floating) {
             const {height: containerHeight} = containerElm.getBoundingClientRect();
             const {height: bottomHeight} = bottomElm.getBoundingClientRect();
-            navElm.setAttribute('style', `height: ${containerHeight}px`);
+            navElm.setAttribute('style', `height: ${containerHeight}px;`);
             document.body.style.paddingBottom = `${bottomHeight}px`;
         } else {
             navElm.removeAttribute('style');
