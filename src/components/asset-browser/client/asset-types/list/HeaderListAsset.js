@@ -1,4 +1,5 @@
 import React from "react";
+import "./HeaderListAsset.css"
 
 export default class HeaderListAsset extends React.Component {
     constructor(props) {
@@ -8,6 +9,9 @@ export default class HeaderListAsset extends React.Component {
         }
         this.ref = {
             container: React.createRef()
+        }
+        this.cb = {
+            onClick: e => this.onClick(e)
         }
     }
 
@@ -21,9 +25,12 @@ export default class HeaderListAsset extends React.Component {
 
     render() {
         let className = 'asset header-list';
+        if (this.props.className)
+            className += ' ' + this.props.className;
         return <ul
+            {...this.props}
             ref={this.ref.container}
-            className={className} {...this.props}>
+            className={className}>
             {this.props.children}
             {this.state.list}
         </ul>
@@ -39,63 +46,47 @@ export default class HeaderListAsset extends React.Component {
 
         const articleElm = current.closest('article, section, body');
         const elmList = [...articleElm.querySelectorAll('h1, h2, h3, h4, h5, h6')]
+            .filter(elm => !elm.classList.contains('no-index'))
+            .filter(elm => !current.contains(elm))
 
-        const root = {content: 'root', children: []}, lastByLevel = {};
+        if (elmList.length === 0)
+            return;
+
+        const root = {content: 'root', children: []}, lastByLevel = {0: root};
         for (const headerElm of elmList) {
             const {nodeName, id, textContent} = headerElm;
-            const liProps = {id, content: textContent, children: []};
-            const hID = parseInt(nodeName.substring(1, 2));
-            lastByLevel[hID] = liProps
-            let target = root;
-            for (let j = 2; j <= hID; j++) {
-                target = lastByLevel[j];
-                if (!target) { // If sublevel doesn't exist
-                    target = {content: null, children: []}
-                    lastByLevel[j] = target;
-                    lastByLevel[j - 1].children.push(target); // Add to previous level ???
-                }
-            }
+            const level = parseInt(nodeName.substring(1, 2));
+            const liProps = {id, content: textContent, children: [], headerElm, level};
+            lastByLevel[level] = liProps
+            let target = lastByLevel[level - 1];
             target.children.push(liProps)
         }
-        console.log('headerElms', elmList, articleElm, root)
         this.setState({
-            list: this.renderHeaderList({elmList, i: -1, curLevel: 1})
+            list: root.children.map((child, i) => this.renderHeaderList(child, i))
         })
     }
 
-    renderHeaderList(stats) {
-        const list = [];
-        while (true) {
-            stats.i++;
-            let headerElm = stats.elmList[stats.i];
-            if (!headerElm)
-                break;
-            const hID = parseInt(headerElm.nodeName.substring(1, 2));
-            if (hID < stats.curLevel) {
-                stats.curLevel--;
-                break;
-            } else if (hID === stats.curLevel) {
-                stats.curLevel++;
-                const subElms = this.renderHeaderList(stats);
-                list.push(<li
-                    className={'level' + hID}
-                >
-                    <a
-                        href={'#' + headerElm.getAttribute('id')}
-                    >{headerElm.textContent}</a>
-                    {subElms ? <ul>{subElms}</ul> : null}
-                </li>)
-            } else {
-                stats.curLevel++;
-                list.push(<li
-                    className={'level' + hID}
-                >
-                    <ul>{this.renderHeaderList(stats)}</ul>
-                </li>)
+    renderHeaderList({content, id, children, headerElm, level}, key) {
+        return [
+            <li className={'h' + level} key={key + 'li'}>
+                <a
+                    onClick={e => this.onClick(e, headerElm)}
+                    href={'#' + id}>{content}</a>
+            </li>,
+            (children && children.length > 0 ? <ul key={key + 'ul'}>
+                {children.map((child, i) => this.renderHeaderList(child, i))}
+            </ul> : null)
+        ];
+    }
 
-            }
-        }
-        return list;
+    onClick(e, headerElm) {
+        const hash = '#' + headerElm.getAttribute('id');
+        e.preventDefault();
+        window.history.pushState({}, '', hash);
+        headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
+        headerElm.classList.add('highlighted')
+        // setTimeout(() => headerElm.classList.remove('highlighted'), 1000);
+        // setTimeout(() => , 1000);
     }
 }
 

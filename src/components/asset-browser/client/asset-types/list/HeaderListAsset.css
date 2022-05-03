@@ -1,0 +1,27 @@
+h1.highlighted,
+h2.highlighted,
+h3.highlighted,
+h4.highlighted,
+h5.highlighted,
+h6.highlighted {
+    font-weight: bold;
+    animation: scaleWobble alternate-reverse 3s;
+}
+
+@keyframes scaleWobble {
+    0% {
+        color: #000;
+        text-shadow: white;
+        letter-spacing: normal;
+    }
+    100% {
+        color: #327679;
+        text-shadow: 2px 2px 5px #73b0ff;
+        letter-spacing: 2px;
+    }
+}
+
+.asset.header-list {
+    max-height: 50vh;
+    overflow-y: auto;
+}

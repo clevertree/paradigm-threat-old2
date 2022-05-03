@@ -3,7 +3,11 @@ body {
   background-color: #ccc;
   //padding-bottom: 4em;
   overflow-y: scroll;
+  scroll-behavior: smooth;
+}
 
+* {
+  scroll-margin-top: 10vh;
 }
 
 .theme-default {
@@ -153,11 +157,11 @@ body {
   position: relative;
   display: block;
   margin: auto;
-  max-height: 100vh;
 }
 
 .asset.image {
   cursor: pointer;
+  max-height: 100vh;
   max-width: 100%;
   z-index: 3;
 }

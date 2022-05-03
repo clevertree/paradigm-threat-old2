@@ -36,7 +36,7 @@ class MarkdownAsset extends React.Component {
             this.loadContent().then();
         }
         if (prevProps.refreshHash && (prevProps.refreshHash !== this.props.refreshHash)) {
-            console.log("Refreshing content: ", this.props.file, prevProps.refreshHash);
+            // console.log("Refreshing content: ", this.props.file, prevProps.refreshHash);
             this.loadContent().then();
         }
     }
