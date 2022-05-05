@@ -43,6 +43,7 @@ body {
 .theme-default article {
   //color: #000;
   min-height: 50vh;
+  //min-width: 90vw;
   margin: 0 auto;
   padding: 0 2vw;
 
@@ -87,17 +88,23 @@ body {
     margin: 0.5em auto;
   }
 
-  @media only screen and (max-width: 1800px) {
-    > h1, > h2, > h3, > h4, > h5, > h6, > ul, > ol, > blockquote, > pre {
-      max-width: 800px;
-    }
-
-    > p {
-      max-width: 760px;
-    }
-  }
+  //@media only screen and (min-width: 1800px) {
+  //  > h1, > h2, > h3, > h4, > h5, > h6, > ul, > ol, > blockquote, > pre {
+  //    max-width: 1000px;
+  //  }
+  //
+  //  > p {
+  //    max-width: 1200px;
+  //  }
+  //}
 }
 
+@media only screen and (min-width: 1800px) {
+  .theme-default article {
+    min-width: 1600px;
+  }
+
+}
 
 .theme-default article > pre > code,
 .theme-default article > p > code {
@@ -159,16 +166,30 @@ body {
   margin: auto;
 }
 
+.asset.video,
 .asset.image {
   cursor: pointer;
-  max-height: 100vh;
-  max-width: 900px;
-  width: 100%;
+  max-height: 100%;
+  max-width: 100%;
   z-index: 3;
-  padding-bottom: 0.3vw;
 }
 
-.asset + .asset {
+.asset.video {
+  //min-width: 42vw;
+  //min-height: 24vw;
+  padding: 0.5em 0;
+}
+
+@media only screen and (min-width: 1000px) {
+  .asset.video,
+  .asset.image {
+    max-height: 900px;
+  }
+}
+
+
+.asset.rounded {
+  border-radius: 1em;
 }
 
 
@@ -178,38 +199,48 @@ body {
   max-width: 30vw;
   padding: 0.4vw;
   max-height: 70vh;
-  overflow-y: auto;
 }
 
 
 @media only screen and (min-width: 640px) {
-  .asset.float-right {
-    float: right;
-    width: 25vh;
-    padding-right: 0.5em;
-    margin-left: 0.5em;
-    clear: right;
+  .asset.float-left,
+  .asset.float-right,
+  {
+    max-width: 33vw;
+    max-height: 33vw;
   }
 
   .asset.float-left {
     float: left;
-    width: 25vh;
     padding-left: 0.5em;
     margin-right: 0.5em;
+    margin-bottom: 0.2em;
     clear: left;
   }
-}
-
-
-@media only screen and (min-width: 800px) {
-  .float-left,
-  .float-right {
+  .asset.float-right {
+    float: right;
+    padding-right: 0.5em;
+    margin-left: 0.5em;
+    margin-bottom: 0.2em;
+    clear: right;
   }
 }
 
+
+@media only screen and (min-width: 1200px) {
+  .asset.float-left,
+  .asset.float-right {
+    max-width: 24vw;
+    max-height: 24vw;
+  }
+}
+
+
 @media only screen and (min-width: 1800px) {
-  .float-left,
-  .float-right {
-    max-width: 30em;
+  .asset.float-left,
+  .asset.float-right,
+  {
+    max-width: 20vw;
+    max-height: 12vw;
   }
 }

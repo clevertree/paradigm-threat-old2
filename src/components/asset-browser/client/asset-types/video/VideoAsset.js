@@ -20,24 +20,26 @@ export default class VideoAsset extends React.Component {
         if (this.parseYoutubeURL(this.props.src))
             return this.renderYoutube();
         // let i = this.props.i || 0;
+        let className = this.className + ' youtube';
+        if (this.props.className)
+            className += ' ' + this.props.className;
         return (
-            <div className={this.className}>
-                <video controls>
-                    <source {...this.props} type="video/mp4"/>
-                    Your browser does not support the video tag.
-                </video>
-            </div>
+            <video controls className={className}>
+                <source {...this.props} type="video/mp4"/>
+                Your browser does not support the video tag.
+            </video>
         );
     }
 
     renderYoutube() {
         const src = 'https://www.youtube.com/embed/' + this.parseYoutubeURL(this.props.src);
         const title = 'Youtube';
+        let className = this.className + ' youtube';
+        if (this.props.className)
+            className += ' ' + this.props.className;
         return (
-            <div className={this.className + ' youtube'}>
-                <iframe title={title} {...this.props} src={src}>
-                </iframe>
-            </div>
+            <iframe title={title} {...this.props} className={className} src={src}>
+            </iframe>
         );
 
     }

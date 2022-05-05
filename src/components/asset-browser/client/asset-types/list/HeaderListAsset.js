@@ -10,9 +10,6 @@ export default class HeaderListAsset extends React.Component {
         this.ref = {
             container: React.createRef()
         }
-        this.cb = {
-            onClick: e => this.onClick(e)
-        }
     }
 
     componentDidMount() {
@@ -70,7 +67,7 @@ export default class HeaderListAsset extends React.Component {
         return [
             <li className={'h' + level} key={key + 'li'}>
                 <a
-                    onClick={e => this.onClick(e, headerElm)}
+                    onClick={e => this.onClick(e, id)}
                     href={'#' + id}>{content}</a>
             </li>,
             (children && children.length > 0 ? <ul key={key + 'ul'}>
@@ -79,8 +76,11 @@ export default class HeaderListAsset extends React.Component {
         ];
     }
 
-    onClick(e, headerElm) {
-        const hash = '#' + headerElm.getAttribute('id');
+    onClick(e, id) {
+        const {current} = this.ref.container;
+        const articleElm = current.closest('article, section, body');
+        const hash = '#' + id;
+        const headerElm = articleElm.querySelector(hash);
         e.preventDefault();
         window.history.pushState({}, '', hash);
         headerElm.scrollIntoView({block: "start", behavior: 'smooth'})

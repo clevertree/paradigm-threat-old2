@@ -22,8 +22,8 @@ h6.highlighted {
 }
 
 .asset.header-list {
-    max-height: 50vh;
-    overflow-y: auto;
-    clear: both;
-    max-width: 900px;
+    /*max-height: 50vh;*/
+    /*overflow-y: auto;*/
+    /*clear: both;*/
+    max-width: 1120px;
 }

@@ -2,8 +2,7 @@ import {resolveAssetURL} from "../util/ClientUtil.js";
 
 let assetAsyncObj = loadAssets();
 export default class AssetLoader {
-
-    loadAssets(force = false) {
+    async loadAssets(force = false) {
         if (force)
             assetAsyncObj = loadAssets(force);
         return assetAsyncObj;
@@ -23,3 +22,7 @@ async function loadAssets(force = false) {
     return assetAsyncObj;
 }
 
+setInterval(async () => {
+    const assets = await loadAssets(true)
+    console.log("Assets refreshed: ", assets);
+}, 60 * 60 * 1000)
