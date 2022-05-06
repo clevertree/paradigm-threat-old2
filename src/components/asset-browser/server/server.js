@@ -33,21 +33,34 @@ export function setup(app, BUILD_PATH) {
             const markdownHTML = fs.readFileSync(pathIndexMD, 'utf8');
 
             const MDDOM = new JSDOM(markdownHTML);
-            const metaList = MDDOM.window.document.head.querySelectorAll('meta, title');
+            const metaList = [...MDDOM.window.document.head.querySelectorAll('meta, title')];
 
             const DOM = new JSDOM(indexHTML);
             for (let metaTag of metaList) {
-                if ((metaTag.getAttribute('name') || '').toLowerCase() === 'title') {
-                    let title = DOM.window.document.querySelector('title') ||
-                        DOM.window.document.createElement('title');
-                    title.innerHTML = metaTag.getAttribute('content')
-                    DOM.window.document.head.prepend(title);
+                const name = (metaTag.getAttribute('name') || metaTag.getAttribute('property')) + '';
+                switch (name.toLowerCase()) {
+                    case 'title':
+                        let title = DOM.window.document.querySelector('title') ||
+                            DOM.window.document.createElement('title');
+                        title.innerHTML = metaTag.getAttribute('content')
+                        DOM.window.document.head.prepend(title);
+                        break;
+                    case 'og:image':
+                        const src = metaTag.getAttribute('content');
+                        if (!src.toLowerCase().startsWith('http')) {
+                            const origin = process.env.REACT_APP_ASSET_PUBLIC_ORIGIN || req.headers.origin || ('http://' + req.headers.host);
+                            metaTag.content = new URL(src, new URL(req.path, origin)) + '';
+                        }
+                        DOM.window.document.head.appendChild(metaTag);
+                        break;
+                    default:
+                        DOM.window.document.head.appendChild(metaTag);
+                        break;
                 }
-                DOM.window.document.head.appendChild(metaTag);
             }
 
             indexHTML = DOM.serialize();
-            console.log('Meta tags updated: ', req.path, pathIndexMD);
+            console.log(`${metaList.length} Meta tags updated: `, req.path, pathIndexMD);
         }
         res.send(indexHTML);
     });

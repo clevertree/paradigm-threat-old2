@@ -39,7 +39,6 @@ export default class AssetBrowser extends React.Component {
     }
 
     componentDidMount() {
-        // console.log("Loading content: ", this.props.file);
         this.loadContent().then();
     }
 
@@ -47,6 +46,7 @@ export default class AssetBrowser extends React.Component {
         const assets = await new AssetLoader().loadAssets(force)
         this.setState({assets, loaded: true});
         // console.log("Assets loaded: ", assets);
+        runOnceScrollToHashID();
     }
 
     updateRefreshHash(refreshHash) {
@@ -130,3 +130,11 @@ export default class AssetBrowser extends React.Component {
     }
 }
 
+let scrollToHashTimeout = null;
+
+function runOnceScrollToHashID() {
+    scrollToHashTimeout = scrollToHashTimeout || setTimeout(() => {
+        const {hash} = document.location;
+        console.log('hash', hash);
+    }, 1)
+}
