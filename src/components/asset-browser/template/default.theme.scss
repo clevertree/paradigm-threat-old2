@@ -177,7 +177,7 @@ body {
 .asset.video {
   //min-width: 42vw;
   //min-height: 24vw;
-  padding: 0.5em 0;
+  margin: 0.5em auto;
 }
 
 @media only screen and (min-width: 1000px) {
@@ -206,23 +206,20 @@ body {
   .asset.float-left,
   .asset.float-right,
   {
-    max-width: 33vw;
-    max-height: 33vw;
+    max-width: 32vw;
+    max-height: 32vw;
+    margin: 0 0.5em 0.2em 0.5em;
   }
 
   .asset.float-left {
     float: left;
-    padding-left: 0.5em;
-    margin-right: 0.5em;
-    margin-bottom: 0.2em;
     clear: left;
+    margin-left: 0;
   }
   .asset.float-right {
     float: right;
-    padding-right: 0.5em;
-    margin-left: 0.5em;
-    margin-bottom: 0.2em;
     clear: right;
+    margin-right: 0;
   }
 }
 
