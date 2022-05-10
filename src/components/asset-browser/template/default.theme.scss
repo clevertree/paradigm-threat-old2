@@ -35,10 +35,12 @@ body {
 .theme-default section {
   display: flex;
   flex-wrap: wrap;
+  clear: both;
+  margin: 0 auto;
+
 }
 
 /** Article **/
-
 
 .theme-default article {
   //color: #000;
@@ -46,6 +48,7 @@ body {
   //min-width: 90vw;
   margin: 0 auto;
   padding: 0 2vw;
+  clear: both;
 
   /** Paragraphs **/
   > p {
@@ -99,9 +102,9 @@ body {
   //}
 }
 
-@media only screen and (min-width: 1800px) {
+@media only screen and (min-width: 1860px) {
   .theme-default article {
-    min-width: 1600px;
+    width: 1800px;
   }
 
 }
@@ -125,14 +128,6 @@ body {
   border-right: 4px solid #AAA;
 }
 
-
-/** overflow in asset list **/
-
-.theme-default article.float {
-  max-height: 70vh;
-  overflow-y: auto;
-  margin: 0.5em auto;
-}
 
 /** Anchor Links **/
 
@@ -193,12 +188,19 @@ body {
 }
 
 
-/** Floating Images **/
+/** Auto Float Assets **/
 
-.asset.float {
-  max-width: 30vw;
+.auto-float {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0;
+  clear: both;
+}
+
+.auto-float .asset {
+  max-width: 30%;
   padding: 0.4vw;
-  max-height: 70vh;
 }
 
 
