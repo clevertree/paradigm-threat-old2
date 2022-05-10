@@ -1,5 +1,6 @@
 import React from "react";
 import "./HeaderListAsset.css"
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 export default class HeaderListAsset extends React.Component {
     constructor(props) {
@@ -24,13 +25,15 @@ export default class HeaderListAsset extends React.Component {
         let className = 'asset header-list';
         if (this.props.className)
             className += ' ' + this.props.className;
-        return <ul
-            {...this.props}
-            ref={this.ref.container}
-            className={className}>
-            {this.props.children}
-            {this.state.list}
-        </ul>
+        return <ErrorBoundary>
+            <ul
+                {...this.props}
+                ref={this.ref.container}
+                className={className}>
+                {this.props.children}
+                {this.state.list}
+            </ul>
+        </ErrorBoundary>
     }
 
     updateHeaderList(force = false) {
@@ -55,12 +58,17 @@ export default class HeaderListAsset extends React.Component {
             const level = parseInt(nodeName.substring(1, 2));
             const liProps = {id, content: textContent, children: [], headerElm, level};
             lastByLevel[level] = liProps
-            let target = lastByLevel[level - 1];
+            let target;
+            for (let i = 1; !target && i <= level; i++) {
+                target = lastByLevel[level - i]
+            }
             target.children.push(liProps)
         }
-        this.setState({
-            list: root.children.map((child, i) => this.renderHeaderList(child, i))
-        })
+        if (root.children.length > 0) {
+            this.setState({
+                list: root.children.map((child, i) => this.renderHeaderList(child, i))
+            })
+        }
     }
 
     renderHeaderList({content, id, children, headerElm, level}, key) {

@@ -10,6 +10,7 @@ import {resolveAssetURL} from "../../util/ClientUtil.js";
 import ChatRoomAsset from "../chatroom/ChatRoomAsset.js";
 import VideoAsset from "../video/VideoAsset.js";
 import HeaderListAsset from "../list/HeaderListAsset.js";
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 const customTags = {};
 let unusedAssets = [];
@@ -63,7 +64,9 @@ export function getMarkdownOptions(pathname) {
             }
         }
         if (customTags[tagName])
-            return customTags[tagName](tagName, finalProps, children);
+            return <ErrorBoundary assetName={tagName}>
+                {customTags[tagName](tagName, finalProps, children)}
+            </ErrorBoundary>;
 
         // console.log('renderTag', tagName, finalProps, children)
         return React.createElement(tagName, finalProps, children);

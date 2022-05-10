@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./ChatRoomAsset.css";
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 
 // TODO prevent stolen focus
@@ -47,20 +48,26 @@ export default class ChatRoomAsset extends React.Component {
     render() {
         const {href} = this.props;
         const absURL = new URL(href || '', process.env.REACT_APP_ASSET_ASSET_CHATROOM_ORIGIN)
-        return <div className="asset chatroom"
-                    ref={this.ref.container}
-        >
-            {this.state.visible ? <iframe title="Chat Server" src={absURL}></iframe> : <div className="placeholder"/>}
-            <a href={absURL} target="_blank" rel="noreferrer">Open Chat in new window</a>
-        </div>
+        return <ErrorBoundary>
+            <div className="asset chatroom"
+                 ref={this.ref.container}
+            >
+                {this.state.visible ? <iframe title="Chat Server" src={absURL}></iframe> :
+                    <div className="placeholder"/>}
+                <a href={absURL} target="_blank" rel="noreferrer">Open Chat in new window</a>
+            </div>
+        </ErrorBoundary>
     }
 
     onScroll(e) {
-        const rect = this.ref.container.current.getBoundingClientRect();
-        const visible = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
-        if (visible) {
-            this.setState({visible})
-            window.removeEventListener('scroll', this.cb.onScroll)
+        const {current} = this.ref.container;
+        if (current) {
+            const rect = current.getBoundingClientRect();
+            const visible = (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+            if (visible) {
+                this.setState({visible})
+                window.removeEventListener('scroll', this.cb.onScroll)
+            }
         }
     }
 }

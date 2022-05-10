@@ -1,7 +1,13 @@
 import React from "react";
 import "./ErrorBoundary.css"
+import PropTypes from "prop-types";
 
 export default class ErrorBoundary extends React.Component {
+    /** Property validation **/
+    static propTypes = {
+        assetName: PropTypes.string,
+    };
+
     constructor(props) {
         super(props);
         this.state = {hasError: false};
