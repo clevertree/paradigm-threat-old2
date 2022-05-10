@@ -135,14 +135,16 @@ let scrollToHashTimeout = null;
 function runOnceScrollToHashID() {
     scrollToHashTimeout = scrollToHashTimeout || setTimeout(() => {
         const {hash} = document.location;
-        const headerElm = document.querySelector(hash);
-        // console.log('hash', hash, headerElm);
-        if (headerElm) {
-            headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
-            headerElm.classList.add('highlighted')
-            setTimeout(() => {
+        if (hash) {
+            const headerElm = document.querySelector(hash);
+            // console.log('hash', hash, headerElm);
+            if (headerElm) {
                 headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
-            }, 500)
+                headerElm.classList.add('highlighted')
+                setTimeout(() => {
+                    headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
+                }, 500)
+            }
         }
     }, 500)
 }

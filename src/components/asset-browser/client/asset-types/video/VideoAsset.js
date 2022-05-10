@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import "./VideoAsset.css";
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 export default class VideoAsset extends React.Component {
     /** Property validation **/
@@ -23,12 +24,12 @@ export default class VideoAsset extends React.Component {
         let className = this.className + ' youtube';
         if (this.props.className)
             className += ' ' + this.props.className;
-        return (
+        return <ErrorBoundary assetName="Video Asset">
             <video controls className={className}>
-                <source {...this.props} type="video/mp4"/>
+                <source {...this.props} children={null} type="video/mp4"/>
                 Your browser does not support the video tag.
             </video>
-        );
+        </ErrorBoundary>;
     }
 
     renderYoutube() {

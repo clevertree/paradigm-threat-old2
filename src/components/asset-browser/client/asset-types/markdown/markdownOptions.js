@@ -38,7 +38,7 @@ registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{childre
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
 registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
 registerTag('headerList', (tagName, props, children) => <HeaderListAsset {...props}>{children}</HeaderListAsset>)
-registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div class="auto-float" key={key}>
+registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div className="auto-float" key={key}>
     <AssetRenderer {...props}>{children}</AssetRenderer>
 </div>)
 

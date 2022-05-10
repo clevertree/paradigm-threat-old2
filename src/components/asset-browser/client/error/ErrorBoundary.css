@@ -1,0 +1,14 @@
+.error-boundary {
+    color: #D8000C;
+    background-color: #FFD2D2;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+}
+
+.error-boundary h2 {
+    margin-top: 0;
+}
+
+.error-boundary .stack {
+    white-space: break-spaces;
+}
