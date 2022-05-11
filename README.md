@@ -21,6 +21,11 @@ you can combine the git submodule init and git submodule update steps by running
 
 In the project directory, you can run:
 
+### `npm build`
+
+Builds the app. This is necessary for running the server\
+Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
+
 ### `npm run server`
 
 Runs the production server. Running this is necessary for the files to load\

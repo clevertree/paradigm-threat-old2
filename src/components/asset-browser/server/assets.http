@@ -1,6 +1,8 @@
-POST http://localhost:8080/:assets
+POST http://localhost:8081/graphql
 Content-Type: application/json
 
-{"method":"list", "path":"/war"}
+{
+  "query":"{report, assets}"
+}
 
 ###
