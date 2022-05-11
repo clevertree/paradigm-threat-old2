@@ -4,7 +4,7 @@ npm run test || exit;
 
 echo "Pushing to origin"
 git push origin master || exit;
-git push github master -f;
+git push github master -f || exit;
 
 echo "Pushing files to origin"
 cd files || exit;
@@ -20,10 +20,11 @@ git reset --hard origin/master;
 
 npm run test || exit;
 
-npm run build;
+npm run build || exit;
 
 pm2 restart "Paradigm Threat Server"
 
-cd /var/www/paradigm-threat-files;
+cd files || exit;
 git pull;
+git reset --hard origin/master;
 EOF
