@@ -31,6 +31,7 @@
     "server": "node scripts/server.js",
     "goaccess": "node scripts/goaccess.js",
     "deploy": "sh scripts/deploy.sh",
+    "deploy-files": "sh scripts/deploy-files.sh",
     "start": "react-scripts start",
     "start-server": "react-scripts start & node scripts/server.js",
     "build": "sh scripts/build.sh",
