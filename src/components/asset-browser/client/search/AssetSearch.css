@@ -1,0 +1,27 @@
+.asset-search {
+    width: 100%;
+
+    clear: both;
+    border: 1px solid #BFBAB0;
+    border-radius: 0.5em;
+    margin: 0.5em;
+    background-color: #F2EFE9;
+
+    display: flex;
+    align-items: center;
+}
+
+.asset-search label {
+    vertical-align: center;
+}
+
+.asset-search input {
+    flex-grow: 1;
+}
+
+
+.asset-search input,
+.asset-search button {
+    padding: 0.5em;
+    margin: 0.5em;
+}

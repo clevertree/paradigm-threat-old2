@@ -9,6 +9,10 @@ export default class AssetIterator {
         this.assets = assets;
     }
 
+    pathExists(path) {
+        return !!this.getPointer(path, false);
+    }
+
     listFiles(path) {
         if (path[0] === '/')
             path = path.substring(1);
@@ -24,16 +28,16 @@ export default class AssetIterator {
     }
 
 
-    getPointer(path, orThrow = true) {
-        if (path[0] === '/') path = path.substring(1);
-        const pathSplit = path.split('/');
+    getPointer(directoryPath, orThrow = true) {
+        if (directoryPath[0] === '/') directoryPath = directoryPath.substring(1);
+        const pathSplit = directoryPath.split('/');
         let pointer = this.assets;
         for (let pathFrag of pathSplit) {
             if (!pathFrag)
                 continue;
             if (!pointer || !pointer[KEY_DIRS] || !pointer[KEY_DIRS][pathFrag]) {
                 if (orThrow)
-                    throw new Error(`Path not found: ${path}`);
+                    throw new Error(`Path not found: ${directoryPath}`);
                 return null;
             }
             pointer = pointer[KEY_DIRS][pathFrag]
@@ -43,14 +47,44 @@ export default class AssetIterator {
     }
 
     tryFile(filepath) {
-        const dir = filepath.substring(0, filepath.lastIndexOf("/") + 1);
+        const directoryPath = filepath.substring(0, filepath.lastIndexOf("/") + 1);
         const filename = filepath.split('/').pop();
-        const pointer = this.getPointer(dir, false);
+        const pointer = this.getPointer(directoryPath, false);
         if (!pointer)
             return null;
 
         if (pointer[KEY_FILES].indexOf(filename) !== -1)
             return filepath;
         return null;
+    }
+
+    searchByKeywords(keywords) {
+        keywords = keywords.map(keyword => keyword.toLowerCase())
+        const fileList = [];
+        search(this.assets, '', keywords);
+        return fileList;
+
+        function search(pointer, directoryPath) {
+            const lcDirectoryPath = directoryPath.toLowerCase()
+            for (const file of pointer[KEY_FILES]) {
+                const assetURL = resolveAssetURL(directoryPath + '/' + file);
+
+                const lcFile = file.toLowerCase();
+                if (lcFile.endsWith('.md'))
+                    continue;
+                for (const keyword of keywords) {
+                    if (lcDirectoryPath.includes(keyword) || lcFile.includes(keyword)) {
+                        fileList.push(assetURL)
+                        break;
+                    }
+                }
+            }
+            if (pointer[KEY_DIRS]) {
+                for (const subDirectory of Object.keys(pointer[KEY_DIRS])) {
+                    const subPointer = pointer[KEY_DIRS][subDirectory]
+                    search(subPointer, directoryPath + '/' + subDirectory)
+                }
+            }
+        }
     }
 }

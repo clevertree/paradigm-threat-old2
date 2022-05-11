@@ -69,7 +69,7 @@ nav.asset-navigation.floating > div.bottom-text {
     cursor: pointer;
     text-align: center;
     clear: both;
-    padding: 1vw 0.5em;
+    padding: 1vh 0.5em;
 }
 
 nav.asset-navigation > div.bottom-text:hover {

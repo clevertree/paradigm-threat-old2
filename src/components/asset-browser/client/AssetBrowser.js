@@ -13,6 +13,8 @@ import "../template/default.theme.scss";
 import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, PATH_SITE} from "../constants.js";
 import {pathJoin, resolveAssetURL} from "./util/ClientUtil.js";
 import StyleSheetAsset from "./asset-types/link/StyleSheetAsset.js";
+import ErrorBoundary from "./error/ErrorBoundary.js";
+import AssetSearch from "./search/AssetSearch.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -99,13 +101,15 @@ export default class AssetBrowser extends React.Component {
     renderChildren() {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
+        const {pathname} = this.props;
+        if (!iterator.pathExists(pathname))
+            return this.renderSearchPage(pathname);
         try {
-            const fileList = iterator.listFiles(this.props.pathname);
-
+            const fileList = iterator.listFiles(pathname);
             const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
             if (indexMDPath)
                 return this.renderIndexPage(indexMDPath, fileList)
-            return this.renderAssetPage(fileList)
+            return this.renderDirectoryPage(fileList)
         } catch (e) {
             return this.renderErrorPage(e);
         }
@@ -119,8 +123,21 @@ export default class AssetBrowser extends React.Component {
         </article>;
     }
 
-    renderAssetPage(fileList) {
-        return <AssetRenderer>{fileList}</AssetRenderer>;
+    renderSearchPage(pathname) {
+        const {assets} = this.state;
+        const iterator = new AssetIterator(assets);
+        const keywords = pathname.split(/[/?#]/g).filter(k => k);
+        return <ErrorBoundary assetName={"Search"}>
+            <AssetSearch iterator={iterator} keywords={keywords}/>
+        </ErrorBoundary>;
+    }
+
+    renderDirectoryPage(fileList) {
+        return <article className={"directory asset-spread"}>
+            <ErrorBoundary assetName={"Directory"}>
+                <AssetRenderer>{fileList}</AssetRenderer>
+            </ErrorBoundary>
+        </article>;
     }
 
     renderErrorPage(error) {
@@ -148,3 +165,4 @@ function runOnceScrollToHashID() {
         }
     }, 500)
 }
+

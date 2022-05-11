@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import "./MarkdownAsset.scss"
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import {getMarkdownOptions} from "./markdownOptions.js";
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 
 class MarkdownAsset extends React.Component {
@@ -67,11 +68,11 @@ class MarkdownAsset extends React.Component {
             ...markdownOptions,
             overrides: this.props.overrides,
         }
-        return (
+        return <ErrorBoundary assetName={"Markdown"}>
             <Markdown options={options}>
                 {this.state.content}
             </Markdown>
-        );
+        </ErrorBoundary>
     }
 }
 

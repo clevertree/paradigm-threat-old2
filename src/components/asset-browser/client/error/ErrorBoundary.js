@@ -32,6 +32,6 @@ export default class ErrorBoundary extends React.Component {
             </div>;
         }
 
-        return this.props.children;
+        return typeof this.props.children === "function" ? this.props.children() : this.props.children;
     }
 }

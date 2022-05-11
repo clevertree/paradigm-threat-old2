@@ -37,17 +37,19 @@ body {
   flex-wrap: wrap;
   clear: both;
   margin: 0 auto;
+}
 
+.theme-default > section {
+  padding: 0 2vw;
 }
 
 /** Article **/
 
 .theme-default article {
   //color: #000;
-  min-height: 50vh;
+  //min-height: 50vh;
   //min-width: 90vw;
   margin: 0 auto;
-  padding: 0 2vw;
   clear: both;
 
   /** Paragraphs **/
@@ -102,9 +104,9 @@ body {
   //}
 }
 
-@media only screen and (min-width: 1860px) {
+@media only screen and (min-width: 1800px) {
   .theme-default article {
-    width: 1800px;
+    width: 1600px;
   }
 
 }
@@ -188,23 +190,24 @@ body {
 }
 
 
-/** Auto Float Assets **/
-
-.auto-float {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  margin: 0;
-  clear: both;
-}
-
-.auto-float .asset {
-  max-width: 30%;
-  padding: 0.4vw;
-}
+/** Floating Images **/
 
 
 @media only screen and (min-width: 640px) {
+  .asset-spread .asset {
+    max-width: 40vw;
+    max-height: 38vh;
+    padding: 0.4vw;
+  }
+
+  .asset-spread {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0;
+    clear: both;
+  }
+
   .asset.float-left,
   .asset.float-right,
   {
@@ -239,7 +242,7 @@ body {
   .asset.float-left,
   .asset.float-right,
   {
-    max-width: 28vw;
-    max-height: 12vw;
+    max-width: 20vw;
+    max-height: 16vw;
   }
 }

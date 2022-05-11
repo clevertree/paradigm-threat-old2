@@ -41,7 +41,7 @@ export default class AssetRenderer extends React.Component {
         const props = {
             src: filePath,
             key,
-            className: 'float'
+            // className: 'float'
         }
         switch (ext) {
             case 'md':

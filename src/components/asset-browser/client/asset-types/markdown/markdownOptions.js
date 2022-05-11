@@ -39,7 +39,7 @@ registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{childre
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
 registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
 registerTag('headerList', (tagName, props, children) => <HeaderListAsset {...props}>{children}</HeaderListAsset>)
-registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div className="auto-float" key={key}>
+registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div className="asset-spread" key={key}>
     <AssetRenderer {...props}>{children}</AssetRenderer>
 </div>)
 
@@ -64,7 +64,7 @@ export function getMarkdownOptions(pathname) {
             }
         }
         if (customTags[tagName])
-            return <ErrorBoundary assetName={tagName}>
+            return <ErrorBoundary assetName={tagName} key={props.key}>
                 {customTags[tagName](tagName, finalProps, children)}
             </ErrorBoundary>;
 
