@@ -13,7 +13,7 @@ import path from "path";
 
 
 export default function setupAPI(app) {
-    app.use(path.join('/', process.env.REACT_APP_ASSET_ENDPOINT), async (req, res) => {
+    app.use(process.env.REACT_APP_ASSET_ENDPOINT, async (req, res) => {
         // Create a generic Request object that can be consumed by Graphql Helix's API
         const request = {
             body: req.body,
