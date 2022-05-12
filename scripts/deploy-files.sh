@@ -7,7 +7,7 @@ cd ..;
 
 echo "Deploying to server"
 ssh git.paradigmthreat.net << EOF
-cd /var/www/paradigm-threat/files;
+cd /var/www/paradigm-threat-site/files;
 git pull;
 git reset --hard origin/master;
 EOF

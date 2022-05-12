@@ -31,6 +31,8 @@ Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
 Runs the production server. Running this is necessary for the files to load\
 Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
 
+`Note: The server will server the react client, as well as all the hosted files.`
+
 ### `npm start`
 
 For developers, Run the app in development mode. This uses the above server for loading files.\
@@ -46,15 +48,5 @@ Note:
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more
 information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-`Note: The server will server the react client, as well as all the hosted files`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
