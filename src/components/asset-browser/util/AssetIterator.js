@@ -61,7 +61,7 @@ export default class AssetIterator {
     searchByKeywords(keywords) {
         keywords = keywords.map(keyword => keyword.toLowerCase())
         const fileList = [];
-        search(this.assets, '', keywords);
+        search(this.assets, '');
         return fileList;
 
         function search(pointer, directoryPath) {
@@ -78,6 +78,27 @@ export default class AssetIterator {
                         break;
                     }
                 }
+            }
+            if (pointer[KEY_DIRS]) {
+                for (const subDirectory of Object.keys(pointer[KEY_DIRS])) {
+                    const subPointer = pointer[KEY_DIRS][subDirectory]
+                    search(subPointer, directoryPath + '/' + subDirectory)
+                }
+            }
+        }
+    }
+
+    searchByFile(filter) {
+        const fileList = [];
+        search(this.assets, '');
+        return fileList;
+
+        function search(pointer, directoryPath) {
+            for (const file of pointer[KEY_FILES]) {
+                const assetURL = directoryPath + '/' + file;
+
+                if (typeof filter === 'function' ? filter(file) : file.includes(filter))
+                    fileList.push(assetURL)
             }
             if (pointer[KEY_DIRS]) {
                 for (const subDirectory of Object.keys(pointer[KEY_DIRS])) {

@@ -9,6 +9,8 @@ export const pathJoin = (...args) => {
 }
 
 export function resolveAssetURL(pathToAsset, relativePath) {
+    if (!pathToAsset)
+        throw new Error("Invalid Path: " + pathToAsset)
     if (pathToAsset.toLowerCase().startsWith('http'))
         return pathToAsset;
     const base = process.env.REACT_APP_ASSET_PUBLIC_ORIGIN || window.location.origin;
