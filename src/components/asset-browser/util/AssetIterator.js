@@ -1,4 +1,7 @@
-import {KEY_DIRS, KEY_FILES} from "../constants.js";
+import {
+    KEY_DIRS,
+    KEY_FILES,
+} from "../constants.js";
 import {resolveAssetURL} from "../client/util/ClientUtil.js";
 
 
@@ -11,6 +14,16 @@ export default class AssetIterator {
 
     pathExists(path) {
         return !!this.getPointer(path, false);
+    }
+
+    fileExists(path) {
+        const pathSplit = path.split('/');
+        const fileName = pathSplit.pop();
+        const directoryPath = pathSplit.join('/');
+        const pointer = this.getPointer(directoryPath, false);
+        if(!pointer)
+            return false;
+        return pointer[KEY_FILES].includes(fileName);
     }
 
     listFiles(path) {
@@ -59,21 +72,20 @@ export default class AssetIterator {
     }
 
     searchByKeywords(keywords) {
-        keywords = keywords.map(keyword => keyword.toLowerCase())
+        keywords = keywords.filter(k => k)
+            .map(keyword => new RegExp(keyword, "i"));
         const fileList = [];
         search(this.assets, '');
         return fileList;
 
         function search(pointer, directoryPath) {
-            const lcDirectoryPath = directoryPath.toLowerCase()
+            // const lcDirectoryPath = directoryPath.toLowerCase()
             for (const file of pointer[KEY_FILES]) {
                 const assetURL = resolveAssetURL(directoryPath + '/' + file);
 
-                const lcFile = file.toLowerCase();
-                if (lcFile.endsWith('.md'))
-                    continue;
+                // const lcFile = file.toLowerCase();
                 for (const keyword of keywords) {
-                    if (lcDirectoryPath.includes(keyword) || lcFile.includes(keyword)) {
+                    if (keyword.test(directoryPath) || keyword.test(file)) {
                         fileList.push(assetURL)
                         break;
                     }
@@ -108,4 +120,5 @@ export default class AssetIterator {
             }
         }
     }
+
 }

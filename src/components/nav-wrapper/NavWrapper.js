@@ -39,7 +39,7 @@ export default class NavWrapper extends Component {
 
 
     onClick(e) {
-        console.log(e);
+        // console.log(e);
         const windowObj = this.props.target || window;
         let target = e.target;
         while (target && target.nodeName.toLowerCase() !== 'a') {

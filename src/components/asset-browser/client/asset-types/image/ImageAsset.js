@@ -46,13 +46,14 @@ class ImageAsset extends React.Component {
         // className += [' even', ' odd'][i % 2];
         // if(i % 4 === 0)
         //     className += ' clear';
-        const {src, alt, title, refreshHash} = this.props;
+        const {src, alt, title, refreshHash, ...extraProps} = this.props;
         const altText = alt || src.split('/').pop();
         let finalSrc = src;
         if (refreshHash && refreshHash !== this.state.originalRefreshHash)
             finalSrc += '?refreshHash=' + refreshHash;
         return [
             <img
+                {...extraProps}
                 key="image"
                 className={className}
                 src={finalSrc}
@@ -66,6 +67,7 @@ class ImageAsset extends React.Component {
                 onClick={this.cb.onClick}
             >
                 <img
+                    {...extraProps}
                     src={finalSrc}
                     alt={altText}
                 />

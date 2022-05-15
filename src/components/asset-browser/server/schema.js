@@ -4,14 +4,15 @@ import getConfig from "./config.js";
 import path from "path";
 import fs from "fs";
 import AssetIterator from "../util/AssetIterator.js";
+import * as readline from "readline";
 
-const SearchResult = new GraphQLObjectType({
-    name: 'Address',
-    fields: {
-        href: {type: GraphQLString},
-        title: {type: GraphQLString},
-    }
-});
+// const SearchResult = new GraphQLObjectType({
+//     name: 'Address',
+//     fields: {
+//         href: {type: GraphQLString},
+//         // title: {type: GraphQLString},
+//     }
+// });
 
 export const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
@@ -39,22 +40,55 @@ export const schema = new GraphQLSchema({
                 }
             },
             search: {
-                type: new GraphQLList(SearchResult),
+                type: new GraphQLList(GraphQLString),
                 args: {
                     keywords: {type: GraphQLString},
                 },
-                resolve: async (_, args) => {
-                    const {assetList} = getConfig();
+                resolve: async (_, {keywords: keywordString}) => {
+                    const {assetList, assetPath} = getConfig();
                     const iterator = new AssetIterator(assetList);
                     const fileList = iterator.searchByFile('.md');
-                    return fileList.map((fileUrl) => {
-                        return {href: fileUrl, title: fileUrl}
-                    });
+                    const filteredFileList = [];
+                    for(const filePath of fileList) {
+                        const absFilePath = path.join(assetPath, filePath);
+                        const found = await searchFileForKeywords(absFilePath, keywordString)
+                        if(found)
+                            filteredFileList.push(filePath + "#scrollHighlight=" +keywordString);
+                    }
+                    return filteredFileList;
                 }
             },
         }
     }),
 });
+
+async function searchFileForKeywords(absFilePath, keywordString) {
+    const keywords = keywordString.split(/[,;\s]+/g).filter(k => k)
+        .map(keyword => new RegExp(keyword, "i"));
+    return await new Promise((resolve, reject) => {
+        let found = false;
+        const rl = readline.createInterface({
+            input: fs.createReadStream(absFilePath),
+            output: process.stdout,
+            terminal: false
+        });
+        rl.on('line', (line) => {
+            for(const keyword of keywords){
+                if(keyword.test(line)) {
+                    found = true;
+                    rl.close();
+                    resolve(true)
+                }
+
+            }
+        });
+        rl.on('close', function(){
+            if(!found)
+                resolve(false);
+        });
+        rl.on('error', reject);
+    })
+}
 
 
 function traverseObject(obj, path) {

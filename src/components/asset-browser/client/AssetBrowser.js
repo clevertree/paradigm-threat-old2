@@ -7,14 +7,19 @@ import AssetBrowserContext from "./context/AssetBrowserContext.js";
 import AssetRefresher from "./loader/AssetRefresher.js";
 import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
 import {setUnusedAssets} from "./asset-types/markdown/markdownOptions.js";
-
-import DefaultTemplate from "../template/default.template.md";
-import "../template/default.theme.scss";
-import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, PATH_SITE} from "../constants.js";
 import {pathJoin, resolveAssetURL} from "./util/ClientUtil.js";
+import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, FILE_SEARCH_PAGE, PATH_SITE} from "../constants.js";
+
 import StyleSheetAsset from "./asset-types/link/StyleSheetAsset.js";
 import ErrorBoundary from "./error/ErrorBoundary.js";
 import AssetSearch from "./search/AssetSearch.js";
+
+// Default Theme
+import "../template/default.theme.scss";
+
+// Default Templates
+import DefaultTemplate from "../template/default.template.md";
+import DefaultSearchPage from "../template/search.page.md";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -58,21 +63,6 @@ export default class AssetBrowser extends React.Component {
         }
     }
 
-    getTemplatePath(pathname, iterator) {
-        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE))
-            || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
-        if (templatePath)
-            return resolveAssetURL(templatePath);
-        return DefaultTemplate;
-    }
-
-    getSiteThemePath(iterator) {
-        let scssPath = iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
-        if (scssPath)
-            return resolveAssetURL(scssPath)
-        return null;
-    }
-
     render() {
         const {assets, loaded} = this.state;
         if (!loaded)
@@ -102,6 +92,8 @@ export default class AssetBrowser extends React.Component {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
         const {pathname} = this.props;
+        if (iterator.fileExists(pathname))
+            return this.renderIndexPage(resolveAssetURL(pathname));
         if (!iterator.pathExists(pathname))
             return this.renderSearchPage(pathname);
         try {
@@ -115,7 +107,7 @@ export default class AssetBrowser extends React.Component {
         }
     }
 
-    renderIndexPage(indexMDPath, fileList) {
+    renderIndexPage(indexMDPath, fileList=[]) {
         const filteredFileList = fileList.filter(file => !file.endsWith('index.md'))
         setUnusedAssets(filteredFileList);
         return <article className={"index"}>
@@ -127,9 +119,14 @@ export default class AssetBrowser extends React.Component {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
         const keywords = pathname.split(/[/?#]/g).filter(k => k);
-        return <ErrorBoundary assetName={"Search"}>
-            <AssetSearch iterator={iterator} keywords={keywords}/>
-        </ErrorBoundary>;
+        let searchPagePath = this.getSearchPagePath(iterator)
+
+        return <article className={"search"}>
+            <MarkdownAsset file={searchPagePath}/>
+            <ErrorBoundary assetName={"Search"}>
+                <AssetSearch iterator={iterator} keywords={keywords}/>
+            </ErrorBoundary>
+        </article>;
     }
 
     renderDirectoryPage(fileList) {
@@ -145,6 +142,32 @@ export default class AssetBrowser extends React.Component {
             <pre className={"error"}>{error.stack}</pre>
         </article>;
     }
+
+
+    // Known paths
+
+    getTemplatePath(pathname, iterator) {
+        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE))
+            || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
+        if (templatePath)
+            return resolveAssetURL(templatePath);
+        return DefaultTemplate;
+    }
+
+    getSiteThemePath(iterator) {
+        let scssPath = iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
+        if (scssPath)
+            return resolveAssetURL(scssPath)
+        return null;
+    }
+
+    getSearchPagePath(iterator) {
+        let searchPage = iterator.tryFile(pathJoin(PATH_SITE, FILE_SEARCH_PAGE));
+        if (searchPage)
+            return resolveAssetURL(searchPage);
+        return DefaultSearchPage;
+    }
+
 }
 
 let scrollToHashTimeout = null;

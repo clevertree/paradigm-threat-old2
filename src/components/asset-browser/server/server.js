@@ -1,6 +1,5 @@
 import fs from "fs";
 import path, {dirname} from "path";
-import express from "express";
 import {JSDOM} from "jsdom";
 import {fileURLToPath} from 'url';
 import {getDirectories, getFiles} from "./server-util.js";
@@ -9,22 +8,59 @@ import getConfig from "./config.js";
 import setupAPI from "./api.js";
 
 
-export function setup(app, BUILD_PATH) {
+export function setup(app) {
+
+    let BUILD_PATH = path.resolve(process.cwd(), process.env.REACT_APP_ASSET_BUILD);
+    if (!fs.existsSync(BUILD_PATH))
+        throw new Error("dist folder not found: " + BUILD_PATH)
     const {assetPath} = getConfig();
-    const BUILD_INDEX_PATH = path.resolve(BUILD_PATH, 'index.html');
 
     // Asset Files
-    app.use(express.static(BUILD_PATH));
-    app.use(express.static(assetPath));
+    // app.use(express.static(BUILD_PATH));
+    // app.use(express.static(assetPath));
 
     // Asset APIs
     setupAPI(app);
 
     app.use((req, res) => {
-        if (req.headers.accept && (!req.headers.accept.includes('html'))) {
-            console.log('404', req.path, req.headers.accept);
+        const {headers: {accept}, path} = req;
+        const isHTMLRequest = accept && (accept.includes('html'));
+        if (isHTMLRequest && path.toLowerCase().endsWith('.md')) {
+            console.log('Serving HTML for Markdown file', path, accept);
+            return serveIndex(req, res);
+        }
+        if(tryFile(req, res))
+            return;
+        if (!isHTMLRequest) {
+            console.log('404', path, accept);
             return res.status(404).send("");
         }
+        serveIndex(req, res);
+    });
+
+    generateAssetList().then(() => {
+        watchAssetList().then();
+    })
+
+    function tryFile(req, res) {
+        const relativePath = decodeURI(req.path);
+        let filePaths = [
+            path.join(BUILD_PATH, relativePath),
+            path.join(assetPath, relativePath),
+            ];
+        for(const filePath of filePaths) {
+            if (fs.existsSync(filePath)) {
+                if (!fs.lstatSync(filePath).isDirectory()) {
+                   res.sendFile(filePath);
+                   return true;
+                }
+            }
+        }
+        return false;
+    }
+    function serveIndex(req, res) {
+        const BUILD_INDEX_PATH = path.resolve(BUILD_PATH, 'index.html');
+
         console.log('Serving Index', req.path, req.headers.accept);
         let indexHTML = fs.readFileSync(BUILD_INDEX_PATH, 'utf8');
 
@@ -32,8 +68,8 @@ export function setup(app, BUILD_PATH) {
         if (fs.existsSync(pathIndexMD)) {
             const markdownHTML = fs.readFileSync(pathIndexMD, 'utf8');
 
-            const MDDOM = new JSDOM(markdownHTML);
-            const metaList = [...MDDOM.window.document.head.querySelectorAll('meta, title')];
+            const MarkdownDOM = new JSDOM(markdownHTML);
+            const metaList = [...MarkdownDOM.window.document.head.querySelectorAll('meta, title')];
 
             const DOM = new JSDOM(indexHTML);
             for (let metaTag of metaList) {
@@ -63,15 +99,9 @@ export function setup(app, BUILD_PATH) {
             console.log(`${metaList.length} Meta tags updated: `, req.path, pathIndexMD);
         }
         res.send(indexHTML);
-    });
-
-    generateAssetList().then(() => {
-        watchAssetList().then();
-    })
-
+    }
 
 }
-
 
 function updateTouchFile() {
     const __filename = fileURLToPath(import.meta.url);

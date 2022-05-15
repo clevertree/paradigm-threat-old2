@@ -16,9 +16,6 @@ process.chdir(rootPath)
 config();
 
 
-let BUILD_PATH = path.resolve(process.cwd(), process.env.REACT_APP_ASSET_BUILD);
-if (!fs.existsSync(BUILD_PATH))
-    throw new Error("dist folder not found: " + BUILD_PATH)
 const app = express();
 app.use(express.json());
 app.use(function (req, res, next) {
@@ -35,7 +32,7 @@ app.use(function (req, res, next) {
 });
 
 
-setup(app, BUILD_PATH);
+setup(app);
 
 app.listen(process.env.REACT_APP_SERVER_PORT, function () {
     console.log('Paradigm Threat Server listening on port: ' + process.env.REACT_APP_SERVER_PORT);
