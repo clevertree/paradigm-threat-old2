@@ -1,3 +1,6 @@
 [submodule "files"]
 	path = files
 	url = ssh://git@git.pthreat.co:2222/ari/paradigm-threat-files.git
+[submodule "sources"]
+	path = sources
+	url = ssh://git@git.pthreat.co:2222/ari/paradigm-threat-files-source.git
