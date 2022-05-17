@@ -13,7 +13,7 @@ export default class NavAsset extends React.Component {
     };
 
     static defaultProps = {
-        homeShow: true,
+        homeShow: false,
         homeName: 'home'
     }
 
