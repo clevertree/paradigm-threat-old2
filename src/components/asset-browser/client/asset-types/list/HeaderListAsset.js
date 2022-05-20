@@ -1,77 +1,70 @@
 import React from "react";
+import ReactDOM from "react-dom/client";
 import "./HeaderListAsset.css"
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 export default class HeaderListAsset extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            list: []
-        }
         this.ref = {
             container: React.createRef()
         }
     }
 
     componentDidMount() {
-        this.updateHeaderList()
+        this.updateHeaderList();
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        this.updateHeaderList()
+        this.updateHeaderList();
     }
 
     render() {
         let className = 'asset header-list';
         if (this.props.className)
             className += ' ' + this.props.className;
+
         return <ErrorBoundary>
             <ul
                 {...this.props}
                 ref={this.ref.container}
                 className={className}>
-                {this.props.children}
-                {this.state.list}
             </ul>
         </ErrorBoundary>
     }
 
-    updateHeaderList(force = false) {
-        if (!force && this.state.list.length !== 0)
-            return;
-
-        const {current} = this.ref.container;
-        if (!current)
-            console.error("Invalid container: ", this);
-
+    updateHeaderList() {
+        const current = this.ref.container.current;
         const articleElm = current.closest('article, section, body');
-        const elmList = [...articleElm.querySelectorAll('h1, h2, h3, h4, h5, h6')]
-            .filter(elm => !elm.classList.contains('no-index'))
-            .filter(elm => !current.contains(elm))
-
-        if (elmList.length === 0)
-            return;
-
-        const root = {content: 'root', children: []}, lastByLevel = {0: root};
-        for (const headerElm of elmList) {
+        const list = articleElm.querySelectorAll('h1, h2, h3, h4, h5, h6');
+        let root = {content: 'root', children: []}, lastByLevel = [root];
+        [].forEach.call(list, function (headerElm) {
+            if (headerElm.classList.contains('no-index'))
+                return;
             const {nodeName, id, textContent} = headerElm;
             const level = parseInt(nodeName.substring(1, 2));
             const liProps = {id, content: textContent, children: [], headerElm, level};
-            lastByLevel[level] = liProps
+            lastByLevel[level] = liProps;
+
+            // Erase disconnected levels
+            lastByLevel = lastByLevel.splice(0, level + 1);
+
+            // Find parent
             let target;
-            for (let i = 1; !target && i <= level; i++) {
-                target = lastByLevel[level - i]
+            for (let i = level - 1; i >= 0; i--) {
+                target = lastByLevel[i];
+                if (target)
+                    break;
             }
+
             target.children.push(liProps)
-        }
-        if (root.children.length > 0) {
-            this.setState({
-                list: root.children.map((child, i) => this.renderHeaderList(child, i))
-            })
-        }
+        });
+        current.reactContainer = current.reactContainer || ReactDOM.createRoot(current);
+        const render = root.children.map((child, i) => this.renderHeaderChild(child, i));
+        current.reactContainer.render(render);
     }
 
-    renderHeaderList({content, id, children, headerElm, level}, key) {
+    renderHeaderChild({content, id, children, headerElm, level}, key) {
         return [
             <li className={'h' + level} key={key + 'li'}>
                 <a
@@ -79,7 +72,7 @@ export default class HeaderListAsset extends React.Component {
                     href={'#' + id}>{content}</a>
             </li>,
             (children && children.length > 0 ? <ul key={key + 'ul'}>
-                {children.map((child, i) => this.renderHeaderList(child, i))}
+                {children.map((child, i) => this.renderHeaderChild(child, i))}
             </ul> : null)
         ];
     }
@@ -93,8 +86,5 @@ export default class HeaderListAsset extends React.Component {
         window.history.pushState({}, '', hash);
         headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
         headerElm.classList.add('highlighted')
-        // setTimeout(() => headerElm.classList.remove('highlighted'), 1000);
-        // setTimeout(() => , 1000);
     }
 }
-
