@@ -43,49 +43,69 @@ export default class AssetBrowser extends React.Component {
         this.overrides = {
             templateContent: (props) => this.renderChildren(props),
         }
-    }
-
-    componentDidMount() {
-        this.loadContent().then();
-    }
-
-    async loadContent(force = false) {
-        const assets = await new AssetLoader().loadAssets(force)
-        this.setState({assets, loaded: true});
-        // console.log("Assets loaded: ", assets);
-        runOnceScrollToHashID();
-    }
-
-    updateRefreshHash(refreshHash) {
-        if (refreshHash !== this.state.refreshHash) {
-            this.setState({refreshHash})
-            this.loadContent(true).then();
+        this.protected = {
+            updateAssets: (assets, error) => {
+                this.setState({assets, error, loaded: true});
+                if (assets) {
+                    runOnceScrollToHashID(); // TODO: refactor
+                }
+            },
+            updateRefreshHash: (refreshHash) => {
+                if (refreshHash !== this.state.refreshHash) {
+                    this.setState({refreshHash})
+                    AssetLoader.reloadAssets();
+                }
+            }
         }
     }
 
+    componentDidMount() {
+        // this.loadContent().then();
+    }
+
+    // async loadContent(force = false) {
+    //     try {
+    //         const assets = await new AssetLoader().loadAssets(force)
+    //         this.setState({assets, loaded: true});
+    //         console.log("Assets loaded: ", assets);
+    // } catch (error) {
+    //     console.error('Error fetching assets: ', error);
+    //     this.setState({loaded: true, error});
+    // }
+    // }
+
     render() {
-        const {assets, loaded} = this.state;
+        return <AssetBrowserContext.Provider value={{
+            ...this.protected,
+            ...this.props,
+            ...this.state,
+            getIterator: () => new AssetIterator(this.state.assets)
+        }}>
+            {this.renderContent()}
+        </AssetBrowserContext.Provider>;
+    }
+
+    renderContent() {
+        const {assets, loaded, error} = this.state;
+        if (error)
+            return error.stack || error || '';
         if (!loaded)
-            return "Loading...";
+            return <>
+                <AssetLoader/>
+                Loading...
+            </>
         const iterator = new AssetIterator(assets);
         let templatePath = this.getTemplatePath(this.props.pathname, iterator)
         let themePath = this.getSiteThemePath(iterator)
 
-        return <AssetBrowserContext.Provider value={{
-            browser: this,
-            ...this.props,
-            ...this.state,
-            iterator
-        }}>
-            <>
-                {themePath ? <StyleSheetAsset href={themePath}/> : null}
-                <AssetRefresher/>
-                <MarkdownAsset
-                    wrapper={React.Fragment}
-                    overrides={this.overrides}
-                    file={templatePath}/>
-            </>
-        </AssetBrowserContext.Provider>;
+        return <>
+            {themePath ? <StyleSheetAsset href={themePath}/> : null}
+            <AssetRefresher/>
+            <MarkdownAsset
+                wrapper={React.Fragment}
+                overrides={this.overrides}
+                file={templatePath}/>
+        </>
     }
 
     renderChildren() {
@@ -107,7 +127,7 @@ export default class AssetBrowser extends React.Component {
         }
     }
 
-    renderIndexPage(indexMDPath, fileList=[]) {
+    renderIndexPage(indexMDPath, fileList = []) {
         const filteredFileList = fileList.filter(file => !file.endsWith('index.md'))
         setUnusedAssets(filteredFileList);
         return <article className={"index"}>

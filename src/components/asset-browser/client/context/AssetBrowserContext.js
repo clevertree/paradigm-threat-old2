@@ -5,6 +5,10 @@ const AssetBrowserContext = React.createContext({
     loaded: false,
     iterator: null,
     assets: null,
-    refreshHash: null
+    refreshHash: null,
+    updateAssets: (assets, error) => {
+    },
+    updateRefreshHash: (refreshHash) => {
+    }
 });
 export default AssetBrowserContext;

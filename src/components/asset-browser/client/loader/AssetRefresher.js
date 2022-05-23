@@ -9,11 +9,11 @@ let lastTouch, timeout;
 export default class AssetRefresher extends React.Component {
     render() {
         return <AssetBrowserContext.Consumer>
-            {({browser}) => {
-                if (browser && lastTouch !== touchValue) {
+            {({updateRefreshHash}) => {
+                if (lastTouch !== touchValue) {
                     lastTouch = touchValue;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => browser.updateRefreshHash(touchValue), 200);
+                    timeout = setTimeout(() => updateRefreshHash(touchValue), 200);
                 }
             }}
         </AssetBrowserContext.Consumer>;
