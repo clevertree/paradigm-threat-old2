@@ -48,6 +48,7 @@ class ImageAsset extends React.Component {
         //     className += ' clear';
         const {src, alt, title, refreshHash, ...extraProps} = this.props;
         const altText = alt || src.split('/').pop();
+        const altTextSingleLine = altText.replace(/\n/g, "")
         let finalSrc = src;
         if (refreshHash && refreshHash !== this.state.originalRefreshHash)
             finalSrc += '?refreshHash=' + refreshHash;
@@ -57,8 +58,8 @@ class ImageAsset extends React.Component {
                 key="image"
                 className={className}
                 src={finalSrc}
-                alt={altText}
-                title={title || altText}
+                alt={altTextSingleLine}
+                title={title || altTextSingleLine}
                 onClick={this.cb.onClick}
             />,
             this.state.fullscreen ? <div
@@ -69,7 +70,7 @@ class ImageAsset extends React.Component {
                 <img
                     {...extraProps}
                     src={finalSrc}
-                    alt={altText}
+                    alt={altTextSingleLine}
                 />
                 {altText ? <div className={'alt-text'}>
                     <Markdown onClick={this.cb.stopPropagation}

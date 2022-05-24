@@ -36,7 +36,8 @@ async function reloadAssets() {
                     Failed to load{' '}
                     <a href={assetURL}>{assetURL}</a>
                     <br/>
-                    <code>{error.stack}</code>
+                    <pre>{error.stack}</pre>
+                    <div>Check to see if the server is running on port {process.env.REACT_APP_SERVER_PORT}</div>
                 </>;
                 console.error(error);
                 timeout = 60 * 1000;
