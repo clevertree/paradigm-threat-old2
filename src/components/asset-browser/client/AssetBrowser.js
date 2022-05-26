@@ -46,9 +46,6 @@ export default class AssetBrowser extends React.Component {
         this.protected = {
             updateAssets: (assets, error) => {
                 this.setState({assets, error, loaded: true});
-                if (assets) {
-                    runOnceScrollToHashID(); // TODO: refactor
-                }
             },
             updateRefreshHash: (refreshHash) => {
                 if (refreshHash !== this.state.refreshHash) {
@@ -102,6 +99,7 @@ export default class AssetBrowser extends React.Component {
             {themePath ? <StyleSheetAsset href={themePath}/> : null}
             <AssetRefresher/>
             <MarkdownAsset
+                onLoad={runOnceScrollToHashID}
                 wrapper={React.Fragment}
                 overrides={this.overrides}
                 file={templatePath}/>
@@ -196,7 +194,9 @@ function runOnceScrollToHashID() {
     scrollToHashTimeout = scrollToHashTimeout || setTimeout(() => {
         const {hash} = document.location;
         if (hash) {
-            const headerElm = document.querySelector(hash);
+            const idString = hash.substring(1);
+            const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
+
             // console.log('hash', hash, headerElm);
             if (headerElm) {
                 headerElm.scrollIntoView({block: "start", behavior: 'smooth'})

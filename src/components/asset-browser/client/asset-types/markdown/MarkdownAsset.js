@@ -12,6 +12,8 @@ class MarkdownAsset extends React.Component {
     /** Property validation **/
     static propTypes = {
         file: PropTypes.string.isRequired,
+        onLoad: PropTypes.func,
+        className: PropTypes.string,
     };
 
     static defaultProps = {
@@ -48,7 +50,7 @@ class MarkdownAsset extends React.Component {
     }
 
     async loadContent() {
-        const {file} = this.props;
+        const {file, onLoad} = this.props;
         const response = await fetch(file);
         const content = await response.text()
         this.setState({
@@ -56,6 +58,7 @@ class MarkdownAsset extends React.Component {
             loaded: true,
             pathname: file.substring(0, file.lastIndexOf("/") + 1)
         });
+        onLoad && setTimeout(onLoad, 100);
     }
 
     render() {
