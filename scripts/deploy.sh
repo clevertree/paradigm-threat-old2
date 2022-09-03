@@ -17,6 +17,7 @@ cd /var/www/paradigm-threat-site;
 git stash;
 git pull;
 git reset --hard origin/master;
+npm i;
 
 npm run test || exit;
 

@@ -12,6 +12,7 @@ import VideoAsset from "../video/VideoAsset.js";
 import HeaderListAsset from "../list/HeaderListAsset.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 import AssetSearch from "../../search/AssetSearch.js";
+import ChangeLogAsset from "../changelog/ChangeLogAsset.js";
 
 const customTags = {};
 let unusedAssets = [];
@@ -38,7 +39,9 @@ registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{childre
 registerTag('video', (tagName, props, children) => <VideoAsset {...props}>{children}</VideoAsset>)
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
+
 registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
+registerTag('changelog', (tagName, props, children) => <ChangeLogAsset {...props}>{children}</ChangeLogAsset>)
 registerTag('headerList', (tagName, props, children) => <HeaderListAsset {...props}>{children}</HeaderListAsset>)
 registerTag('assetSearch', (tagName, props, children) => <AssetSearch {...props}>{children}</AssetSearch>)
 registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div className="asset-spread" key={key}>

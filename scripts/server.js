@@ -3,7 +3,7 @@ import {setup} from "../src/components/asset-browser/server/server.js";
 import {config} from "dotenv";
 import path from "path";
 import {fileURLToPath} from "url";
-import fs from "fs";
+// import fs from "fs";
 
 // Locate root directory
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

@@ -1,10 +1,11 @@
-import {GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLList} from "graphql";
+import {GraphQLInt, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLString} from "graphql";
 import {GraphQLJSON} from "graphql-type-json";
 import getConfig from "./config.js";
 import path from "path";
 import fs from "fs";
 import AssetIterator from "../util/AssetIterator.js";
 import * as readline from "readline";
+import {simpleGit} from 'simple-git';
 
 // const SearchResult = new GraphQLObjectType({
 //     name: 'Address',
@@ -14,52 +15,86 @@ import * as readline from "readline";
 //     }
 // });
 
+
+const fields = {
+    assets: {
+        type: GraphQLJSON,
+        args: {},
+        resolve: (_, args) => {
+            const {assetList} = getConfig();
+            return assetList;
+        }
+    },
+    report: {
+        type: GraphQLJSON,
+        args: {
+            path: {type: GraphQLString},
+        },
+        resolve: (_, args) => {
+            const {assetPath} = getConfig();
+            const reportPath = path.join(assetPath, process.env.REACT_APP_ASSET_SITE_DIRECTORY, process.env.REACT_APP_ASSET_GOACCESS_REPORT_JSON);
+            const reportJSONString = fs.readFileSync(reportPath, 'utf8');
+            const reportJSON = JSON.parse(reportJSONString);
+            return traverseObject(reportJSON, args.path);
+        }
+    },
+    search: {
+        type: new GraphQLList(GraphQLString),
+        args: {
+            keywords: {type: GraphQLString},
+        },
+        resolve: async (_, {keywords: keywordString}) => {
+            const {assetList, assetPath} = getConfig();
+            const iterator = new AssetIterator(assetList);
+            const fileList = iterator.searchByFile('.md');
+            const filteredFileList = [];
+            for (const filePath of fileList) {
+                const absFilePath = path.join(assetPath, filePath);
+                const found = await searchFileForKeywords(absFilePath, keywordString)
+                if (found)
+                    filteredFileList.push(filePath + "#scrollHighlight=" + keywordString);
+            }
+            return filteredFileList;
+        }
+    },
+
+    changeLog: {
+        type: new GraphQLList(GraphQLJSON),
+        args: {
+            maxCount: {type: GraphQLInt, defaultValue: 12},
+        },
+        resolve: async (_, {maxCount}) => {
+            const git = getGitInstance();
+            const {all} = await git.log({maxCount});
+            return all.map(({hash, date, message, author_name}) => ({
+                hash, date, message, author_name
+            })).sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+    },
+};
+
+let gitInstance;
+
+function getGitInstance() {
+    if (!gitInstance) {
+        const {assetPath} = getConfig();
+        const options = {
+            baseDir: assetPath,
+            binary: 'git',
+            maxConcurrentProcesses: 6,
+            trimmed: false,
+        };
+        gitInstance = simpleGit(options);
+    }
+    return gitInstance;
+}
+
+
 export const schema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: "Assets",
-        fields: {
-            assets: {
-                type: GraphQLJSON,
-                args: {},
-                resolve: (_, args) => {
-                    const {assetList} = getConfig();
-                    return assetList;
-                }
-            },
-            report: {
-                type: GraphQLJSON,
-                args: {
-                    path: {type: GraphQLString},
-                },
-                resolve: (_, args) => {
-                    const {assetPath} = getConfig();
-                    const reportPath = path.join(assetPath, process.env.REACT_APP_ASSET_SITE_DIRECTORY, process.env.REACT_APP_ASSET_GOACCESS_REPORT_JSON);
-                    const reportJSONString = fs.readFileSync(reportPath, 'utf8');
-                    const reportJSON = JSON.parse(reportJSONString);
-                    return traverseObject(reportJSON, args.path);
-                }
-            },
-            search: {
-                type: new GraphQLList(GraphQLString),
-                args: {
-                    keywords: {type: GraphQLString},
-                },
-                resolve: async (_, {keywords: keywordString}) => {
-                    const {assetList, assetPath} = getConfig();
-                    const iterator = new AssetIterator(assetList);
-                    const fileList = iterator.searchByFile('.md');
-                    const filteredFileList = [];
-                    for(const filePath of fileList) {
-                        const absFilePath = path.join(assetPath, filePath);
-                        const found = await searchFileForKeywords(absFilePath, keywordString)
-                        if(found)
-                            filteredFileList.push(filePath + "#scrollHighlight=" +keywordString);
-                    }
-                    return filteredFileList;
-                }
-            },
-        }
-    }),
+        fields
+    })
 });
 
 async function searchFileForKeywords(absFilePath, keywordString) {
@@ -73,8 +108,8 @@ async function searchFileForKeywords(absFilePath, keywordString) {
             terminal: false
         });
         rl.on('line', (line) => {
-            for(const keyword of keywords){
-                if(keyword.test(line)) {
+            for (const keyword of keywords) {
+                if (keyword.test(line)) {
                     found = true;
                     rl.close();
                     resolve(true)
@@ -82,8 +117,8 @@ async function searchFileForKeywords(absFilePath, keywordString) {
 
             }
         });
-        rl.on('close', function(){
-            if(!found)
+        rl.on('close', function () {
+            if (!found)
                 resolve(false);
         });
         rl.on('error', reject);
