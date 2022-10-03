@@ -13,6 +13,7 @@ import HeaderListAsset from "../list/HeaderListAsset.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 import AssetSearch from "../../search/AssetSearch.js";
 import ChangeLogAsset from "../changelog/ChangeLogAsset.js";
+import HiddenAsset from "../hidden/HiddenAsset.js";
 
 const customTags = {};
 let unusedAssets = [];
@@ -37,8 +38,10 @@ export function registerTag(tagName, tagCallback) {
 
 registerTag('img', (tagName, props, children) => <ImageAsset {...props}>{children}</ImageAsset>)
 registerTag('video', (tagName, props, children) => <VideoAsset {...props}>{children}</VideoAsset>)
+// TODO: process meta keywords and highlight on page
 registerTag('meta', (tagName, props, children) => <MetaAsset {...props}>{children}</MetaAsset>)
 registerTag('nav', (tagName, props, children) => <NavAsset {...props}>{children}</NavAsset>)
+registerTag('hidden', (tagName, props, children) => <HiddenAsset {...props}>{children}</HiddenAsset>)
 
 registerTag('chatroom', (tagName, props, children) => <ChatRoomAsset {...props}>{children}</ChatRoomAsset>)
 registerTag('changelog', (tagName, props, children) => <ChangeLogAsset {...props}>{children}</ChangeLogAsset>)

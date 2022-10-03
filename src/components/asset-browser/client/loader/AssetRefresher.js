@@ -11,6 +11,7 @@ export default class AssetRefresher extends React.Component {
         return <AssetBrowserContext.Consumer>
             {({updateRefreshHash}) => {
                 if (lastTouch !== touchValue) {
+
                     lastTouch = touchValue;
                     clearTimeout(timeout);
                     timeout = setTimeout(() => updateRefreshHash(touchValue), 200);

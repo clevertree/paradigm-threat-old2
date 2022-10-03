@@ -10,24 +10,30 @@ export default class AssetSearch extends React.Component {
         this.state = {
             keywords: this.props.keywords,
             fileList: [],
-            assetList: []
+            assetList: [],
+            loading: true,
         }
         this.cb = {
             onFocus: e => this.onFocus(e),
-            onChange: e => this.onChange(e)
-
+            onChange: e => this.onChange(e),
+            onSubmit: e => this.onSubmit(e),
+        }
+        this.ref = {
+            form: React.createRef()
         }
         this.timeout = null
     }
 
     componentDidMount() {
-        if(this.state.keywords)
+        if (this.state.keywords)
             this.updateSearch(this.state.keywords);
     }
+    
 
     render() {
-        const {fileList, assetList} = this.state;
-        return <>
+        const {fileList, assetList, loading} = this.state;
+        return <form onSubmit={this.cb.onSubmit}
+                     ref={this.ref.form}>
             <fieldset className="asset-search">
                 <label>Search: </label>
                 <input name="search"
@@ -37,27 +43,30 @@ export default class AssetSearch extends React.Component {
                 <button type="submit">Search</button>
             </fieldset>
             <article className={"search asset-spread"}>
-                {fileList && fileList.length > 0 ? <ul>
+                {!loading ? <ul>
                     <h2>Markdown Search Results:</h2>
                     {fileList.map((file, key) => <li key={key}>
                         <a href={file}>{new URL(file).pathname}</a>
-                        </li>)}
+                    </li>)}
                 </ul> : null}
                 <AssetRenderer>{assetList}</AssetRenderer>
             </article>
-        </>;
+        </form>;
     }
 
-    onChange(e) {
+    onChange() {
         clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-            const {value} = e.target;
-            const keywords = value.split(/[,;\s]+/g).filter(k => k);
-            this.updateSearch(keywords);
-        }, 250)
+        this.timeout = setTimeout(this.cb.onSubmit, 250)
     }
 
-    updateSearch(keywords) {
+    onSubmit(e = null) {
+        e && e.preventDefault();
+        const {value} = this.ref.form.current.elements.search;
+        const keywords = value.split(/[,;]+/g).filter(k => k).map(k => k.trim());
+        this.updateSearch(keywords);
+    }
+
+    async updateSearch(keywords) {
         const {iterator} = this.props;
         const pathname = '/' + keywords.join('/')
         let assetList = keywords.join('').trim() ? iterator.searchByKeywords(keywords) : [];
@@ -65,13 +74,13 @@ export default class AssetSearch extends React.Component {
         assetList = assetList.filter(file => !fileList.includes(file));
         this.setState({
             keywords,
-            fileList,
+            // fileList,
             assetList
         })
-        window.history.pushState({}, '', pathname);
 
-        if(keywords && keywords.join(""))
-            this.fetchFileList(keywords)
+        if (keywords && keywords.join(""))
+            await this.fetchFileList(keywords)
+        window.history.pushState({}, '', pathname);
 
     }
 
@@ -81,14 +90,18 @@ export default class AssetSearch extends React.Component {
 
     async fetchFileList(keywords) {
         const assetURL = resolveAssetURL(process.env.REACT_APP_ASSET_ENDPOINT);
-        const response = await fetch(`${assetURL}?query={search(keywords:"${keywords.join(" ")}")}`);
-        const { errors, data} = await response.json();
+        this.setState({
+            loading: true,
+        });
+        const response = await fetch(`${assetURL}?query={search(keywords:"${keywords.join(", ")}")}`);
+        const {errors, data} = await response.json();
         if (errors)
             return errors.map(error => console.error(error.message));
         let fileList = data.search.map(result => resolveAssetURL(result));
-        fileList = this.state.fileList.concat(fileList);
-        fileList.filter((item, index) => fileList.indexOf(item) !== index);
+        // fileList = this.state.fileList.concat(fileList);
+        // fileList.filter((item, index) => fileList.indexOf(item) !== index);
         this.setState({
+            loading: false,
             fileList
         })
     }

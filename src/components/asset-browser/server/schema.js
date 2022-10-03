@@ -61,7 +61,7 @@ const fields = {
     changeLog: {
         type: new GraphQLList(GraphQLJSON),
         args: {
-            maxCount: {type: GraphQLInt, defaultValue: 12},
+            maxCount: {type: GraphQLInt, defaultValue: 6},
         },
         resolve: async (_, {maxCount}) => {
             const git = getGitInstance();
@@ -98,28 +98,33 @@ export const schema = new GraphQLSchema({
 });
 
 async function searchFileForKeywords(absFilePath, keywordString) {
-    const keywords = keywordString.split(/[,;\s]+/g).filter(k => k)
+    const keywords = keywordString.split(/[,;]+/g).filter(k => k).map(k => k.trim())
         .map(keyword => new RegExp(keyword, "i"));
     return await new Promise((resolve, reject) => {
-        let found = false;
+        const found = new Array(keywords.length).fill(false);
         const rl = readline.createInterface({
             input: fs.createReadStream(absFilePath),
             output: process.stdout,
             terminal: false
         });
         rl.on('line', (line) => {
-            for (const keyword of keywords) {
+            for (const i in keywords) {
+                const keyword = keywords[i];
                 if (keyword.test(line)) {
-                    found = true;
-                    rl.close();
-                    resolve(true)
+                    found[i] = true;
+                    if (found.every(t => t)) {
+                        rl.close();
+                        resolve(true);
+                        break;
+                    }
                 }
 
             }
         });
         rl.on('close', function () {
-            if (!found)
+            if (!found.every(t => t)) {
                 resolve(false);
+            }
         });
         rl.on('error', reject);
     })

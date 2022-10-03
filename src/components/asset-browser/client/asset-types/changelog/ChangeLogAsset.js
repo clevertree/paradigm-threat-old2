@@ -47,7 +47,8 @@ export default class ChangeLogAsset extends React.Component {
         const absURL = new URL(href || '', process.env.REACT_APP_ASSET_ASSET_GIT_HASH_URL)
         return <ul className="list" ref={this.ref.container}>
             {this.state.changeLog.map(entry => <li>
-                <a href={absURL + entry.hash}>{new Date(entry.date).toLocaleDateString("en-US")} - {entry.message}</a>
+                <a key={entry.hash}
+                   href={absURL + entry.hash}>{new Date(entry.date).toLocaleDateString("en-US")} - {entry.message}</a>
             </li>)}
         </ul>
     }

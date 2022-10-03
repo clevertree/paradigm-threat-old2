@@ -21,7 +21,7 @@ export default class AssetIterator {
         const fileName = pathSplit.pop();
         const directoryPath = pathSplit.join('/');
         const pointer = this.getPointer(directoryPath, false);
-        if(!pointer)
+        if (!pointer)
             return false;
         return pointer[KEY_FILES].includes(fileName);
     }
@@ -82,14 +82,17 @@ export default class AssetIterator {
             // const lcDirectoryPath = directoryPath.toLowerCase()
             for (const file of pointer[KEY_FILES]) {
                 const assetURL = resolveAssetURL(directoryPath + '/' + file);
-
-                // const lcFile = file.toLowerCase();
+                const formattedFileName = file.replace(/[_-]+/g, ' ');
+                let notFound = false;
                 for (const keyword of keywords) {
-                    if (keyword.test(directoryPath) || keyword.test(file)) {
-                        fileList.push(assetURL)
+                    if (!keyword.test(directoryPath) && !keyword.test(formattedFileName)) {
+                        notFound = true;
                         break;
                     }
                 }
+                if (notFound)
+                    continue;
+                fileList.push(assetURL)
             }
             if (pointer[KEY_DIRS]) {
                 for (const subDirectory of Object.keys(pointer[KEY_DIRS])) {
@@ -109,8 +112,9 @@ export default class AssetIterator {
             for (const file of pointer[KEY_FILES]) {
                 const assetURL = directoryPath + '/' + file;
 
-                if (typeof filter === 'function' ? filter(file) : file.includes(filter))
+                if (typeof filter === 'function' ? filter(file) : file.includes(filter)) {
                     fileList.push(assetURL)
+                }
             }
             if (pointer[KEY_DIRS]) {
                 for (const subDirectory of Object.keys(pointer[KEY_DIRS])) {
