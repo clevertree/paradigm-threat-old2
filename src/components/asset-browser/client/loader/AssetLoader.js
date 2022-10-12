@@ -29,7 +29,7 @@ async function reloadAssets() {
                     console.error(errors);
                 if (!assets)
                     throw new Error("Invalid asset data: " + assetURL);
-                console.log("Assets loaded: ", assets);
+                // console.log("Assets loaded: ", assets);
                 updateAssetsCallback(assets);
             } catch (error) {
                 const errorMsg = <>

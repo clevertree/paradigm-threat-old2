@@ -113,14 +113,13 @@ body {
 
 .theme-default article > pre > code,
 .theme-default article > p > code {
-  display: block;
-  background: #AAA;
-  padding: 1em;
-  border-radius: 4px;
+  background: #C0C0C0;
+  border-radius: 2px;
   white-space: pre-wrap;
 }
 
-.theme-default article > blockquote > p {
+.theme-default article > pre,
+.theme-default article > blockquote {
   background: #C0C0C0;
   padding: 1em;
   white-space: normal;
@@ -128,6 +127,10 @@ body {
   border-radius: 4px;
   border-left: 4px solid #AAA;
   border-right: 4px solid #AAA;
+
+  > p {
+    margin: 0;
+  }
 }
 
 
@@ -171,9 +174,9 @@ body {
   z-index: 3;
   padding-bottom: 0.2em;
 }
+
 .asset.image + .asset.image {
 }
-
 
 
 .asset.video {

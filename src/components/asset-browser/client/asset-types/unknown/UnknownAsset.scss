@@ -1,3 +1,8 @@
 .asset.unknown {
-  white-space: pre-wrap;
+  text-align: justify;
+  overflow-y: auto;
+  font-family: monospace;
+  max-height: 80vh;
+  max-width: 92vw;
+  margin-bottom: 1rem;
 }

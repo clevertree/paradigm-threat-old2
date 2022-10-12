@@ -34,7 +34,6 @@ export default class AssetBrowser extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log('AssetBrowser', props);
         this.state = {
             assets: null,
             loaded: false,
@@ -142,7 +141,6 @@ export default class AssetBrowser extends React.Component {
         if (pathname === '/search')
             keywords = [];
         let searchPagePath = this.getSearchPagePath(iterator)
-        console.log('keywords', keywords, this.props.pathname)
 
         return <article className={"search"}>
             <MarkdownAsset file={searchPagePath}/>

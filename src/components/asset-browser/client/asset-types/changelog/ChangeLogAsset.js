@@ -23,7 +23,6 @@ export default class ChangeLogAsset extends React.Component {
         this.ref = {
             container: React.createRef()
         }
-        console.log('fetch', this.fetch)
     }
 
     componentDidMount() {
@@ -46,9 +45,8 @@ export default class ChangeLogAsset extends React.Component {
         const {href} = this.props;
         const absURL = new URL(href || '', process.env.REACT_APP_ASSET_ASSET_GIT_HASH_URL)
         return <ul className="list" ref={this.ref.container}>
-            {this.state.changeLog.map(entry => <li>
-                <a key={entry.hash}
-                   href={absURL + entry.hash}>{new Date(entry.date).toLocaleDateString("en-US")} - {entry.message}</a>
+            {this.state.changeLog.map(entry => <li key={entry.hash}>
+                <a href={absURL + entry.hash}>{new Date(entry.date).toLocaleDateString("en-US")} - {entry.message}</a>
             </li>)}
         </ul>
     }
