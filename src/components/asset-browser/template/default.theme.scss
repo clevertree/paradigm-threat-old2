@@ -61,6 +61,7 @@ body {
 
   h1 {
     font-size: 1.7em;
+    clear: left;
   }
 
   h2 {
@@ -197,6 +198,15 @@ body {
   border-radius: 1em;
 }
 
+/** Within a Paragraph **/
+
+p > .asset.image,
+p > .asset.video {
+  @media only screen and (min-width: 640px) {
+    max-height: 80%;
+    max-width: 70%;
+  }
+}
 
 /** Floating Images **/
 

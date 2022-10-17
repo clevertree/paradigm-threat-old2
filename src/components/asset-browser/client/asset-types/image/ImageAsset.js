@@ -7,11 +7,13 @@ import {getMarkdownOptions} from "../markdown/markdownOptions.js";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 
 class ImageAsset extends React.Component {
+    static ASSET_CLASS = 'asset image';
     /** Property validation **/
     static propTypes = {
         src: PropTypes.string.isRequired,
         i: PropTypes.number
     };
+
 
     constructor(props) {
         super(props);
@@ -35,20 +37,12 @@ class ImageAsset extends React.Component {
     }
 
     render() {
-        // let i = this.props.i || 0;
-        let className = 'asset image';
-        if (this.props.className)
-            className += ' ' + this.props.className;
-        if (this.props['data-no-fullscreen'])
-            className += ' no-fullscreen';
-        // if(this.state.fullscreen)
-        //     className += ' fullscreen';
-        // className += [' even', ' odd'][i % 2];
-        // if(i % 4 === 0)
-        //     className += ' clear';
-        const {src, alt, title, refreshHash, ...extraProps} = this.props;
-        const altText = alt || src.split('/').pop();
-        const altTextSingleLine = altText.replace(/\n/g, " ")
+        let {src, alt, title, className, refreshHash, ...extraProps} = this.props;
+
+        alt = alt || src.split('/').pop();
+        const altSL = alt.replace(/\n/g, " ")
+        title = title || altSL;
+        className = ImageAsset.ASSET_CLASS + (className ? ' ' + className : '')
         let finalSrc = src;
         if (refreshHash && refreshHash !== this.state.originalRefreshHash)
             finalSrc += '?refreshHash=' + refreshHash;
@@ -58,8 +52,8 @@ class ImageAsset extends React.Component {
                 key="image"
                 className={className}
                 src={finalSrc}
-                alt={altText}
-                title={title || altTextSingleLine}
+                alt={alt}
+                title={title || altSL}
                 onClick={this.cb.onClick}
             />,
             this.state.fullscreen ? <div
@@ -70,11 +64,11 @@ class ImageAsset extends React.Component {
                 <img
                     {...extraProps}
                     src={finalSrc}
-                    alt={altText}
+                    alt={alt}
                 />
-                {altText ? <div className={'alt-text'}>
+                {alt ? <div className={'alt-text'}>
                     <Markdown onClick={this.cb.stopPropagation}
-                              options={this.options}>{altText.replace(/\\n/g, "\n")}</Markdown>
+                              options={this.options}>{alt.replace(/\\n/g, "\n")}</Markdown>
                     <a onClick={this.cb.stopPropagation} href={finalSrc} className="source" target="_blank"
                        rel="noreferrer">Source
                         File</a>
