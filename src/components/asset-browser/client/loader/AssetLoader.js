@@ -17,8 +17,8 @@ export default class AssetLoader extends React.Component {
 
 let assetsAsyncCall = null
 
-async function reloadAssets() {
-    if (!assetsAsyncCall)
+async function reloadAssets(force = false) {
+    if (!assetsAsyncCall || force)
         assetsAsyncCall = new Promise(async (resolve, reject) => {
             let timeout = 60 * 60 * 1000;
             const assetURL = resolveAssetURL(process.env.REACT_APP_ASSET_ENDPOINT);

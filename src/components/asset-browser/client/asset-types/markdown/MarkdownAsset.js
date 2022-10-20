@@ -6,6 +6,7 @@ import "./MarkdownAsset.scss"
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import {getMarkdownOptions} from "./markdownOptions.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
+import {useEffect} from "react";
 
 
 class MarkdownAsset extends React.Component {
@@ -14,6 +15,7 @@ class MarkdownAsset extends React.Component {
         file: PropTypes.string.isRequired,
         onLoad: PropTypes.func,
         className: PropTypes.string,
+        overrides: PropTypes.object
     };
 
     static defaultProps = {
@@ -45,12 +47,12 @@ class MarkdownAsset extends React.Component {
     }
 
     componentDidMount() {
-        // console.log("Loading content: ", this.props.file);
+        // console.log("Loading content: ", this.props.file, this.state);
         this.loadContent().then();
     }
 
     async loadContent() {
-        const {file, onLoad} = this.props;
+        const {file} = this.props;
         const response = await fetch(file);
         const content = await response.text()
         this.setState({
@@ -58,26 +60,32 @@ class MarkdownAsset extends React.Component {
             loaded: true,
             pathname: file.substring(0, file.lastIndexOf("/") + 1)
         });
-        onLoad && setTimeout(onLoad, 100);
     }
 
     render() {
-
-        const {loaded, pathname} = this.state;
+        const {loaded, pathname, content} = this.state;
+        const {overrides, onLoad} = this.props;
         if (!loaded)
             return "Loading: " + this.props.file;
-        const markdownOptions = getMarkdownOptions(pathname);
-        const options = {
-            ...markdownOptions,
-            overrides: this.props.overrides,
-        }
-        return <ErrorBoundary assetName={"Markdown"}>
-            <Markdown options={options}>
-                {this.state.content}
-            </Markdown>
-        </ErrorBoundary>
+        return <MarkdownAssetContentRenderer
+            overrides={overrides} onLoad={onLoad} pathname={pathname}>
+            {content}
+        </MarkdownAssetContentRenderer>
     }
 }
+
+const MarkdownAssetContentRenderer = ({pathname, children, overrides, onLoad}) => {
+    useEffect(() => {
+        onLoad && onLoad()
+    }, [onLoad])
+    const markdownOptions = getMarkdownOptions(pathname, overrides);
+    return <ErrorBoundary assetName={"Markdown"}>
+        <Markdown options={markdownOptions}>
+            {children}
+        </Markdown>
+    </ErrorBoundary>
+}
+
 
 export default class MarkdownAssetWrapper extends React.Component {
     render() {
@@ -90,3 +98,4 @@ export default class MarkdownAssetWrapper extends React.Component {
         </AssetBrowserContext.Consumer>;
     }
 }
+

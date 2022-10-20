@@ -10,7 +10,6 @@ import {resolveAssetURL} from "../../util/ClientUtil.js";
 import ChatRoomAsset from "../chatroom/ChatRoomAsset.js";
 import VideoAsset from "../video/VideoAsset.js";
 import HeaderListAsset from "../list/HeaderListAsset.js";
-import ErrorBoundary from "../../error/ErrorBoundary.js";
 import AssetSearch from "../../search/AssetSearch.js";
 import ChangeLogAsset from "../changelog/ChangeLogAsset.js";
 import HiddenAsset from "../hidden/HiddenAsset.js";
@@ -51,20 +50,30 @@ registerTag('assetRenderer', (tagName, {key, ...props}, children) => <div classN
     <AssetRenderer {...props}>{children}</AssetRenderer>
 </div>)
 
-export function getMarkdownOptions(pathname) {
+// TODO: asset collection in global context?
 
+export function getMarkdownOptions(pathname, overrides = null) {
     return {
         wrapper: React.Fragment,
+        overrides,
         createElement,
     }
 
     function createElement(tagName, props, children) {
         let finalProps = {...props};
+        // if (typeof tagName === 'string' && collection !== null) {
+        //     finalProps.ref = elm => {
+        //         if (elm instanceof React.Component
+        //             && collection.indexOf(elm) === -1)
+        //             collection.push(elm);
+        //     }
+        // }
         if (props.class) {
             finalProps.className = finalProps.class;
             delete finalProps.class;
         }
         if (props.src) {
+            finalProps.originalSrc = props.src;
             finalProps.src = resolveAssetURL(props.src + '', pathname);
             let found = unusedAssets.indexOf(finalProps.src);
             if (found !== -1) {
@@ -72,9 +81,7 @@ export function getMarkdownOptions(pathname) {
             }
         }
         if (customTags[tagName])
-            return <ErrorBoundary assetName={tagName} key={props.key}>
-                {customTags[tagName](tagName, finalProps, children)}
-            </ErrorBoundary>;
+            return customTags[tagName](tagName, finalProps, children)
 
         // console.log('renderTag', tagName, finalProps, children)
         return React.createElement(tagName, finalProps, children);

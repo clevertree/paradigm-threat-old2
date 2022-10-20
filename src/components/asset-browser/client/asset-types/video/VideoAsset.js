@@ -11,15 +11,15 @@ export default class VideoAsset extends React.Component {
         src: PropTypes.string.isRequired,
     };
 
-    constructor(props) {
-        super(props);
-    }
+    // constructor(props) {
+    //     super(props);
+    // }
 
     render() {
         if (this.parseYoutubeURL(this.props.src))
             return this.renderYoutube();
         // let i = this.props.i || 0;
-        let {src, alt, title, className, refreshHash, ...extraProps} = this.props;
+        let {src, alt, title, className, refreshHash, originalSrc, ...extraProps} = this.props;
         alt = alt || src.split('/').pop();
         const altSL = alt.replace(/\n/g, " ")
         title = title || altSL;
@@ -33,7 +33,7 @@ export default class VideoAsset extends React.Component {
     }
 
     renderYoutube() {
-        let {src, alt, title, className, refreshHash, ...extraProps} = this.props;
+        let {src, alt, title, className, refreshHash, originalSrc, ...extraProps} = this.props;
         src = 'https://www.youtube.com/embed/' + this.parseYoutubeURL(src);
         title = title || 'Youtube';
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')

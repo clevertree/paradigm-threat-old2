@@ -18,3 +18,25 @@ export function resolveAssetURL(pathToAsset, relativePath) {
         pathToAsset = pathJoin(relativePath, pathToAsset);
     return new URL(pathToAsset, base) + '';
 }
+
+export function scrollIntoViewPersistent(elm) {
+    elm.scrollIntoView({block: "start", behavior: 'auto'})
+    let intervalCount = 0;
+    const intervalID = setInterval(() => {
+
+        var top = elm.offsetTop;
+        var height = elm.offsetHeight;
+
+        const inView = (
+            top < (window.pageYOffset + window.innerHeight) &&
+            (top + height) > window.pageYOffset
+        );
+        intervalCount++;
+        if (inView || intervalCount > 5) {
+            clearInterval(intervalID);
+        } else {
+            elm.scrollIntoView({block: "start", behavior: 'smooth'})
+        }
+
+    }, 1000)
+}

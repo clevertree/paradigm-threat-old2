@@ -7,7 +7,7 @@ import AssetBrowserContext from "./context/AssetBrowserContext.js";
 import AssetRefresher from "./loader/AssetRefresher.js";
 import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
 import {setUnusedAssets} from "./asset-types/markdown/markdownOptions.js";
-import {pathJoin, resolveAssetURL} from "./util/ClientUtil.js";
+import {pathJoin, resolveAssetURL, scrollIntoViewPersistent} from "./util/ClientUtil.js";
 import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, FILE_SEARCH_PAGE, PATH_SITE} from "../constants.js";
 
 import StyleSheetAsset from "./asset-types/link/StyleSheetAsset.js";
@@ -20,6 +20,7 @@ import "../template/default.theme.scss";
 // Default Templates
 import DefaultTemplate from "../template/default.template.md";
 import DefaultSearchPage from "../template/search.page.md";
+import AssetFullScreenView from "./asset-viewer/AssetFullScreenView.js";
 
 export default class AssetBrowser extends React.Component {
     /** Property validation **/
@@ -35,14 +36,38 @@ export default class AssetBrowser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            assets: null,
-            loaded: false,
-            refreshHash: null,
+            assets: null, loaded: false, refreshHash: null,
+            assetContentFullScreen: null
         }
         this.overrides = {
             templateContent: (props) => this.renderChildren(props),
         }
-        this.protected = {
+        this.renderedAssets = [];
+        this.cb = {
+            onPopState: (e) => {
+                this.setState({assetContentFullScreen: null});
+            },
+            /** @deprecated **/
+            addRenderedAsset: (assetInstance) => {
+                if (assetInstance instanceof React.Component
+                    && this.renderedAssets.indexOf(assetInstance) === -1)
+                    this.renderedAssets.push(assetInstance);
+            },
+            showFullScreenAsset: (assetContent, src, alt) => {
+                this.setState({assetContentFullScreen: {children: assetContent, src, alt}});
+                if (window.history.state?.viewAsset !== src) {
+                    window.history.pushState({viewAsset: src}, '', '?viewAsset=' + src);
+                }
+            },
+            closeFullScreen: (e) => {
+                this.setState({assetContentFullScreen: null});
+                if (window.history?.state?.viewAsset) {
+                    window.history.back();
+                } else {
+                    window.history.pushState({}, '', '#');
+                }
+            },
+            stopPropagation: e => e.stopPropagation(),
             updateAssets: (assets, error) => {
                 this.setState({assets, error, loaded: true});
             },
@@ -51,15 +76,35 @@ export default class AssetBrowser extends React.Component {
                     this.setState({refreshHash})
                     AssetLoader.reloadAssets();
                 }
+            },
+            onMarkdownLoad: () => {
+                this.cb.onHashChange();
+            },
+            onHashChange: () => {
+                const {hash} = document.location;
+                if (hash) {
+                    if (hash.startsWith('#viewAsset=')) {
+                    } else {
+                        const idString = hash.substring(1);
+                        const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
+
+                        if (headerElm) {
+                            headerElm.classList.add('highlighted');
+                            scrollIntoViewPersistent(headerElm);
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
 
     componentDidMount() {
         if (!this.state.loaded && !this.state.refreshHash)
-            AssetLoader.reloadAssets();
-        // this.loadContent().then();
+            AssetLoader.reloadAssets(true);
+        window.addEventListener('popstate', this.cb.onPopState)
     }
+
 
     // async loadContent(force = false) {
     //     try {
@@ -74,33 +119,32 @@ export default class AssetBrowser extends React.Component {
 
     render() {
         return <AssetBrowserContext.Provider value={{
-            ...this.protected,
-            ...this.props,
-            ...this.state,
-            getIterator: () => new AssetIterator(this.state.assets)
+            ...this.cb, ...this.props, ...this.state,
+            getIterator: () => new AssetIterator(this.state.assets),
+            showFullScreenAsset: this.cb.showFullScreenAsset,
+            addRenderedAsset: this.cb.addRenderedAsset
         }}>
             {this.renderContent()}
         </AssetBrowserContext.Provider>;
     }
 
+
     renderContent() {
-        const {assets, loaded, error} = this.state;
-        if (error)
-            return error.stack || error || '';
-        if (!loaded)
-            return <>
-                <AssetLoader/>
-                Loading...
-            </>
+        const {assets, loaded, error, assetContentFullScreen} = this.state;
+        if (error) return error.stack || error || '';
+        if (!loaded) return <>
+            <AssetLoader/>
+            Loading...
+        </>
         const iterator = new AssetIterator(assets);
         let templatePath = this.getTemplatePath(this.props.pathname, iterator)
         let themePath = this.getSiteThemePath(iterator)
 
         return <>
             {themePath ? <StyleSheetAsset href={themePath}/> : null}
+            {assetContentFullScreen ? this.renderFullScreenAsset() : null}
             <AssetRefresher/>
             <MarkdownAsset
-                onLoad={runOnceScrollToHashID}
                 wrapper={React.Fragment}
                 overrides={this.overrides}
                 file={templatePath}/>
@@ -111,15 +155,12 @@ export default class AssetBrowser extends React.Component {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
         const {pathname} = this.props;
-        if (iterator.fileExists(pathname))
-            return this.renderIndexPage(resolveAssetURL(pathname));
-        if (!iterator.pathExists(pathname))
-            return this.renderSearchPage(pathname);
+        if (iterator.fileExists(pathname)) return this.renderIndexPage(resolveAssetURL(pathname));
+        if (!iterator.pathExists(pathname)) return this.renderSearchPage(pathname);
         try {
             const fileList = iterator.listFiles(pathname);
             const indexMDPath = fileList.find(filePath => filePath.endsWith('index.md'))
-            if (indexMDPath)
-                return this.renderIndexPage(indexMDPath, fileList)
+            if (indexMDPath) return this.renderIndexPage(indexMDPath, fileList)
             return this.renderDirectoryPage(fileList)
         } catch (e) {
             return this.renderErrorPage(e);
@@ -130,7 +171,10 @@ export default class AssetBrowser extends React.Component {
         const filteredFileList = fileList.filter(file => !file.endsWith('index.md'))
         setUnusedAssets(filteredFileList);
         return <article className={"index"}>
-            <MarkdownAsset file={indexMDPath}/>
+            <MarkdownAsset
+                file={indexMDPath}
+                onLoad={this.cb.onMarkdownLoad}
+            />
         </article>;
     }
 
@@ -138,12 +182,11 @@ export default class AssetBrowser extends React.Component {
         const {assets} = this.state;
         const iterator = new AssetIterator(assets);
         let keywords = pathname.split(/[/?#]/g).filter(k => k).map(k => k.replace(/%20/g, ' ').trim());
-        if (pathname === '/search')
-            keywords = [];
+        if (pathname === '/search') keywords = [];
         let searchPagePath = this.getSearchPagePath(iterator)
 
         return <article className={"search"}>
-            <MarkdownAsset file={searchPagePath}/>
+            <MarkdownAsset file={searchPagePath} onLoad={this.cb.onMarkdownLoad}/>
             <ErrorBoundary assetName={"Search"}>
                 <AssetSearch iterator={iterator} keywords={keywords}/>
             </ErrorBoundary>
@@ -164,51 +207,35 @@ export default class AssetBrowser extends React.Component {
         </article>;
     }
 
+    renderFullScreenAsset() {
+        const {assetContentFullScreen} = this.state;
+        return <AssetFullScreenView
+            onClose={this.cb.closeFullScreen}
+            {...assetContentFullScreen}
+        />
+    }
+
 
     // Known paths
 
     getTemplatePath(pathname, iterator) {
-        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE))
-            || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
-        if (templatePath)
-            return resolveAssetURL(templatePath);
+        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE)) || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
+        if (templatePath) return resolveAssetURL(templatePath);
         return DefaultTemplate;
     }
 
     getSiteThemePath(iterator) {
         let scssPath = iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
-        if (scssPath)
-            return resolveAssetURL(scssPath)
+        if (scssPath) return resolveAssetURL(scssPath)
         return null;
     }
 
     getSearchPagePath(iterator) {
         let searchPage = iterator.tryFile(pathJoin(PATH_SITE, FILE_SEARCH_PAGE));
-        if (searchPage)
-            return resolveAssetURL(searchPage);
+        if (searchPage) return resolveAssetURL(searchPage);
         return DefaultSearchPage;
     }
 
 }
 
-let scrollToHashTimeout = null;
-
-function runOnceScrollToHashID() {
-    scrollToHashTimeout = scrollToHashTimeout || setTimeout(() => {
-        const {hash} = document.location;
-        if (hash) {
-            const idString = hash.substring(1);
-            const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
-
-            // console.log('hash', hash, headerElm);
-            if (headerElm) {
-                headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
-                headerElm.classList.add('highlighted')
-                setTimeout(() => {
-                    headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
-                }, 500)
-            }
-        }
-    }, 500)
-}
 
