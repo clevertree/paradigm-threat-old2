@@ -19,7 +19,8 @@ export default class StyleSheetAsset extends React.Component {
         // linkTag.setAttribute('rel', 'stylesheet')
         // document.head.append(linkTag);
         return <AssetBrowserContext.Consumer>
-            {({refreshHash}) => {
+            {(assetBrowser) => {
+                const refreshHash = assetBrowser.getRefreshHash();
                 return <link rel='stylesheet' href={href + '?' + refreshHash} data-refresh={refreshHash}/>;
             }}
         </AssetBrowserContext.Consumer>;

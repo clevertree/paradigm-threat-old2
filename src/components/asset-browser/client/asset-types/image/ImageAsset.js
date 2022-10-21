@@ -28,61 +28,60 @@ class ImageAsset extends React.Component {
             forceWrapper: true,
             overrides: props.overrides,
         }
+        this.ref = {
+            img: React.createRef()
+        }
         this.cb = {
             onClick: e => {
-                this.renderFullScreenAsset();
+                if (!this.props['data-no-fullscreen']) {
+                    this.openInFullScreen();
+                }
             },
-            onPopState: e => {
-                this.checkForFullScreenHash();
-            }
+            // onPopState: e => {
+            //     this.checkForFullScreenHash();
+            // }
         }
     }
 
+
     componentDidMount() {
-        window.addEventListener('popstate', this.cb.onPopState);
-        this.checkForFullScreenHash();
+        let {assetBrowser} = this.props;
+        assetBrowser.addRenderedAsset(this);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('popstate', this.cb.onPopState);
+        let {assetBrowser} = this.props;
+        assetBrowser.removeRenderedAsset(this);
     }
 
-    checkForFullScreenHash() {
+    checkForFullScreenHash(matchSrc) {
         const {src, originalSrc} = this.props;
-        const {searchParams} = (new URL(document.location));
-        const viewAsset = searchParams.get('viewAsset');
-        if (viewAsset) {
-            if (src === viewAsset || originalSrc === viewAsset) {
-                console.log(src);
-                this.renderFullScreenAsset();
-            }
+        if (src === matchSrc || originalSrc === matchSrc) {
+            this.openInFullScreen();
+            return true;
         }
-
-        // const assetSrc = window.history?.state?.viewAssetFullscreen;
-        // if (search.startsWith('?viewAsset=')) {
-        // }
-
+        return false;
     }
 
-    renderFullScreenAsset() {
-        let {title, src, originalSrc, assetBrowser, alt} = this.props;
-        const shortSrc = originalSrc || src;
+    openInFullScreen() {
+        let {title, src, assetBrowser, alt} = this.props;
         alt = alt || src.split('/').pop();
         const altSL = alt.replace(/\n/g, " ")
         title = title || altSL;
         const fullscreenContent = <img
-            key="fullscreen-image"
+            key={src}
             className="fullscreen-image"
             src={src}
             alt={alt}
             title={title || altSL}
         />
-        assetBrowser.showFullScreenAsset(fullscreenContent, shortSrc, alt);
+        assetBrowser.showFullScreenAsset(this, fullscreenContent, src, alt);
+        this.ref.img.current.scrollIntoView({block: "start", behavior: 'smooth'})
     }
 
     render() {
         let {src, alt, title, className, assetBrowser, originalSrc, ...extraProps} = this.props;
-        const {refreshHash} = assetBrowser;
+        const refreshHash = assetBrowser.getRefreshHash();
 
         alt = alt || src.split('/').pop();
         const altSL = alt.replace(/\n/g, " ")
@@ -99,6 +98,7 @@ class ImageAsset extends React.Component {
             alt={alt}
             title={title || altSL}
             onClick={this.cb.onClick}
+            ref={this.ref.img}
         />
 
     }

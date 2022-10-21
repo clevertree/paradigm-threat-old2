@@ -84,30 +84,19 @@ body {
     font-size: 1.0em;
   }
 
-  > h1, > h2, > h3, > h4, > h5, > h6, > ul, > ol, > blockquote, > pre {
+  > p, > h1, > h2, > h3, > h4, > h5, > h6, > ul, > ol, > blockquote, > pre {
     max-width: 1160px;
     margin: 0.7em auto 0.7em auto;
+    @media only screen and (min-width: 1400px) {
+      max-width: 70vw;
+    }
   }
 
-  > p {
-    max-width: 1200px;
-    margin: 0.5em auto;
-  }
-
-  //@media only screen and (min-width: 1800px) {
-  //  > h1, > h2, > h3, > h4, > h5, > h6, > ul, > ol, > blockquote, > pre {
-  //    max-width: 1000px;
-  //  }
-  //
-  //  > p {
-  //    max-width: 1200px;
-  //  }
-  //}
 }
 
 @media only screen and (min-width: 1800px) {
   .theme-default article {
-    width: 1600px;
+    //width: 1600px;
   }
 
 }
@@ -176,9 +165,6 @@ body {
   padding-bottom: 0.2em;
 }
 
-.asset.image + .asset.image {
-}
-
 
 .asset.video {
   //min-width: 42vw;
@@ -231,36 +217,38 @@ p > .asset.video {
   {
     max-width: 32vw;
     max-height: 32vw;
-    margin: 0 0.5em 0em 0.5em;
+    margin: 0 0.5em 0 0.5em;
+
+    @media only screen and (min-width: 1200px) {
+      max-width: 24vw;
+      max-height: 24vw;
+    }
+
+
+    @media only screen and (min-width: 1800px) {
+      max-width: 32em;
+      max-height: 28em;
+    }
   }
 
   .asset.float-left {
     float: left;
     clear: left;
     margin-left: 0;
+
+    + .asset.float-left {
+      margin-bottom: 0.2em;
+    }
+
   }
   .asset.float-right {
     float: right;
     clear: right;
     margin-right: 0;
+
+    + .asset.float-right {
+      margin-bottom: 0.2em;
+    }
   }
 }
 
-
-@media only screen and (min-width: 1200px) {
-  .asset.float-left,
-  .asset.float-right {
-    max-width: 24vw;
-    max-height: 24vw;
-  }
-}
-
-
-@media only screen and (min-width: 1800px) {
-  .asset.float-left,
-  .asset.float-right,
-  {
-    max-width: 32em;
-    max-height: 20em;
-  }
-}

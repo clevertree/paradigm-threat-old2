@@ -90,7 +90,8 @@ const MarkdownAssetContentRenderer = ({pathname, children, overrides, onLoad}) =
 export default class MarkdownAssetWrapper extends React.Component {
     render() {
         return <AssetBrowserContext.Consumer>
-            {({refreshHash}) => {
+            {(assetBrowser) => {
+                const refreshHash = assetBrowser.getRefreshHash();
                 return <MarkdownAsset {...this.props} refreshHash={refreshHash}>
                     {this.props.children}
                 </MarkdownAsset>;

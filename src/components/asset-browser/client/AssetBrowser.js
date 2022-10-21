@@ -36,7 +36,9 @@ export default class AssetBrowser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            assets: null, loaded: false, refreshHash: null,
+            assets: null,
+            loaded: false,
+            refreshHash: null,
             assetContentFullScreen: null
         }
         this.overrides = {
@@ -44,58 +46,23 @@ export default class AssetBrowser extends React.Component {
         }
         this.renderedAssets = [];
         this.cb = {
-            onPopState: (e) => {
-                this.setState({assetContentFullScreen: null});
-            },
-            /** @deprecated **/
-            addRenderedAsset: (assetInstance) => {
-                if (assetInstance instanceof React.Component
-                    && this.renderedAssets.indexOf(assetInstance) === -1)
-                    this.renderedAssets.push(assetInstance);
-            },
-            showFullScreenAsset: (assetContent, src, alt) => {
-                this.setState({assetContentFullScreen: {children: assetContent, src, alt}});
-                if (window.history.state?.viewAsset !== src) {
-                    window.history.pushState({viewAsset: src}, '', '?viewAsset=' + src);
-                }
-            },
-            closeFullScreen: (e) => {
-                this.setState({assetContentFullScreen: null});
-                if (window.history?.state?.viewAsset) {
-                    window.history.back();
-                } else {
-                    window.history.pushState({}, '', '#');
-                }
-            },
-            stopPropagation: e => e.stopPropagation(),
-            updateAssets: (assets, error) => {
-                this.setState({assets, error, loaded: true});
-            },
-            updateRefreshHash: (refreshHash) => {
-                if (refreshHash !== this.state.refreshHash) {
-                    this.setState({refreshHash})
-                    AssetLoader.reloadAssets();
-                }
-            },
-            onMarkdownLoad: () => {
-                this.cb.onHashChange();
-            },
-            onHashChange: () => {
-                const {hash} = document.location;
-                if (hash) {
-                    if (hash.startsWith('#viewAsset=')) {
-                    } else {
-                        const idString = hash.substring(1);
-                        const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
+            onPopState: () => {
+                const {searchParams} = (new URL(document.location));
+                const viewAsset = searchParams.get('viewAsset');
 
-                        if (headerElm) {
-                            headerElm.classList.add('highlighted');
-                            scrollIntoViewPersistent(headerElm);
-                            return;
-                        }
+                for (const asset of this.renderedAssets) {
+                    if (asset.checkForFullScreenHash(viewAsset)) {
+                        return;
                     }
                 }
-            }
+                this.setState({assetContentFullScreen: null});
+            },
+            // closeFullScreen: e => this.closeFullScreen(),
+            stopPropagation: e => e.stopPropagation(),
+            onMarkdownLoad: () => {
+                this.cb.onPopState()
+                this.checkForHashScrollPosition();
+            },
         }
     }
 
@@ -105,32 +72,61 @@ export default class AssetBrowser extends React.Component {
         window.addEventListener('popstate', this.cb.onPopState)
     }
 
+    getRefreshHash() {
+        return this.state.refreshHash;
+    }
 
-    // async loadContent(force = false) {
-    //     try {
-    //         const assets = await new AssetLoader().loadAssets(force)
-    //         this.setState({assets, loaded: true});
-    //         console.log("Assets loaded: ", assets);
-    // } catch (error) {
-    //     console.error('Error fetching assets: ', error);
-    //     this.setState({loaded: true, error});
-    // }
-    // }
+    getPath() {
+        return this.props.pathname;
+    }
+
+    isLoaded() {
+        return this.state.loaded;
+    }
+
+    getIterator() {
+        return new AssetIterator(this.state.assets)
+    }
+
+    removeRenderedAsset(assetInstance) {
+        const i = this.renderedAssets.indexOf(assetInstance);
+        if (i !== -1) {
+            this.renderedAssets.splice(i, 1);
+        }
+    }
+
+    addRenderedAsset(assetInstance) {
+        if (this.renderedAssets.indexOf(assetInstance) === -1) {
+            this.renderedAssets.push(assetInstance);
+        }
+    }
+
+    getRenderedAssets() {
+        return this.renderedAssets;
+    }
+
+    checkForHashScrollPosition() {
+        const {hash} = document.location;
+        if (hash) {
+            const idString = hash.substring(1);
+            const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
+
+            if (headerElm) {
+                headerElm.classList.add('highlighted');
+                scrollIntoViewPersistent(headerElm);
+            }
+        }
+    }
 
     render() {
-        return <AssetBrowserContext.Provider value={{
-            ...this.cb, ...this.props, ...this.state,
-            getIterator: () => new AssetIterator(this.state.assets),
-            showFullScreenAsset: this.cb.showFullScreenAsset,
-            addRenderedAsset: this.cb.addRenderedAsset
-        }}>
+        return <AssetBrowserContext.Provider value={this}>
             {this.renderContent()}
         </AssetBrowserContext.Provider>;
     }
 
 
     renderContent() {
-        const {assets, loaded, error, assetContentFullScreen} = this.state;
+        const {assets, loaded, error} = this.state;
         if (error) return error.stack || error || '';
         if (!loaded) return <>
             <AssetLoader/>
@@ -142,7 +138,7 @@ export default class AssetBrowser extends React.Component {
 
         return <>
             {themePath ? <StyleSheetAsset href={themePath}/> : null}
-            {assetContentFullScreen ? this.renderFullScreenAsset() : null}
+            {this.renderFullScreenAsset()}
             <AssetRefresher/>
             <MarkdownAsset
                 wrapper={React.Fragment}
@@ -208,13 +204,50 @@ export default class AssetBrowser extends React.Component {
     }
 
     renderFullScreenAsset() {
-        const {assetContentFullScreen} = this.state;
+        if (!this.state.assetContentFullScreen)
+            return null;
+        const {src, alt, children, assetInstance} = this.state.assetContentFullScreen;
+        if (!children) {
+            throw new Error("WTF")
+        }
         return <AssetFullScreenView
-            onClose={this.cb.closeFullScreen}
-            {...assetContentFullScreen}
+            src={src}
+            alt={alt}
+            children={children}
+            assetBrowser={this}
+            assetInstance={assetInstance}
         />
     }
 
+    updateAssets(assets, error) {
+        this.setState({assets, error, loaded: true});
+    }
+
+    updateRefreshHash(refreshHash) {
+        if (refreshHash !== this.state.refreshHash) {
+            this.setState({refreshHash})
+            AssetLoader.reloadAssets();
+        }
+    }
+
+    showFullScreenAsset(assetInstance, assetContent, src, alt) {
+        this.setState({assetContentFullScreen: {children: assetContent, assetInstance, src, alt}});
+        let {viewAsset, viewCount} = window.history.state || {};
+        if (viewAsset !== src) {
+            window.history.pushState({viewAsset: src, viewCount: (viewCount || 0) + 1}, '', '?viewAsset=' + src);
+        }
+    }
+
+    closeFullScreen() {
+        if (!this.state.assetContentFullScreen)
+            throw new Error("Fulls screen is already closed")
+        this.setState({assetContentFullScreen: null});
+        // if (window.history?.state?.viewAsset) {
+        //     window.history.back();
+        // } else {
+        window.history.pushState({}, '', '?');
+        // }
+    }
 
     // Known paths
 

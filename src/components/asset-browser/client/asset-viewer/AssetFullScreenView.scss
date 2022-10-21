@@ -13,32 +13,40 @@ div.asset-image-fullscreen {
   cursor: pointer;
 
   display: flex;
-  /*flex-direction: column;*/
-  flex-wrap: wrap;
-  align-content: center;
-  /*justify-content: center;*/
-  /*justify-items: center;*/
+  flex-direction: column;
+  justify-content: center;
   z-index: 11;
 
   animation: fadeIn 0.3s;
 
+
+  @media (min-aspect-ratio: 5/3) {
+    flex-direction: row;
+  }
+
   > img {
-    max-width: 90vw;
-    max-height: 90vh;
+    width: 90vw;
+    max-height: 60vh;
     object-fit: contain;
-    flex-grow: 1;
     /*background-color: #000;*/
+
+    @media (min-aspect-ratio: 5/3) {
+      max-height: 90vh;
+      width: 60vw;
+    }
   }
 
   > .alt-text {
     position: relative;
-    max-width: 90vw;
+    //max-height: 30vh;
     //background: #000;
     color: white;
     //flex: 1 1;
-    margin-left: 0.5em;
+    margin-left: 1vw;
+    margin-top: 2vh;
 
     > * {
+      margin-top: 0;
       cursor: default;
     }
 
@@ -47,21 +55,57 @@ div.asset-image-fullscreen {
       font-size: smaller;
     }
 
+    > a {
+      display: block;
+    }
+
+    > p {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      text-indent: 12px;
+      text-align: justify;
+    }
+
   }
 
-  > .close {
+  > .next, > .previous, > .close {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: xx-large;
     color: indianred;
     position: absolute;
     right: 0;
     top: 0;
-    padding: 6px 12px;
+    padding: 6px 6px;
+    width: 32px;
+    height: 32px;
     border-radius: 4px;
     cursor: pointer;
 
     &:hover {
       background-color: indianred;
       color: red;
+    }
+  }
+
+  > .next {
+    top: 50vh
+  }
+
+  > .previous {
+    left: 0;
+    top: 50vh
+  }
+
+  &.animation-left {
+    > img {
+      animation: fadeInLeft 0.3s;
+    }
+  }
+
+  &.animation-right {
+    > img {
+      animation: fadeInRight 0.3s;
     }
   }
 
@@ -76,3 +120,27 @@ div.asset-image-fullscreen {
     opacity: 1;
   }
 }
+
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) rotate(-10deg)
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0%) rotate(0)
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%) rotate(-10deg)
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0%) rotate(0)
+  }
+}
+

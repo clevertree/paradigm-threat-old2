@@ -6,8 +6,8 @@ let updateAssetsCallback = null
 export default class AssetLoader extends React.Component {
     render() {
         return (
-            <AssetBrowserContext.Consumer>{({updateAssets, loaded}) => {
-                updateAssetsCallback = updateAssets;
+            <AssetBrowserContext.Consumer>{(assetBrowser) => {
+                updateAssetsCallback = (assets, error) => assetBrowser.updateAssets(assets, error);
                 reloadAssets();
             }}
             </AssetBrowserContext.Consumer>

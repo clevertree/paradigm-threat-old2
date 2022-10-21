@@ -61,13 +61,13 @@ export default class NavAsset extends React.Component {
         if (this.state.floating)
             className += ' floating';
         return <AssetBrowserContext.Consumer>
-            {({getIterator, pathname, loaded}) => <nav
+            {(assetBrowser) => <nav
                 ref={this.ref.nav}
                 className={className}>
                 <div className="nav-container"
                      ref={this.ref.container}
                 >
-                    {this.renderLinks(pathname, getIterator(), loaded)}
+                    {this.renderLinks(assetBrowser.getPath(), assetBrowser.getIterator(), assetBrowser.isLoaded())}
                 </div>
                 {this.state.floating ? <div
                     className="bottom-text"
