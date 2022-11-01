@@ -46,10 +46,10 @@ export default class AssetFullScreenView extends React.Component {
                     default:
                         break;
                     case 'ArrowRight':
-                        this.renderPreviousAsset()
+                        this.renderNextAsset()
                         break;
                     case 'ArrowLeft':
-                        this.renderNextAsset()
+                        this.renderPreviousAsset()
                         break;
 
                 }

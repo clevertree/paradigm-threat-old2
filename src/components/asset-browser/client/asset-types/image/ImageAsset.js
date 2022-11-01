@@ -3,13 +3,17 @@ import PropTypes from "prop-types";
 
 import {getMarkdownOptions} from "../markdown/markdownOptions.js";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
+import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 
 class ImageAsset extends React.Component {
     static ASSET_CLASS = 'asset image';
     /** Property validation **/
     static propTypes = {
-        src: PropTypes.string.isRequired,
+        src: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.bool
+        ]).isRequired,
         assetBrowser: PropTypes.object.isRequired
         // i: PropTypes.number
     };
@@ -19,7 +23,8 @@ class ImageAsset extends React.Component {
         super(props);
 
         this.state = {
-            originalRefreshHash: this.props.assetBrowser.refreshHash
+            originalRefreshHash: this.props.assetBrowser.refreshHash,
+            altContent: null
         }
         const markdownOptions = getMarkdownOptions();
         this.options = {
@@ -47,6 +52,7 @@ class ImageAsset extends React.Component {
     componentDidMount() {
         let {assetBrowser} = this.props;
         assetBrowser.addRenderedAsset(this);
+        this.loadAltSource().then();
     }
 
     componentWillUnmount() {
@@ -64,28 +70,34 @@ class ImageAsset extends React.Component {
     }
 
     openInFullScreen() {
-        let {title, src, assetBrowser, alt} = this.props;
-        alt = alt || src.split('/').pop();
-        const altSL = alt.replace(/\n/g, " ")
-        title = title || altSL;
+        let {title, src, assetBrowser} = this.props;
+        const altContent = this.getAltContent();
         const fullscreenContent = <img
             key={src}
             className="fullscreen-image"
             src={src}
-            alt={alt}
-            title={title || altSL}
+            alt={altContent}
+            title={title || altContent}
         />
-        assetBrowser.showFullScreenAsset(this, fullscreenContent, src, alt);
+        assetBrowser.showFullScreenAsset(this, fullscreenContent, src, altContent);
         this.ref.img.current.scrollIntoView({block: "start", behavior: 'smooth'})
+    }
+
+    getAltContent() {
+        const {altContent} = this.state;
+        if (typeof altContent === "string")
+            return altContent;
+        let {alt, src} = this.props;
+        if (typeof alt !== "string" || !alt)
+            return src.split('/').pop();
+        return alt;
     }
 
     render() {
         let {src, alt, title, className, assetBrowser, originalSrc, ...extraProps} = this.props;
         const refreshHash = assetBrowser.getRefreshHash();
 
-        alt = alt || src.split('/').pop();
-        const altSL = alt.replace(/\n/g, " ")
-        title = title || altSL;
+        const altContent = this.getAltContent();
         className = ImageAsset.ASSET_CLASS + (className ? ' ' + className : '')
         let finalSrc = src;
         if (refreshHash && refreshHash !== this.state.originalRefreshHash)
@@ -95,25 +107,41 @@ class ImageAsset extends React.Component {
             key="image"
             className={className}
             src={finalSrc}
-            alt={alt}
-            title={title || altSL}
+            alt={altContent}
+            title={title || altContent.replace(/\n/g, " ")}
             onClick={this.cb.onClick}
             ref={this.ref.img}
         />
 
     }
 
+    async loadAltSource() {
+        let {src, alt} = this.props;
+        const {altContent} = this.state;
+        if (!altContent && alt === true) {
+            let pos = src.lastIndexOf(".");
+            const altSrc = src.substring(0, pos < 0 ? src.length : pos) + ".md";
+            const promise = new Promise(async (resolve, reject) => {
+                const response = await fetch(altSrc);
+                const altContent = await response.text()
+                this.setState({altContent})
+            })
+            this.setState({altContent: promise})
+        }
+    }
 }
 
 
 export default class ImageAssetWrapper extends React.Component {
     render() {
-        return <AssetBrowserContext.Consumer>
-            {(assetBrowser) => {
-                return <ImageAsset {...this.props} assetBrowser={assetBrowser}>
-                    {this.props.children}
-                </ImageAsset>;
-            }}
-        </AssetBrowserContext.Consumer>;
+        return <ErrorBoundary>
+            <AssetBrowserContext.Consumer>
+                {(assetBrowser) => {
+                    return <ImageAsset {...this.props} assetBrowser={assetBrowser}>
+                        {this.props.children}
+                    </ImageAsset>;
+                }}
+            </AssetBrowserContext.Consumer>
+        </ErrorBoundary>;
     }
 }

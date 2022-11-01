@@ -38,7 +38,7 @@ export default class HeaderListAsset extends React.Component {
         const articleElm = current.closest('article, section, body');
         const list = articleElm.querySelectorAll('h1, h2, h3, h4, h5, h6');
         let root = {content: 'root', children: []}, lastByLevel = [root];
-        [].forEach.call(list, function (headerElm) {
+        [].forEach.call(list, (headerElm) => {
             if (headerElm.classList.contains('no-index'))
                 return;
             const {nodeName, id, textContent} = headerElm;
@@ -57,7 +57,9 @@ export default class HeaderListAsset extends React.Component {
                     break;
             }
 
-            target.children.push(liProps)
+            target.children.push(liProps);
+            headerElm.classList.add('header-target');
+            headerElm.onclick = e => this.onClick(e, id);
         });
         current.reactContainer = current.reactContainer || ReactDOM.createRoot(current);
         const render = root.children.map((child, i) => this.renderHeaderChild(child, i));
@@ -81,10 +83,11 @@ export default class HeaderListAsset extends React.Component {
         const {current} = this.ref.container;
         const articleElm = current.closest('article, section, body');
         const hash = '#' + id;
-        const headerElm = articleElm.querySelector(hash);
+        const headerElm = articleElm.querySelector(`*[id='${id}']`);
         e.preventDefault();
         window.history.pushState({}, '', hash);
         headerElm.scrollIntoView({block: "start", behavior: 'smooth'})
         headerElm.classList.add('highlighted')
+        setTimeout(() => headerElm.classList.remove('highlighted'), 4000);
     }
 }

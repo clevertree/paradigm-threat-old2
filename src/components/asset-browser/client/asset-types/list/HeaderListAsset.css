@@ -5,8 +5,18 @@ h4.highlighted,
 h5.highlighted,
 h6.highlighted {
     font-weight: bold;
-    animation: scaleWobble alternate-reverse 3s;
+    animation: scaleWobble alternate-reverse ease-in-out 3s;
 }
+
+h1.header-target,
+h2.header-target,
+h3.header-target,
+h4.header-target,
+h5.header-target,
+h6.header-target {
+    cursor: pointer;
+}
+
 
 @keyframes scaleWobble {
     0% {
@@ -14,12 +24,20 @@ h6.highlighted {
         text-shadow: white;
         letter-spacing: normal;
     }
-    100% {
+    50% {
         color: #327679;
-        text-shadow: 2px 2px 5px #73b0ff;
-        letter-spacing: 2px;
+        text-shadow: 5px 0 5px #FFF, -5px 0 5px #FFF;
+    }
+    70% {
+        color: #327679;
+        text-shadow: 25px 5px 5px #73b0ff, -25px -5px 5px #73b0ff;
+    }
+    0% {
+        color: #000;
+        text-shadow: white;
+        letter-spacing: normal;
     }
 }
 
-.asset.header-list {
+.asset.header {
 }
