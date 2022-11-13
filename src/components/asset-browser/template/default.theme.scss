@@ -41,6 +41,7 @@ body {
 
 .theme-default > section {
   padding: 0 2vw;
+  max-width: 1600px;
 }
 
 /** Article **/
@@ -88,7 +89,8 @@ body {
     max-width: 1160px;
     margin: 0.7em auto 0.7em auto;
     @media only screen and (min-width: 1400px) {
-      max-width: 70vw;
+      max-width: 1360px;
+      //max-width: 70vw;
     }
   }
 
