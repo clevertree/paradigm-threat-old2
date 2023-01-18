@@ -5,7 +5,7 @@ h4.highlighted,
 h5.highlighted,
 h6.highlighted {
     font-weight: bold;
-    animation: scaleWobble alternate-reverse ease-in-out 3s;
+    animation: scaleWobble ease-out 2s;
 }
 
 h1.header-target,
@@ -24,15 +24,14 @@ h6.header-target {
         text-shadow: white;
         letter-spacing: normal;
     }
-    50% {
+    30% {
         color: #327679;
         text-shadow: 5px 0 5px #FFF, -5px 0 5px #FFF;
     }
     70% {
         color: #327679;
-        text-shadow: 25px 5px 5px #73b0ff, -25px -5px 5px #73b0ff;
     }
-    0% {
+    100% {
         color: #000;
         text-shadow: white;
         letter-spacing: normal;

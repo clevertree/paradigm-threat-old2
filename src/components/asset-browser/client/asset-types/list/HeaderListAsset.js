@@ -59,7 +59,7 @@ export default class HeaderListAsset extends React.Component {
 
             target.children.push(liProps);
             headerElm.classList.add('header-target');
-            headerElm.onclick = e => this.onClick(e, id);
+            headerElm.ondblclick = e => this.onClick(e, id);
         });
         current.reactContainer = current.reactContainer || ReactDOM.createRoot(current);
         const render = root.children.map((child, i) => this.renderHeaderChild(child, i));
