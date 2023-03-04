@@ -147,18 +147,21 @@ function stripMarkup(markdownContent) {
     function strip(contentList) {
         let string = '';
         for (const content of contentList) {
-            let contentString = content;
-            if (typeof content !== "string") {
-                if (typeof content !== "object" || !content.props.children)
-                    throw new Error("Invalid object");
-                contentString = strip(content.props.children)
+            let contentString = '';
+            if (typeof content === "string") {
+                contentString = content.trim();
+            } else {
+                if (typeof content === "object" && content.props.children) {
+                    contentString = strip(content.props.children).trim();
+                }
             }
-            string += (string ? " " : "") + contentString.trim();
+            string += ((string ? " " : "") + contentString).trim();
         }
         return string.trim();
     }
 
-    return strip(contentList);
+    const altString = strip(contentList);
+    return altString
 }
 
 
