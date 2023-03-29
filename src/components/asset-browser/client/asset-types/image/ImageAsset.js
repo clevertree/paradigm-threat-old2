@@ -5,7 +5,7 @@ import {getMarkdownOptions} from "../markdown/markdownOptions.js";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 import Markdown, {compiler} from "markdown-to-jsx";
-
+import "./ImageAsset.scss"
 
 class ImageAsset extends React.Component {
     static ASSET_CLASS = 'asset image';
@@ -107,16 +107,27 @@ class ImageAsset extends React.Component {
 
         const altString = stripMarkup(altContent)
 
-        return <img
-            {...extraProps}
-            key="image"
+        return <div
             className={className}
-            src={finalSrc}
-            alt={altString}
-            title={title || altString.replace(/\n/g, " ")}
-            onClick={this.cb.onClick}
-            ref={this.ref.img}
-        />
+        >
+            <img
+                {...extraProps}
+                key="image"
+                src={finalSrc}
+                alt={altString}
+                title={title || altString.replace(/\n/g, " ")}
+                onClick={this.cb.onClick}
+                ref={this.ref.img}
+            />
+            <Markdown
+                className='text-container'
+                options={{
+                    wrapper: 'div',
+                    forceWrapper: true
+                }}>
+                {altContent.replace(/\\n/g, "\n")}
+            </Markdown>
+        </div>
 
     }
 
@@ -149,19 +160,18 @@ function stripMarkup(markdownContent) {
         for (const content of contentList) {
             let contentString = '';
             if (typeof content === "string") {
-                contentString = content.trim();
+                contentString = content;
             } else {
                 if (typeof content === "object" && content.props.children) {
-                    contentString = strip(content.props.children).trim();
+                    contentString = strip(content.props.children);
                 }
             }
-            string += ((string ? " " : "") + contentString).trim();
+            string += contentString;
         }
         return string.trim();
     }
 
-    const altString = strip(contentList);
-    return altString
+    return strip(contentList)
 }
 
 

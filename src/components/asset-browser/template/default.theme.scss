@@ -33,15 +33,14 @@ body {
 /** Section **/
 
 .theme-default section {
-  display: flex;
-  flex-wrap: wrap;
-  clear: both;
-  margin: 0 auto;
+  //display: flex;
+  //flex-wrap: wrap;
+  //clear: both;
+  //margin: 0 auto;
 }
 
 .theme-default > section {
-  padding: 0 2vw;
-  max-width: 1600px;
+  //margin: 0 2vw;
 }
 
 /** Article **/
@@ -52,6 +51,16 @@ body {
   //min-width: 90vw;
   margin: 0 auto;
   clear: both;
+
+  max-width: 100%;
+
+  &:not(.asset-spread) {
+    padding: 1vw;
+    @media only screen and (min-width: 1600px) {
+      padding: 0 0;
+      max-width: 1600px;
+    }
+  }
 
   /** Paragraphs **/
   > p {
@@ -153,107 +162,48 @@ body {
   border-top: 2px solid #888;
 }
 
-/** Image Asset **/
-
-.asset {
-  position: relative;
-  display: block;
-  margin: auto;
-}
-
-.asset.video,
-.asset.image {
-  cursor: pointer;
-  max-height: 100%;
-  max-width: 100%;
-  z-index: 3;
-  padding-bottom: 0.2em;
-}
-
-
-.asset.video {
-  //min-width: 42vw;
-  //min-height: 24vw;
-  margin: 0.5em auto;
-}
-
-@media only screen and (min-width: 1000px) {
-  .asset.video,
-  .asset.image {
-    max-height: 900px;
-  }
-}
-
-
-.asset.rounded {
-  border-radius: 1em;
-}
-
 /** Within a Paragraph **/
 
-p > .asset.image,
-p > .asset.video {
-  @media only screen and (min-width: 640px) {
-    max-height: 80%;
+p > .asset {
+  @media only screen and (min-width: 768px) {
+    //max-height: 80%;
     max-width: 70%;
   }
 }
 
-/** Floating Images **/
+/** Spread Images **/
 
+.asset-spread {
+  display: flex;
+  flex-wrap: wrap;
+  //justify-content: center;
+  width: 100%;
+  margin: 0;
+  clear: both;
+}
 
-@media only screen and (min-width: 640px) {
-  .asset-spread .asset {
-    max-width: 40vw;
-    max-height: 38vh;
-    padding: 0.4vw;
-  }
+.asset-spread > .asset {
+  width: 96vw;
+  padding: 2vw;
+}
 
-  .asset-spread {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    margin: 0;
-    clear: both;
-  }
-
-  .asset.float-left,
-  .asset.float-right,
-  {
-    max-width: 32vw;
-    max-height: 32vw;
-    margin: 0 0.5em 0 0.5em;
-
-    @media only screen and (min-width: 1200px) {
-      max-width: 24vw;
-      max-height: 24vw;
-    }
-
-
-    @media only screen and (min-width: 1800px) {
-      max-width: 32em;
-      max-height: 28em;
-    }
-  }
-
-  .asset.float-left {
-    float: left;
-    clear: left;
-    margin-left: 0;
-
-    + .asset.float-left {
-      margin-bottom: 0.2em;
-    }
-
-  }
-  .asset.float-right {
-    float: right;
-    clear: right;
-    margin-right: 0;
-
-    + .asset.float-right {
-      margin-bottom: 0.2em;
-    }
+@media only screen and (min-width: 768px) {
+  .asset-spread > .asset {
+    width: 48vw;
+    padding: 0.5vw 1vw 0.5vw 0.5vw;
   }
 }
 
+@media only screen and (min-width: 992px) {
+  .asset-spread > .asset {
+    width: 31vw;
+    padding: 1vw;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  .asset-spread > .asset {
+    width: 23vw;
+    padding: 1vw;
+  }
+}

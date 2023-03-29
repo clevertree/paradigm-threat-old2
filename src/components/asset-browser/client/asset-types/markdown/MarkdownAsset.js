@@ -15,11 +15,13 @@ class MarkdownAsset extends React.Component {
         file: PropTypes.string.isRequired,
         onLoad: PropTypes.func,
         className: PropTypes.string,
-        overrides: PropTypes.object
+        overrides: PropTypes.object,
+        asset: PropTypes.bool
     };
 
     static defaultProps = {
-        className: "markdown-body"
+        className: null,
+        asset: false
     }
 
 
@@ -63,14 +65,23 @@ class MarkdownAsset extends React.Component {
     }
 
     render() {
+        let className = 'asset markdown';
+        if (this.props.className)
+            className += ' ' + this.props.className;
         const {loaded, pathname, content} = this.state;
         const {overrides, onLoad} = this.props;
-        if (!loaded)
-            return "Loading: " + this.props.file;
-        return <MarkdownAssetContentRenderer
-            overrides={overrides} onLoad={onLoad} pathname={pathname}>
-            {content}
-        </MarkdownAssetContentRenderer>
+        let output = "Loading: " + this.props.file;
+        if (loaded)
+            output = <MarkdownAssetContentRenderer
+                overrides={overrides} onLoad={onLoad} pathname={pathname}>
+                {content}
+            </MarkdownAssetContentRenderer>
+        if (this.props.asset) {
+            output = <div className={className}>
+                {output}
+            </div>
+        }
+        return output;
     }
 }
 

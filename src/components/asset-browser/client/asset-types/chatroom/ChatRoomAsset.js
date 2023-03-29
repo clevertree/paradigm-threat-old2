@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./ChatRoomAsset.css";
+import "./ChatRoomAsset.scss";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 
 

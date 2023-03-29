@@ -1,0 +1,87 @@
+
+.asset.image {
+  background-color: #CCC;
+
+  z-index: 3;
+  max-width: 100vw;
+  display: flex;
+  flex-direction: column;
+  //justify-content: center;
+}
+
+.asset.image > img {
+  cursor: pointer;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.asset.image > div.text-container {
+  text-align: justify;
+  padding-top: 0.2em;
+
+  > p {
+    margin: 0;
+    padding: 0;
+  }
+
+  font-family: "Helvetica", "Times", serif;
+  font-size: 0.7em;
+  margin: 0;
+
+  * {
+    font-size: 1em;
+    margin: 0;
+  }
+}
+
+.asset.image.float-left,
+.asset.image.float-right {
+  max-width: 32vw;
+  padding: 0 0.5em 0.5em 0.5em;
+  @media only screen and (min-width: 1200px) {
+    max-width: 30rem;
+    //max-height: 24vw;
+  }
+}
+
+.asset.image.float-left {
+  float: left;
+  clear: left;
+  padding-left: 0;
+
+  + .asset.image.float-left {
+    margin-bottom: 0.2em;
+  }
+}
+
+.asset.image.float-right {
+  float: right;
+  clear: right;
+  padding-right: 0;
+
+  + .asset.float-right {
+    margin-bottom: 0.2em;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .asset.image {
+    //max-height: 900px;
+  }
+}
+
+
+.asset.image,
+.asset.image.rounded > img {
+  border-radius: 1em;
+}
+
+/** Within a Paragraph **/
+
+@media only screen and (min-width: 768px) {
+  p > .asset.image {
+    max-height: 80%;
+    max-width: 70%;
+    margin: auto;
+  }
+}

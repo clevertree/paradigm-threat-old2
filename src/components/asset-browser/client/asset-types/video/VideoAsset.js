@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import "./VideoAsset.css";
+import "./VideoAsset.scss";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
+import Markdown from "markdown-to-jsx";
 
 export default class VideoAsset extends React.Component {
     static ASSET_CLASS = 'asset video';
@@ -25,10 +26,18 @@ export default class VideoAsset extends React.Component {
         title = title || altSL;
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')
         return <ErrorBoundary assetName="Video Asset">
-            <video controls title={title} className={className}>
-                <source src={src}  {...extraProps} children={null} type="video/mp4"/>
-                <meta itemProp="description" content={alt}/>
-            </video>
+            <div title={title} className={className}>
+                <video controls>
+                    <source src={src}  {...extraProps} children={null} type="video/mp4"/>
+                    <meta itemProp="description" content={alt}/>
+                </video>
+
+                <div
+                    className='text-container'
+                >
+                    {alt.replace(/\\n/g, "\n")}
+                </div>
+            </div>
         </ErrorBoundary>;
     }
 
@@ -38,7 +47,9 @@ export default class VideoAsset extends React.Component {
         title = title || 'Youtube';
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')
         return (
-            <iframe title={title} className={className} src={src} {...extraProps} />
+            <div title={title} className={className}>
+                <iframe src={src} {...extraProps} />
+            </div>
         );
 
     }

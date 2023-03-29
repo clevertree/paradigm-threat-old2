@@ -11,7 +11,7 @@ export default class PDFAsset extends React.Component {
 
 
     render() {
-        let className = 'asset-pdf asset';
+        let className = 'asset pdf';
         let filename = decodeURI(this.props.src.split('/').pop());
 
         return (
