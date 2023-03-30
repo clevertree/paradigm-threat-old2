@@ -1,7 +1,7 @@
 <div class="theme-default">
 <header>
   <a href="/">
-    <img src="/@site/header.png" alt="Header Logo" class="logo" data-no-fullscreen />
+    <img src="/@site/header.png" alt="Header Logo" class="logo" asset="false" />
   </a>
 </header>
 

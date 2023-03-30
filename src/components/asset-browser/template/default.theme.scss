@@ -71,7 +71,7 @@ body {
 
   h1 {
     font-size: 1.7em;
-    clear: left;
+    //clear: left;
   }
 
   h2 {
@@ -117,6 +117,7 @@ body {
 
 .theme-default article > pre > code,
 .theme-default article > p > code {
+  display: flex;
   background: #C0C0C0;
   border-radius: 2px;
   white-space: pre-wrap;
@@ -124,6 +125,7 @@ body {
 
 .theme-default article > pre,
 .theme-default article > blockquote {
+  display: flex;
   background: #C0C0C0;
   padding: 1em;
   white-space: normal;

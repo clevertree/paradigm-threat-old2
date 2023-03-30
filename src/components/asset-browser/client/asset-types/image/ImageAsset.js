@@ -39,7 +39,7 @@ class ImageAsset extends React.Component {
         }
         this.cb = {
             onClick: e => {
-                if (!this.props['data-no-fullscreen']) {
+                if (this.isAsset()) {
                     this.openInFullScreen();
                 }
             },
@@ -49,16 +49,23 @@ class ImageAsset extends React.Component {
         }
     }
 
+    isAsset() {
+        return (!['false', false].includes(this.props['asset']));
+    }
 
     componentDidMount() {
-        let {assetBrowser} = this.props;
-        assetBrowser.addRenderedAsset(this);
-        this.loadAltSource().then();
+        if (this.isAsset()) {
+            let {assetBrowser} = this.props;
+            assetBrowser.addRenderedAsset(this);
+            this.loadAltSource().then();
+        }
     }
 
     componentWillUnmount() {
-        let {assetBrowser} = this.props;
-        assetBrowser.removeRenderedAsset(this);
+        if (this.isAsset()) {
+            let {assetBrowser} = this.props;
+            assetBrowser.removeRenderedAsset(this);
+        }
     }
 
     checkForFullScreenHash(matchSrc) {
@@ -96,7 +103,7 @@ class ImageAsset extends React.Component {
     }
 
     render() {
-        let {src, alt, title, className, assetBrowser, originalSrc, ...extraProps} = this.props;
+        let {src, alt, title, className, assetBrowser, originalSrc, asset, ...extraProps} = this.props;
         const refreshHash = assetBrowser.getRefreshHash();
 
         const altContent = this.getAltContent();
@@ -106,13 +113,25 @@ class ImageAsset extends React.Component {
             finalSrc += '?refreshHash=' + refreshHash;
 
         const altString = stripMarkup(altContent)
+        if (['false', false].includes(asset)) {
+            return <img
+                {...extraProps}
+                key={finalSrc}
+                src={finalSrc}
+                alt={altString}
+                title={title || altString.replace(/\n/g, " ")}
+                onClick={this.cb.onClick}
+                ref={this.ref.img}
+            />
+
+        }
 
         return <div
+            key={finalSrc}
             className={className}
         >
             <img
                 {...extraProps}
-                key="image"
                 src={finalSrc}
                 alt={altString}
                 title={title || altString.replace(/\n/g, " ")}
