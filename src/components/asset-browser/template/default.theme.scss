@@ -117,7 +117,8 @@ body {
 
 .theme-default article > pre > code,
 .theme-default article > p > code {
-  display: flex;
+  //display: flex;
+  //flex-direction: column;
   background: #C0C0C0;
   border-radius: 2px;
   white-space: pre-wrap;
@@ -126,6 +127,7 @@ body {
 .theme-default article > pre,
 .theme-default article > blockquote {
   display: flex;
+  flex-direction: column;
   background: #C0C0C0;
   padding: 1em;
   white-space: normal;
