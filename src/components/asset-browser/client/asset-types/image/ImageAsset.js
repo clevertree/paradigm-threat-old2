@@ -57,7 +57,7 @@ class ImageAsset extends React.Component {
         if (this.isAsset()) {
             let {assetBrowser} = this.props;
             assetBrowser.addRenderedAsset(this);
-            this.loadAltSource().then();
+            this.loadMDContent().then();
         }
     }
 
@@ -79,7 +79,7 @@ class ImageAsset extends React.Component {
 
     async openInFullScreen() {
         let {title, src, assetBrowser} = this.props;
-        const altContent = (await this.loadAltSource()) || this.getAltContent();
+        const altContent = (await this.loadMDContent()) || this.getAltContent();
         const altString = stripMarkup(altContent)
         const fullscreenContent = <img
             key={src}
@@ -150,7 +150,7 @@ class ImageAsset extends React.Component {
 
     }
 
-    async loadAltSource() {
+    async loadMDContent() {
         let {src, alt} = this.props;
         let {altContent} = this.state;
         if (!altContent) {

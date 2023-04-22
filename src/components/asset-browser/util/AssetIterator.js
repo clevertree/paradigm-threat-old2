@@ -12,6 +12,37 @@ export default class AssetIterator {
         this.assets = assets;
     }
 
+    getAssetStats() {
+        const associatedMDFiles = {};
+        const stats = {
+            associatedMDFiles
+        };
+        const process = (path, pointer) => {
+            const files = pointer[KEY_FILES] || [];
+            const dirs = pointer[KEY_DIRS] || [];
+            for (let mdFilePos = 0; mdFilePos < files.length; mdFilePos++) {
+                const mdFile = files[mdFilePos];
+                const mdFileLC = mdFile.toLowerCase();
+                if (mdFileLC.endsWith('.md')) {
+                    const mdFileLCNE = mdFileLC.substring(0, mdFileLC.length - 2);
+                    for (let assetFilePos = 0; assetFilePos < files.length; assetFilePos++) {
+                        const assetFile = files[assetFilePos];
+                        const assetFileLC = assetFile.toLowerCase();
+                        if (assetFileLC.startsWith(mdFileLCNE) && !assetFileLC.endsWith('.md')) {
+                            associatedMDFiles[`${path}/${assetFile}`] = `${path}/${mdFile}`;
+                        }
+                    }
+                }
+            }
+            for (const dirPath of Object.keys(dirs)) {
+                process(`${path}/${dirPath}`, dirs[dirPath])
+            }
+        }
+        process('', this.assets);
+        console.log('stats', stats);
+        return stats;
+    }
+
     pathExists(path) {
         return !!this.getPointer(path, false);
     }
@@ -26,10 +57,12 @@ export default class AssetIterator {
         return pointer[KEY_FILES].includes(fileName);
     }
 
-    listFiles(path) {
+    listFiles(path, orThrow = true) {
         if (path[0] === '/')
             path = path.substring(1);
-        const pointer = this.getPointer(path);
+        const pointer = this.getPointer(path, orThrow);
+        if (!pointer[KEY_FILES])
+            return [];
         return pointer[KEY_FILES].map(file => resolveAssetURL(path + '/' + file));
     }
 

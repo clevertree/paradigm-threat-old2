@@ -220,6 +220,8 @@ export default class AssetBrowser extends React.Component {
     }
 
     updateAssets(assets, error) {
+        const iterator = new AssetIterator(assets)
+        const assetStats = iterator.getAssetStats();
         this.setState({assets, error, loaded: true});
     }
 
