@@ -10,25 +10,27 @@ export default class ErrorBoundary extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {hasError: false};
+        this.state = {hasError: false, error: null, errorInfo: null};
     }
 
     static getDerivedStateFromError(error) {
-        // Update state so the next render will show the fallback UI.
         return {hasError: true, error};
     }
 
     componentDidCatch(error, errorInfo) {
-        // You can also log the error to an error reporting service
-        console.error(error, errorInfo, this.props?.children?.props);
+        this.setState({hasError: true, error, errorInfo})
+        // console.error(error.message || error, error.stack, errorInfo.componentStack);
     }
 
     render() {
-        if (this.state.hasError) {
+        const {hasError, error, errorInfo} = this.state;
+        if (hasError) {
             // You can render any custom fallback UI
             return <div className="error-boundary">
                 {this.props.assetName ? <h2>{this.props.assetName} Rendering Error</h2> : null}
-                <div className="stack">{this.state.error.stack}</div>
+                <h2 className="message">{error.message}</h2>
+                <div className="stack">{error.stack}</div>
+                <div className="stack">{errorInfo?.componentStack}</div>
             </div>;
         }
 

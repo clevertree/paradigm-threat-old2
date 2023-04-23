@@ -2,69 +2,66 @@
 
 div.asset-image-fullscreen {
   position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   margin: 0 !important;
-  padding: 5vh 5vw;
+  //padding: 5vh 5vw;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   background: #000D;
   cursor: pointer;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   z-index: 11;
 
   animation: fadeIn 0.3s;
 
 
-  @media (min-aspect-ratio: 5/3) {
-    flex-direction: row;
-  }
+  > .asset {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    @media (min-aspect-ratio: 5/4) {
+      flex-direction: row;
+      > img {
+        max-width: 70vw;
+        //min-width: 50%;
+      }
 
-  > img {
-    width: 90vw;
-    max-height: 60vh;
-    object-fit: contain;
-    /*background-color: #000;*/
-
-    @media (min-aspect-ratio: 5/3) {
-      max-height: 90vh;
-      width: 60vw;
-    }
-  }
-
-  > .alt-text {
-    position: relative;
-    //max-height: 30vh;
-    //background: #000;
-    color: white;
-    //flex: 1 1;
-    margin-left: 1vw;
-    margin-top: 2vh;
-
-    > * {
-      margin-top: 0;
-      cursor: default;
     }
 
-    > .source {
-      font-style: italic;
-      font-size: smaller;
+    a {
+      color: #AAD;
     }
 
-    > a {
-      display: block;
+
+    > img {
+      max-height: 80vh;
+      object-fit: contain;
+      /*background-color: #000;*/
     }
 
-    > p {
+    > .text-container {
+      color: white;
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       text-indent: 12px;
       text-align: justify;
+      margin: 1vw;
     }
 
+  }
+
+  > .source {
+    font-style: italic;
+    font-size: smaller;
+    text-decoration: none;
+    position: absolute;
+    left: 4px;
+    bottom: 4px;
   }
 
   > .next, > .previous, > .close {
@@ -81,6 +78,7 @@ div.asset-image-fullscreen {
     height: 32px;
     border-radius: 4px;
     cursor: pointer;
+    z-index: 9;
 
     &:hover {
       background-color: indianred;

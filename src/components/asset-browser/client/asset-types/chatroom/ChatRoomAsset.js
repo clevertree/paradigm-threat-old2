@@ -54,7 +54,9 @@ export default class ChatRoomAsset extends React.Component {
             >
                 {this.state.visible ? <iframe title="Chat Server" src={absURL}></iframe> :
                     <div className="placeholder"/>}
-                <a href={absURL} target="_blank" rel="noreferrer">Open Chat in new window</a>
+                <a href={absURL + ''} target="_blank" rel="noreferrer"
+                   className='text-container'
+                >Open Chat in new window</a>
             </div>
         </ErrorBoundary>
     }

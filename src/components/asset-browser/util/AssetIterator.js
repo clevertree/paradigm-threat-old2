@@ -39,7 +39,6 @@ export default class AssetIterator {
             }
         }
         process('', this.assets);
-        console.log('stats', stats);
         return stats;
     }
 
@@ -96,7 +95,7 @@ export default class AssetIterator {
         const directoryPath = filepath.substring(0, filepath.lastIndexOf("/") + 1);
         const filename = filepath.split('/').pop();
         const pointer = this.getPointer(directoryPath, false);
-        if (!pointer)
+        if (!pointer || !pointer[KEY_FILES])
             return null;
 
         if (pointer[KEY_FILES].indexOf(filename) !== -1)

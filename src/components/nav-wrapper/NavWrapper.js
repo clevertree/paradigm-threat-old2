@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
+import {scrollIntoViewPersistent} from "../asset-browser/client/util/ClientUtil.js";
 
 export default class NavWrapper extends Component {
     static propTypes = {
@@ -48,7 +49,6 @@ export default class NavWrapper extends Component {
         if (target
             && target.nodeName.toLowerCase() === 'a'
             && target.target !== '_blank') {
-            // console.log("Click target: ", target);
 
             const url = new URL(target.href);
             if (url.origin !== windowObj.location.origin) {
@@ -59,7 +59,12 @@ export default class NavWrapper extends Component {
                 || url.pathname.endsWith('.html') // TODO: hack fix!
             ) {
                 // Allow local navigation
-
+                const idString = url.hash.substring(1);
+                const headerElm = [].find.call(document.querySelectorAll('h1, h2, h3, h4, h5, h6'), header => header.getAttribute('id') === idString);
+                if (headerElm) {
+                    e.preventDefault();
+                    scrollIntoViewPersistent(headerElm);
+                }
             } else {
                 e.preventDefault();
                 windowObj.history.pushState({}, '', url.pathname);

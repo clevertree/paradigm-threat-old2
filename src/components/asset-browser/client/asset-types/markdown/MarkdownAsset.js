@@ -12,11 +12,11 @@ import {useEffect} from "react";
 class MarkdownAsset extends React.Component {
     /** Property validation **/
     static propTypes = {
-        file: PropTypes.string.isRequired,
+        src: PropTypes.string.isRequired,
         onLoad: PropTypes.func,
         className: PropTypes.string,
         overrides: PropTypes.object,
-        asset: PropTypes.bool
+        assetBrowser: PropTypes.object.isRequired
     };
 
     static defaultProps = {
@@ -37,30 +37,36 @@ class MarkdownAsset extends React.Component {
 
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.file !== this.props.file) {
+        if (prevProps.src !== this.props.src) {
             this.setState({content: null, loaded: false});
-            // console.log("Changing content: ", this.props.file);
+            // console.log("Changing content: ", this.props.src);
             this.loadContent().then();
         }
         if (prevProps.refreshHash && (prevProps.refreshHash !== this.props.refreshHash)) {
-            // console.log("Refreshing content: ", this.props.file, prevProps.refreshHash);
+            // console.log("Refreshing content: ", this.props.src, prevProps.refreshHash);
             this.loadContent().then();
         }
     }
 
     componentDidMount() {
-        // console.log("Loading content: ", this.props.file, this.state);
         this.loadContent().then();
+        let {assetBrowser, src} = this.props;
+        assetBrowser.addRenderedAsset(src, this);
+    }
+
+    componentWillUnmount() {
+        let {assetBrowser, src} = this.props;
+        assetBrowser.removeRenderedAsset(src);
     }
 
     async loadContent() {
-        const {file} = this.props;
-        const response = await fetch(file);
+        const {src} = this.props;
+        const response = await fetch(src);
         const content = await response.text()
         this.setState({
             content,
             loaded: true,
-            pathname: file.substring(0, file.lastIndexOf("/") + 1)
+            pathname: src.substring(0, src.lastIndexOf("/") + 1)
         });
     }
 
@@ -70,10 +76,14 @@ class MarkdownAsset extends React.Component {
             className += ' ' + this.props.className;
         const {loaded, pathname, content} = this.state;
         const {overrides, onLoad} = this.props;
-        let output = "Loading: " + this.props.file;
+        let output = "Loading: " + this.props.src;
         if (loaded)
             output = <MarkdownAssetContentRenderer
-                overrides={overrides} onLoad={onLoad} pathname={pathname}>
+                overrides={overrides}
+                onLoad={onLoad}
+                pathname={pathname}
+                {...this.props}
+            >
                 {content}
             </MarkdownAssetContentRenderer>
         if (this.props.asset) {
@@ -85,13 +95,18 @@ class MarkdownAsset extends React.Component {
     }
 }
 
-const MarkdownAssetContentRenderer = ({pathname, children, overrides, onLoad}) => {
+const MarkdownAssetContentRenderer = ({pathname, children, overrides, onLoad, options, className}) => {
     useEffect(() => {
         onLoad && onLoad()
     }, [onLoad])
     const markdownOptions = getMarkdownOptions(pathname, overrides);
+    const props = {
+        options: markdownOptions
+    }
+    if (className)
+        props.className = className;
     return <ErrorBoundary assetName={"Markdown"}>
-        <Markdown options={markdownOptions}>
+        <Markdown {...props}>
             {children}
         </Markdown>
     </ErrorBoundary>
@@ -103,7 +118,7 @@ export default class MarkdownAssetWrapper extends React.Component {
         return <AssetBrowserContext.Consumer>
             {(assetBrowser) => {
                 const refreshHash = assetBrowser.getRefreshHash();
-                return <MarkdownAsset {...this.props} refreshHash={refreshHash}>
+                return <MarkdownAsset {...this.props} refreshHash={refreshHash} assetBrowser={assetBrowser}>
                     {this.props.children}
                 </MarkdownAsset>;
             }}

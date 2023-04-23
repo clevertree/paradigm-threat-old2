@@ -1,10 +1,9 @@
 import AssetIterator from "./AssetIterator.js";
 
 
-test('Test Asset Iterator', () => {
+test('Asset Iterator', () => {
     const iterator = new AssetIterator(assets);
     const stats = iterator.getAssetStats();
-    console.log('stats', stats)
 });
 
 const assets = {

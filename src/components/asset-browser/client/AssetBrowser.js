@@ -7,7 +7,7 @@ import AssetBrowserContext from "./context/AssetBrowserContext.js";
 import AssetRefresher from "./loader/AssetRefresher.js";
 import AssetRenderer from "./asset-types/asset-renderer/AssetRenderer.js";
 import {setUnusedAssets} from "./asset-types/markdown/markdownOptions.js";
-import {pathJoin, resolveAssetURL, scrollIntoViewPersistent} from "./util/ClientUtil.js";
+import {pathJoin, resolveAssetPath, resolveAssetURL, scrollIntoViewPersistent} from "./util/ClientUtil.js";
 import {FILE_DEFAULT_TEMPLATE, FILE_DEFAULT_THEME, FILE_SEARCH_PAGE, PATH_SITE} from "../constants.js";
 
 import StyleSheetAsset from "./asset-types/link/StyleSheetAsset.js";
@@ -37,22 +37,33 @@ export default class AssetBrowser extends React.Component {
         super(props);
         this.state = {
             assets: null,
+            assetStats: {
+                associatedMDFiles: {}
+            },
+            assetIterator: null,
             loaded: false,
             refreshHash: null,
             assetContentFullScreen: null
         }
+        if (props.assets) {
+            this.state.assets = props.assets;
+            this.state.assetIterator = new AssetIterator(props.assets)
+            this.state.assetStats = this.state.assetIterator.getAssetStats();
+        }
         this.overrides = {
             templateContent: (props) => this.renderChildren(props),
         }
-        this.renderedAssets = [];
+        this.renderedAssets = {};
         this.cb = {
             onPopState: () => {
                 const {searchParams} = (new URL(document.location));
                 const viewAsset = searchParams.get('viewAsset');
-
-                for (const asset of this.renderedAssets) {
-                    if (asset.checkForFullScreenHash(viewAsset)) {
-                        return;
+                if (viewAsset) {
+                    for (const src of Object.keys(this.renderedAssets)) {
+                        if (viewAsset === src) {
+                            this.renderedAssets[src].openInFullScreen()
+                            return;
+                        }
                     }
                 }
                 this.setState({assetContentFullScreen: null});
@@ -88,17 +99,13 @@ export default class AssetBrowser extends React.Component {
         return new AssetIterator(this.state.assets)
     }
 
-    removeRenderedAsset(assetInstance) {
-        const i = this.renderedAssets.indexOf(assetInstance);
-        if (i !== -1) {
-            this.renderedAssets.splice(i, 1);
-        }
+    removeRenderedAsset(src) {
+        delete this.renderedAssets[src];
     }
 
-    addRenderedAsset(assetInstance) {
-        if (this.renderedAssets.indexOf(assetInstance) === -1) {
-            this.renderedAssets.push(assetInstance);
-        }
+    addRenderedAsset(src, assetInstance) {
+        if (!this.renderedAssets[src])
+            this.renderedAssets[src] = assetInstance;
     }
 
     getRenderedAssets() {
@@ -121,20 +128,20 @@ export default class AssetBrowser extends React.Component {
     render() {
         return <AssetBrowserContext.Provider value={this}>
             {this.renderContent()}
+            {this.props.children}
         </AssetBrowserContext.Provider>;
     }
 
 
     renderContent() {
-        const {assets, loaded, error} = this.state;
+        const {loaded, error} = this.state;
         if (error) return error.stack || error || '';
         if (!loaded) return <>
             <AssetLoader/>
             Loading...
         </>
-        const iterator = new AssetIterator(assets);
-        let templatePath = this.getTemplatePath(this.props.pathname, iterator)
-        let themePath = this.getSiteThemePath(iterator)
+        let templatePath = this.getTemplatePath(this.props.pathname)
+        let themePath = this.getSiteThemePath()
 
         return <>
             {themePath ? <StyleSheetAsset href={themePath}/> : null}
@@ -143,7 +150,7 @@ export default class AssetBrowser extends React.Component {
             <MarkdownAsset
                 wrapper={React.Fragment}
                 overrides={this.overrides}
-                file={templatePath}/>
+                src={templatePath}/>
         </>
     }
 
@@ -168,23 +175,22 @@ export default class AssetBrowser extends React.Component {
         setUnusedAssets(filteredFileList);
         return <article className={"index"}>
             <MarkdownAsset
-                file={indexMDPath}
+                src={indexMDPath}
                 onLoad={this.cb.onMarkdownLoad}
             />
         </article>;
     }
 
     renderSearchPage(pathname) {
-        const {assets} = this.state;
-        const iterator = new AssetIterator(assets);
+        const {assetIterator} = this.state;
         let keywords = pathname.split(/[/?#]/g).filter(k => k).map(k => k.replace(/%20/g, ' ').trim());
         if (pathname === '/search') keywords = [];
-        let searchPagePath = this.getSearchPagePath(iterator)
+        let searchPagePath = this.getSearchPagePath()
 
         return <article className={"search"}>
-            <MarkdownAsset file={searchPagePath} onLoad={this.cb.onMarkdownLoad}/>
+            <MarkdownAsset src={searchPagePath} onLoad={this.cb.onMarkdownLoad}/>
             <ErrorBoundary assetName={"Search"}>
-                <AssetSearch iterator={iterator} keywords={keywords}/>
+                <AssetSearch iterator={assetIterator} keywords={keywords}/>
             </ErrorBoundary>
         </article>;
     }
@@ -206,13 +212,12 @@ export default class AssetBrowser extends React.Component {
     renderFullScreenAsset() {
         if (!this.state.assetContentFullScreen)
             return null;
-        const {src, alt, children, assetInstance} = this.state.assetContentFullScreen;
+        const {children, assetInstance, src} = this.state.assetContentFullScreen;
         if (!children) {
             throw new Error("WTF")
         }
         return <AssetFullScreenView
             src={src}
-            alt={alt}
             children={children}
             assetBrowser={this}
             assetInstance={assetInstance}
@@ -220,9 +225,9 @@ export default class AssetBrowser extends React.Component {
     }
 
     updateAssets(assets, error) {
-        const iterator = new AssetIterator(assets)
-        const assetStats = iterator.getAssetStats();
-        this.setState({assets, error, loaded: true});
+        const assetIterator = new AssetIterator(assets)
+        const assetStats = assetIterator.getAssetStats();
+        this.setState({assets, assetStats, assetIterator, error, loaded: true});
     }
 
     updateRefreshHash(refreshHash) {
@@ -233,10 +238,10 @@ export default class AssetBrowser extends React.Component {
     }
 
     showFullScreenAsset(assetInstance, assetContent, src, alt) {
-        this.setState({assetContentFullScreen: {children: assetContent, assetInstance, src, alt}});
+        this.setState({assetContentFullScreen: {children: assetContent, assetInstance, src}});
         let {viewAsset, viewCount} = window.history.state || {};
         if (viewAsset !== src) {
-            window.history.pushState({viewAsset: src, viewCount: (viewCount || 0) + 1}, '', '?viewAsset=' + src);
+            window.history.pushState({viewAsset: src, viewCount: (viewCount || 0) + 1}, alt, '?viewAsset=' + src);
         }
     }
 
@@ -253,24 +258,33 @@ export default class AssetBrowser extends React.Component {
 
     // Known paths
 
-    getTemplatePath(pathname, iterator) {
-        let templatePath = iterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE)) || iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
+    getTemplatePath(pathname) {
+        const {assetIterator} = this.state;
+        let templatePath = assetIterator.tryFile(pathJoin(pathname, FILE_DEFAULT_TEMPLATE)) || assetIterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_TEMPLATE));
         if (templatePath) return resolveAssetURL(templatePath);
         return DefaultTemplate;
     }
 
-    getSiteThemePath(iterator) {
-        let scssPath = iterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
+    getSiteThemePath() {
+        const {assetIterator} = this.state;
+        let scssPath = assetIterator.tryFile(pathJoin(PATH_SITE, FILE_DEFAULT_THEME));
         if (scssPath) return resolveAssetURL(scssPath)
         return null;
     }
 
-    getSearchPagePath(iterator) {
-        let searchPage = iterator.tryFile(pathJoin(PATH_SITE, FILE_SEARCH_PAGE));
+    getSearchPagePath() {
+        const {assetIterator} = this.state;
+        let searchPage = assetIterator.tryFile(pathJoin(PATH_SITE, FILE_SEARCH_PAGE));
         if (searchPage) return resolveAssetURL(searchPage);
         return DefaultSearchPage;
     }
 
+    getMDCaptionPath(absPath) {
+        const pathname = resolveAssetPath(absPath);
+        const {assetStats: {associatedMDFiles}} = this.state;
+        const mdCaptionPath = associatedMDFiles[pathname];
+        return mdCaptionPath ? resolveAssetURL(mdCaptionPath) : null;
+    }
 }
 
 

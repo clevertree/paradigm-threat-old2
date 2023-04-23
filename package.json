@@ -36,7 +36,8 @@
     "start": "react-scripts start",
     "start-server": "react-scripts start & node scripts/server.js",
     "build": "sh scripts/build.sh",
-    "test": "CI=true react-scripts test",
+    "test": "react-scripts test",
+    "test-ci": "CI=true react-scripts test",
     "eject": "react-scripts eject",
     "prepare": "node scripts/touch.js"
   },

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 import "./VideoAsset.scss";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
-import Markdown from "markdown-to-jsx";
+import {resolveAssetPath} from "../../util/ClientUtil.js";
 
 export default class VideoAsset extends React.Component {
     static ASSET_CLASS = 'asset video';
@@ -20,10 +20,11 @@ export default class VideoAsset extends React.Component {
         if (this.parseYoutubeURL(this.props.src))
             return this.renderYoutube();
         // let i = this.props.i || 0;
-        let {src, alt, title, className, refreshHash, originalSrc, ...extraProps} = this.props;
-        alt = alt || src.split('/').pop();
-        const altSL = alt.replace(/\n/g, " ")
-        title = title || altSL;
+        let {src, alt, caption, title, className, refreshHash, originalSrc, ...extraProps} = this.props;
+        if (!alt)
+            alt = resolveAssetPath(src).replace(/\.[^.]*$/, '').replace(/[_/-]+/g, ' ').trim();
+        if (!title)
+            title = alt;
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')
         return <ErrorBoundary assetName="Video Asset">
             <div title={title} className={className}>
@@ -48,7 +49,7 @@ export default class VideoAsset extends React.Component {
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')
         return (
             <div title={title} className={className}>
-                <iframe src={src} {...extraProps} />
+                <iframe src={src} title={title} {...extraProps} />
             </div>
         );
 

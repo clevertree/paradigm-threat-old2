@@ -6,9 +6,10 @@
 }
 
 .error-boundary h2 {
-    margin-top: 0;
+    margin: 0;
 }
 
+.error-boundary .error,
 .error-boundary .stack {
     white-space: break-spaces;
 }

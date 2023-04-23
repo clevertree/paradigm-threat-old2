@@ -1,11 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import {getMarkdownOptions} from "../markdown/markdownOptions.js";
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 import Markdown, {compiler} from "markdown-to-jsx";
 import "./ImageAsset.scss"
+import MarkdownAsset from "../markdown/MarkdownAsset.js"
+import {resolveAssetPath} from "../../util/ClientUtil.js";
 
 class ImageAsset extends React.Component {
     static ASSET_CLASS = 'asset image';
@@ -25,14 +26,7 @@ class ImageAsset extends React.Component {
 
         this.state = {
             originalRefreshHash: this.props.assetBrowser.refreshHash,
-            altContent: null
-        }
-        const markdownOptions = getMarkdownOptions();
-        this.options = {
-            ...markdownOptions,
-            wrapper: 'div',
-            forceWrapper: true,
-            overrides: props.overrides,
+            caption: null
         }
         this.ref = {
             img: React.createRef()
@@ -49,148 +43,99 @@ class ImageAsset extends React.Component {
         }
     }
 
+    getAltString() {
+        let {src, alt} = this.props;
+        return alt || resolveAssetPath(src).replace(/\.[^.]*$/, '').replace(/[_/-]+/g, ' ').trim();
+    }
+
+    getTitleString() {
+        let {title} = this.props;
+        return title || this.getAltString();
+    }
+
     isAsset() {
         return (!['false', false].includes(this.props['asset']));
     }
 
     componentDidMount() {
-        if (this.isAsset()) {
-            let {assetBrowser} = this.props;
-            assetBrowser.addRenderedAsset(this);
-            this.loadMDContent().then();
+        let {assetBrowser, src} = this.props;
+        if (assetBrowser && this.isAsset()) {
+            assetBrowser.addRenderedAsset(src, this);
+            // this.checkForMDCaption(assetBrowser).then();
         }
     }
 
     componentWillUnmount() {
-        if (this.isAsset()) {
-            let {assetBrowser} = this.props;
-            assetBrowser.removeRenderedAsset(this);
+        let {assetBrowser, src} = this.props;
+        if (assetBrowser && this.isAsset()) {
+            assetBrowser.removeRenderedAsset(src);
         }
-    }
-
-    checkForFullScreenHash(matchSrc) {
-        const {src, originalSrc} = this.props;
-        if (src === matchSrc || originalSrc === matchSrc) {
-            this.openInFullScreen();
-            return true;
-        }
-        return false;
     }
 
     async openInFullScreen() {
-        let {title, src, assetBrowser} = this.props;
-        const altContent = (await this.loadMDContent()) || this.getAltContent();
-        const altString = stripMarkup(altContent)
-        const fullscreenContent = <img
+        let {assetBrowser, src} = this.props;
+        assetBrowser.showFullScreenAsset(this, this.render(false), src, this.getAltString());
+        setTimeout(() => {
+            this.ref.img.current.scrollIntoView({block: "start", behavior: 'smooth'})
+        }, 500)
+    }
+
+    render(local = true) {
+        let {src, caption, className, assetBrowser, originalSrc, asset, ...extraProps} = this.props;
+        className = ImageAsset.ASSET_CLASS + (className && local ? ' ' + className : '')
+
+        const contentImage = <img
             key={src}
-            className="fullscreen-image"
+            alt={this.getAltString()}
+            title={this.getTitleString()}
             src={src}
-            alt={altString}
-            title={title || altString.replace(/\n/g, " ")}
+            onClick={this.cb.onClick}
+            ref={local ? this.ref.img : null}
+            {...extraProps}
         />
-        assetBrowser.showFullScreenAsset(this, fullscreenContent, src, altContent);
-        this.ref.img.current.scrollIntoView({block: "start", behavior: 'smooth'})
-    }
 
-    getAltContent() {
-        const {altContent} = this.state;
-        if (typeof altContent === "string")
-            return altContent;
-        let {alt, src} = this.props;
-        if (typeof alt !== "string" || !alt)
-            return src.split('/').pop();
-        return alt;
-    }
-
-    render() {
-        let {src, alt, title, className, assetBrowser, originalSrc, asset, ...extraProps} = this.props;
-        const refreshHash = assetBrowser.getRefreshHash();
-
-        const altContent = this.getAltContent();
-        className = ImageAsset.ASSET_CLASS + (className ? ' ' + className : '')
-        let finalSrc = src;
-        if (refreshHash && refreshHash !== this.state.originalRefreshHash)
-            finalSrc += '?refreshHash=' + refreshHash;
-
-        const altString = stripMarkup(altContent)
         if (['false', false].includes(asset)) {
-            return <img
-                {...extraProps}
-                key={finalSrc}
-                src={finalSrc}
-                alt={altString}
-                title={title || altString.replace(/\n/g, " ")}
-                onClick={this.cb.onClick}
-                ref={this.ref.img}
-            />
+            return contentImage;
+        }
 
+        const captionMDPath = assetBrowser.getMDCaptionPath(src);
+
+        const mdProps = {
+            options: {
+                wrapper: 'div',
+                forceWrapper: true
+            }
         }
 
         return <div
-            key={finalSrc}
+            key={src}
             className={className}
         >
-            <img
-                {...extraProps}
-                src={finalSrc}
-                alt={altString}
-                title={title || altString.replace(/\n/g, " ")}
-                onClick={this.cb.onClick}
-                ref={this.ref.img}
-            />
-            <Markdown
-                className='text-container'
-                options={{
-                    wrapper: 'div',
-                    forceWrapper: true
-                }}>
-                {altContent.replace(/\\n/g, "\n")}
-            </Markdown>
+            {contentImage}
+            <div className="text-container">
+                {captionMDPath
+                    ? <MarkdownAsset src={captionMDPath} {...mdProps}/>
+                    : (caption && <Markdown {...mdProps}>
+                        {caption.replace(/\\n/g, "\n")}
+                    </Markdown>)}
+            </div>
         </div>
 
     }
 
-    async loadMDContent() {
-        let {src, alt} = this.props;
-        let {altContent} = this.state;
-        if (!altContent) {
-            if (alt === true) {
-                let pos = src.lastIndexOf(".");
-                const altSrc = src.substring(0, pos < 0 ? src.length : pos) + ".md";
-                altContent = new Promise(async (resolve, reject) => {
-                    const response = await fetch(altSrc);
-                    const altContent = await response.text()
-                    this.setState({altContent})
-                    resolve();
-                })
-                this.setState({altContent})
-            }
+    /**
+     * @param {AssetBrowser} assetBrowser
+     * @returns {Promise<*>}
+     */
+    async checkForMDCaption(assetBrowser) {
+        let {src} = this.props;
+        const captionMDPath = assetBrowser.getMDCaptionPath(src);
+        if (captionMDPath) {
+            const response = await fetch(captionMDPath);
+            const caption = await response.text()
+            this.setState({caption})
         }
-        return altContent;
     }
-}
-
-
-function stripMarkup(markdownContent) {
-    const contentList = compiler(markdownContent, {wrapper: null});
-
-    function strip(contentList) {
-        let string = '';
-        for (const content of contentList) {
-            let contentString = '';
-            if (typeof content === "string") {
-                contentString = content;
-            } else {
-                if (typeof content === "object" && content.props.children) {
-                    contentString = strip(content.props.children);
-                }
-            }
-            string += contentString;
-        }
-        return string.trim();
-    }
-
-    return strip(contentList)
 }
 
 

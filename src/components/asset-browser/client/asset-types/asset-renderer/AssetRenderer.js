@@ -21,11 +21,12 @@ export default class AssetRenderer extends React.Component {
 
 
     render() {
+        const {source, exclude, children} = this.props;
         let fileList;
-        switch (this.props.source) {
+        switch (source) {
             default:
             case 'children':
-                fileList = this.props.children;
+                fileList = children;
                 break;
             case 'unused':
                 fileList = getUnusedAssets()
@@ -33,6 +34,10 @@ export default class AssetRenderer extends React.Component {
         }
         if (!Array.isArray(fileList))
             throw new Error("Invalid file list in props.children: " + typeof fileList)
+        if (exclude) {
+            const excludeRegexp = new RegExp(exclude, 'i');
+            fileList = fileList.filter(filePath => !excludeRegexp.test(filePath));
+        }
         return fileList.map((filePath, i) => this.renderFile(filePath, i))
     }
 
@@ -41,11 +46,10 @@ export default class AssetRenderer extends React.Component {
         const props = {
             src: filePath,
             key,
-            // className: 'float'
         }
         switch (ext) {
             case 'md':
-                return <MarkdownAsset asset file={filePath}/>
+                return <MarkdownAsset asset {...props}/>
             case 'img':
             case 'jpg':
             case 'jpeg':

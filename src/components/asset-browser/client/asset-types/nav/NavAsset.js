@@ -145,5 +145,10 @@ export default class NavAsset extends React.Component {
             left: 0,
             behavior: 'smooth'
         });
+        if (window.location.hash !== '') {
+            setTimeout(() => {
+                window.location.hash = '';
+            }, 500);
+        }
     }
 }

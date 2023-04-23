@@ -1,6 +1,5 @@
 #!/bin/bash
-
-npm run test || exit;
+npm run test-ci || exit;
 
 echo "Pushing to origin"
 git push origin master || exit;
@@ -19,7 +18,7 @@ git pull;
 git reset --hard origin/master;
 npm i;
 
-npm run test || exit;
+npm run test-ci || exit;
 
 npm run build || exit;
 

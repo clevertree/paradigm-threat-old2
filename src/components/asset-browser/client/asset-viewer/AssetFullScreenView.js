@@ -1,13 +1,12 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import Markdown from "markdown-to-jsx";
 import "./AssetFullScreenView.scss"
 
 export default class AssetFullScreenView extends React.Component {
     /** Property validation **/
     static propTypes = {
         src: PropTypes.string.isRequired,
-        alt: PropTypes.string.isRequired,
+        // alt: PropTypes.string.isRequired,
         assetBrowser: PropTypes.object.isRequired,
         assetInstance: PropTypes.object.isRequired,
         children: PropTypes.any.isRequired,
@@ -30,11 +29,11 @@ export default class AssetFullScreenView extends React.Component {
             stopPropagation: e => e.stopPropagation(),
             renderNextAsset: e => {
                 e.stopPropagation();
-                this.renderNextAsset()
+                this.renderNextMediaAsset()
             },
             renderPreviousAsset: e => {
                 e.stopPropagation();
-                this.renderPreviousAsset()
+                this.renderPreviousMediaAsset()
             },
             onKeyUp: e => {
                 switch (e.key) {
@@ -46,10 +45,10 @@ export default class AssetFullScreenView extends React.Component {
                     default:
                         break;
                     case 'ArrowRight':
-                        this.renderNextAsset()
+                        this.renderNextMediaAsset()
                         break;
                     case 'ArrowLeft':
-                        this.renderPreviousAsset()
+                        this.renderPreviousMediaAsset()
                         break;
 
                 }
@@ -60,16 +59,16 @@ export default class AssetFullScreenView extends React.Component {
             onTouchEnd: e => {
                 touchendX = e.changedTouches[0].screenX
                 if (touchendX < touchstartX)
-                    this.renderNextAsset();
+                    this.renderNextMediaAsset();
                 else if (touchendX > touchstartX)
-                    this.renderPreviousAsset();
+                    this.renderPreviousMediaAsset();
             }
         }
     }
 
 
     render() {
-        const {src, alt, assetBrowser, children} = this.props;
+        const {assetBrowser, children, src} = this.props;
         return <div
             key="asset-image-fullscreen"
             className={`asset-image-fullscreen animation-${this.lastDirection}`}
@@ -83,12 +82,12 @@ export default class AssetFullScreenView extends React.Component {
             }}
         >
             {children}
-            {alt ? <div className={'alt-text'}>
-                <Markdown onClick={this.cb.stopPropagation}
-                          options={AssetFullScreenView.markdownOptions}>{alt.replace(/\\n/g, "\n")}</Markdown>
-                <a onClick={this.cb.stopPropagation} href={src} className="source" target="_blank"
-                   rel="noreferrer">Source File</a>
-            </div> : null}
+            <a onClick={this.cb.stopPropagation} href={src} className="source" target="_blank"
+               rel="noreferrer">Source File: {src}</a>
+            {/*{alt ? <div className={'alt-text'}>*/}
+            {/*    <Markdown onClick={this.cb.stopPropagation}*/}
+            {/*              options={AssetFullScreenView.markdownOptions}>{alt.replace(/\\n/g, "\n")}</Markdown>*/}
+            {/*</div> : null}*/}
             <div className="close">&#10006;</div>
             <div className="previous" onClick={this.cb.renderPreviousAsset}>&#8656;</div>
             <div className="next" onClick={this.cb.renderNextAsset}>&#8658;</div>
@@ -96,23 +95,25 @@ export default class AssetFullScreenView extends React.Component {
         </div>
     }
 
-    renderNextAsset() {
+    async renderNextMediaAsset() {
         this.lastDirection = 'left';
-        const {assetBrowser, assetInstance} = this.props;
+        const {assetBrowser, src} = this.props;
         const assets = assetBrowser.getRenderedAssets();
-        const i = assets.indexOf(assetInstance);
-        const nextAsset = assets[i + 1] || assets[0];
+        const assetList = Object.keys(assets).filter(assetFile => !assetFile.toLowerCase().endsWith('.md'));
+        const i = assetList.indexOf(src);
+        const nextAssetSrc = assetList[i + 1] || assetList[0];
         // assetBrowser.closeFullScreen();
-        nextAsset.openInFullScreen();
+        await assets[nextAssetSrc].openInFullScreen();
     }
 
-    renderPreviousAsset() {
+    async renderPreviousMediaAsset() {
         this.lastDirection = 'right';
-        const {assetBrowser, assetInstance} = this.props;
+        const {assetBrowser, src} = this.props;
         const assets = assetBrowser.getRenderedAssets();
-        const i = assets.indexOf(assetInstance);
-        const lastAsset = assets[i - 1] || assets[assets.length - 1];
+        const assetList = Object.keys(assets).filter(assetFile => !assetFile.toLowerCase().endsWith('.md'));
+        const i = assetList.indexOf(src);
+        const lastAssetSrc = assetList[i - 1] || assetList[assetList.length - 1];
         // assetBrowser.closeFullScreen();
-        lastAsset.openInFullScreen();
+        await assets[lastAssetSrc].openInFullScreen();
     }
 }
