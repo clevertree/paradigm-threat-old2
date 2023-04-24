@@ -6,7 +6,7 @@ git push origin master -f || exit;
 cd ..;
 
 echo "Deploying to server"
-ssh git.paradigmthreat.net << EOF
+ssh ari@paradigmthreat.net << EOF
 cd /var/www/paradigm-threat-site/files;
 git pull;
 git reset --hard origin/master;

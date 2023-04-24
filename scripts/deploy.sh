@@ -3,7 +3,7 @@ npm run test-ci || exit;
 
 echo "Pushing to origin"
 git push origin master || exit;
-git push github master -f || exit;
+git push github master -f;
 
 echo "Pushing files to origin"
 cd files || exit;
@@ -11,7 +11,7 @@ git push origin master || exit;
 cd ..;
 
 echo "Deploying to server"
-ssh git.paradigmthreat.net << EOF
+ssh ari@paradigmthreat.net << EOF
 cd /var/www/paradigm-threat-site;
 git stash;
 git pull;

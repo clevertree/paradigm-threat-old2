@@ -1,9 +1,9 @@
-import React from "react";
+import React, {useContext} from "react";
 import PropTypes from "prop-types";
 
 import AssetBrowserContext from "../../context/AssetBrowserContext.js";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
-import Markdown, {compiler} from "markdown-to-jsx";
+import Markdown from "markdown-to-jsx";
 import "./ImageAsset.scss"
 import MarkdownAsset from "../markdown/MarkdownAsset.js"
 import {resolveAssetPath} from "../../util/ClientUtil.js";
@@ -12,10 +12,7 @@ class ImageAsset extends React.Component {
     static ASSET_CLASS = 'asset image';
     /** Property validation **/
     static propTypes = {
-        src: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.bool
-        ]).isRequired,
+        src: PropTypes.string,
         assetBrowser: PropTypes.object.isRequired
         // i: PropTypes.number
     };
@@ -45,7 +42,7 @@ class ImageAsset extends React.Component {
 
     getAltString() {
         let {src, alt} = this.props;
-        return alt || resolveAssetPath(src).replace(/\.[^.]*$/, '').replace(/[_/-]+/g, ' ').trim();
+        return alt || resolveAssetPath(src).replace(/\.[^./]*$/, '').replace(/[_/-]+/g, ' ').trim();
     }
 
     getTitleString() {
@@ -123,32 +120,12 @@ class ImageAsset extends React.Component {
 
     }
 
-    /**
-     * @param {AssetBrowser} assetBrowser
-     * @returns {Promise<*>}
-     */
-    async checkForMDCaption(assetBrowser) {
-        let {src} = this.props;
-        const captionMDPath = assetBrowser.getMDCaptionPath(src);
-        if (captionMDPath) {
-            const response = await fetch(captionMDPath);
-            const caption = await response.text()
-            this.setState({caption})
-        }
-    }
 }
 
 
-export default class ImageAssetWrapper extends React.Component {
-    render() {
-        return <ErrorBoundary>
-            <AssetBrowserContext.Consumer>
-                {(assetBrowser) => {
-                    return <ImageAsset {...this.props} assetBrowser={assetBrowser}>
-                        {this.props.children}
-                    </ImageAsset>;
-                }}
-            </AssetBrowserContext.Consumer>
-        </ErrorBoundary>;
-    }
+export default function ImageAssetWrapper(props) {
+    const assetBrowser = useContext(AssetBrowserContext)
+    return <ErrorBoundary assetName="Image Asset">
+        <ImageAsset {...props} assetBrowser={assetBrowser}/>
+    </ErrorBoundary>;
 }

@@ -1,15 +1,19 @@
-import React from "react";
+import React, {useContext} from "react";
 import PropTypes from "prop-types";
 
 import "./VideoAsset.scss";
 import ErrorBoundary from "../../error/ErrorBoundary.js";
 import {resolveAssetPath} from "../../util/ClientUtil.js";
+import AssetBrowserContext from "../../context/AssetBrowserContext.js";
+import MarkdownAsset from "../markdown/MarkdownAsset.js";
+import Markdown from "markdown-to-jsx";
 
-export default class VideoAsset extends React.Component {
+class VideoAsset extends React.Component {
     static ASSET_CLASS = 'asset video';
     /** Property validation **/
     static propTypes = {
         src: PropTypes.string.isRequired,
+        assetBrowser: PropTypes.object.isRequired
     };
 
     // constructor(props) {
@@ -20,26 +24,36 @@ export default class VideoAsset extends React.Component {
         if (this.parseYoutubeURL(this.props.src))
             return this.renderYoutube();
         // let i = this.props.i || 0;
-        let {src, alt, caption, title, className, refreshHash, originalSrc, ...extraProps} = this.props;
+        let {src, alt, caption, title, className, assetBrowser, refreshHash, originalSrc, ...extraProps} = this.props;
         if (!alt)
-            alt = resolveAssetPath(src).replace(/\.[^.]*$/, '').replace(/[_/-]+/g, ' ').trim();
+            alt = resolveAssetPath(src).replace(/\.[^./]*$/, '').replace(/[_/-]+/g, ' ').trim();
         if (!title)
             title = alt;
         className = VideoAsset.ASSET_CLASS + (className ? ' ' + className : '')
-        return <ErrorBoundary assetName="Video Asset">
+
+        const captionMDPath = assetBrowser.getMDCaptionPath(src);
+
+        const mdProps = {
+            options: {
+                wrapper: 'div',
+                forceWrapper: true
+            }
+        }
+        return (
             <div title={title} className={className}>
                 <video controls>
                     <source src={src}  {...extraProps} children={null} type="video/mp4"/>
                     <meta itemProp="description" content={alt}/>
                 </video>
 
-                <div
-                    className='text-container'
-                >
-                    {alt.replace(/\\n/g, "\n")}
+                <div className="text-container">
+                    {captionMDPath
+                        ? <MarkdownAsset src={captionMDPath} {...mdProps}/>
+                        : (caption && <Markdown {...mdProps}>
+                            {caption.replace(/\\n/g, "\n")}
+                        </Markdown>)}
                 </div>
-            </div>
-        </ErrorBoundary>;
+            </div>);
     }
 
     renderYoutube() {
@@ -61,4 +75,12 @@ export default class VideoAsset extends React.Component {
         var match = url.match(regExp);
         return (match && match[7].length === 11) ? match[7] : false;
     }
+}
+
+
+export default function VideoAssetWrapper(props) {
+    const assetBrowser = useContext(AssetBrowserContext)
+    return <ErrorBoundary assetName="Video Asset">
+        <VideoAsset {...props} assetBrowser={assetBrowser}/>
+    </ErrorBoundary>;
 }
